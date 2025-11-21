@@ -1,0 +1,807 @@
+---
+title: 'Blog Features Showcase: Complete Style Guide'
+description: 'A comprehensive demonstration of all blog features including typography, code blocks, media embeds, interactive components, and more. This post serves as both a showcase and a style guide.'
+publishDate: 2024-03-20
+category: 'tutorial'
+tags: ['Documentation', 'Style Guide', 'Features', 'Demo']
+featured: false
+image:
+  src: '/images/blog/showcase-hero.svg'
+  alt: 'Blog features showcase illustration'
+---
+
+import Callout from '../../components/blog/Callout.astro';
+import YouTubeEmbed from '../../components/blog/YouTubeEmbed.astro';
+import ImageComparison from '../../components/blog/ImageComparison.astro';
+import CodePen from '../../components/blog/CodePen.astro';
+import AudioPlayer from '../../components/blog/AudioPlayer.astro';
+import Chart from '../../components/blog/Chart.astro';
+import MermaidDiagram from '../../components/blog/MermaidDiagram.astro';
+
+Welcome to the complete blog features showcase! This post demonstrates every capability of the blog system, from basic typography to interactive components. Whether you're writing technical content, tutorials, or personal stories, you'll find all the tools you need here.
+
+## Typography and Text Formatting
+
+### Headings Hierarchy
+
+This is a level 2 heading (H2). It's used for major sections and includes a bottom border for visual separation.
+
+### This is a level 3 heading (H3)
+
+Level 3 headings are perfect for subsections within major topics. They're slightly smaller but still prominent.
+
+#### This is a level 4 heading (H4)
+
+Level 4 headings are great for detailed breakdowns and minor sections within subsections.
+
+### Text Emphasis
+
+You can use **bold text** to emphasize important points, or *italic text* for subtle emphasis. You can even combine them with ***bold and italic text*** when you really need something to stand out.
+
+Use `inline code` for technical terms, file names, or short code snippets within paragraphs. For example, you might reference `useState` or `package.json` in your content.
+
+### Links and Navigation
+
+Here are some useful resources: [GitHub](https://github.com), [TypeScript Documentation](https://www.typescriptlang.org/docs/), and [React Docs](https://react.dev). Links are styled with the primary color and include hover effects.
+
+## Lists and Organization
+
+### Unordered Lists
+
+Here's an unordered list of key features:
+
+- **Rich typography** with carefully crafted font scales
+- **Syntax highlighting** for multiple programming languages
+- **Interactive components** for enhanced engagement
+- **Responsive design** that works on all devices
+- **Dark theme** optimized for reading comfort
+- **Table of contents** for easy navigation
+
+### Ordered Lists
+
+Follow these steps to write great blog posts:
+
+1. **Plan your content** - Outline your main points and structure
+2. **Write a compelling introduction** - Hook your readers early
+3. **Use visual aids** - Add images, videos, and code examples
+4. **Break up text** - Use headings, lists, and callouts
+5. **Include examples** - Show, don't just tell
+6. **Edit ruthlessly** - Remove unnecessary words and refine your message
+7. **Add a conclusion** - Summarize key takeaways
+
+### Nested Lists
+
+You can create nested lists for hierarchical information:
+
+- Frontend Technologies
+  - React
+    - Hooks
+    - Context API
+    - Server Components
+  - Vue
+  - Svelte
+- Backend Technologies
+  - Node.js
+  - Python
+  - Go
+
+## Callout Components
+
+Callouts are perfect for highlighting important information, tips, warnings, and more.
+
+<Callout type="info" title="Information Callout">
+  This is an informational callout. Use it to provide helpful context, explain concepts, or share background information that supports your main content.
+</Callout>
+
+<Callout type="success" title="Success Story">
+  Success callouts are great for highlighting wins, best practices, or positive outcomes. They draw attention to things that work well and should be adopted.
+</Callout>
+
+<Callout type="warning" title="Important Warning">
+  Warning callouts help readers avoid common pitfalls, anti-patterns, or potential issues. Use them to prevent mistakes before they happen.
+</Callout>
+
+<Callout type="error" title="Critical Error">
+  Error callouts highlight severe issues, breaking changes, or things that should absolutely be avoided. They demand immediate attention.
+</Callout>
+
+## Code Examples
+
+### Inline Code Blocks
+
+For short snippets, use inline code: `const greeting = 'Hello, World!'` within your text.
+
+### JavaScript/TypeScript
+
+Here's a TypeScript example with modern React hooks:
+
+```typescript
+import { useState, useEffect } from 'react';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'user' | 'guest';
+}
+
+function UserProfile({ userId }: { userId: string }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/users/${userId}`);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch user');
+        }
+
+        const data = await response.json();
+        setUser(data);
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error('Unknown error'));
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchUser();
+  }, [userId]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+  if (!user) return <div>User not found</div>;
+
+  return (
+    <div className="user-profile">
+      <h2>{user.name}</h2>
+      <p>{user.email}</p>
+      <span className="badge">{user.role}</span>
+    </div>
+  );
+}
+
+export default UserProfile;
+```
+
+### React JSX
+
+A functional React component with props and composition:
+
+```jsx
+function Card({ title, description, image, tags, onSelect }) {
+  return (
+    <article className="card">
+      <div className="card-image">
+        <img src={image} alt={title} loading="lazy" />
+      </div>
+
+      <div className="card-content">
+        <h3 className="card-title">{title}</h3>
+        <p className="card-description">{description}</p>
+
+        {tags && tags.length > 0 && (
+          <div className="card-tags">
+            {tags.map((tag) => (
+              <span key={tag} className="tag">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <button
+          onClick={() => onSelect(title)}
+          className="card-button"
+          aria-label={`Select ${title}`}
+        >
+          Learn More
+        </button>
+      </div>
+    </article>
+  );
+}
+```
+
+### CSS Styling
+
+Modern CSS with custom properties and modern features:
+
+```css
+:root {
+  --primary: #00bfa6;
+  --primary-dark: #008c7a;
+  --primary-light: #5df2d6;
+  --surface: #0f1620;
+  --bg-900: #0b0f12;
+  --text-primary: #f0f4f8;
+  --spacing-unit: 0.5rem;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: calc(var(--spacing-unit) * 4);
+  background: var(--surface);
+  border-radius: 1rem;
+}
+
+.card {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 2rem;
+  padding: 2rem;
+  background: linear-gradient(
+    135deg,
+    var(--bg-900) 0%,
+    var(--surface) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 191, 166, 0.1);
+}
+
+@media (max-width: 768px) {
+  .card {
+    grid-template-columns: 1fr;
+  }
+}
+```
+
+### Python
+
+Python example with modern features:
+
+```python
+from dataclasses import dataclass
+from typing import List, Optional
+import asyncio
+
+@dataclass
+class User:
+    id: int
+    username: str
+    email: str
+    is_active: bool = True
+
+    def __post_init__(self):
+        if not self.email or '@' not in self.email:
+            raise ValueError("Invalid email address")
+
+    def to_dict(self) -> dict:
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'is_active': self.is_active
+        }
+
+class UserService:
+    def __init__(self, database):
+        self.db = database
+
+    async def get_user(self, user_id: int) -> Optional[User]:
+        """Fetch user from database by ID"""
+        try:
+            data = await self.db.fetch_one(
+                "SELECT * FROM users WHERE id = ?",
+                (user_id,)
+            )
+
+            if data:
+                return User(**data)
+            return None
+        except Exception as e:
+            print(f"Error fetching user: {e}")
+            raise
+
+    async def get_active_users(self) -> List[User]:
+        """Get all active users"""
+        data = await self.db.fetch_all(
+            "SELECT * FROM users WHERE is_active = TRUE"
+        )
+        return [User(**row) for row in data]
+
+# Usage
+async def main():
+    service = UserService(database)
+    user = await service.get_user(123)
+    if user:
+        print(f"Found user: {user.username}")
+```
+
+### JSON Configuration
+
+JSON example with proper formatting:
+
+```json
+{
+  "name": "my-awesome-project",
+  "version": "2.0.0",
+  "description": "A modern web application",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\""
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "zustand": "^4.4.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^4.4.0"
+  }
+}
+```
+
+### Bash/Shell Commands
+
+Terminal commands and shell scripts:
+
+```bash
+#!/bin/bash
+
+# Install dependencies
+pnpm install
+
+# Run development server
+pnpm run dev
+
+# Build for production
+pnpm run build
+
+# Run tests with coverage
+pnpm test -- --coverage
+
+# Deploy to production
+pnpm run deploy --environment=production
+
+# Check for updates
+pnpm update --interactive --latest
+```
+
+## Blockquotes
+
+Blockquotes are perfect for highlighting quotes, important statements, or key takeaways:
+
+> "The best way to predict the future is to invent it." — Alan Kay
+
+> Design is not just what it looks like and feels like. Design is how it works. Good design is about making something intelligible and memorable. Great design is about making something relevant and meaningful.
+
+## Horizontal Rules
+
+Use horizontal rules to separate major sections:
+
+---
+
+## Media Components
+
+### YouTube Videos
+
+Embed YouTube videos with the YouTubeEmbed component:
+
+<YouTubeEmbed id="dQw4w9WgXcQ" title="Example Video" />
+
+<Callout type="info" title="Video Embedding">
+  YouTube videos are embedded with lazy loading for better performance. They include proper ARIA labels and are fully responsive.
+</Callout>
+
+### Images
+
+Regular images with markdown syntax:
+
+![Sample image alt text](/images/blog/react-architecture.svg)
+
+Images automatically include borders and proper spacing. They're responsive and optimized for different screen sizes.
+
+### Image Comparison
+
+Compare before and after images with an interactive slider:
+
+<ImageComparison
+  before="/images/blog/react-architecture.svg"
+  after="/images/blog/showcase-hero.svg"
+  alt="Performance comparison"
+/>
+
+<Callout type="info" title="Interactive Feature">
+  Drag the slider to compare images side by side. This component works with both mouse and touch inputs.
+</Callout>
+
+### CodePen Embeds
+
+Embed live code examples from CodePen:
+
+<CodePen id="raxGrKe" username="sonnykoh" title="Interactive Animation Example" height={400} />
+
+### Audio Player
+
+Include audio content with a custom player:
+
+<AudioPlayer
+  src="/audio/sample.mp3"
+  title="Podcast Episode: Building Better UIs"
+/>
+
+## Tables
+
+Tables are styled with borders and proper spacing:
+
+| Feature | Free | Pro | Enterprise |
+|---------|------|-----|------------|
+| Projects | 3 | Unlimited | Unlimited |
+| Storage | 1GB | 100GB | 1TB |
+| Team Members | 1 | 10 | Unlimited |
+| Support | Community | Email | 24/7 Phone |
+| Custom Domain | ❌ | ✅ | ✅ |
+| API Access | ❌ | ❌ | ✅ |
+| Price | $0 | $29/mo | Custom |
+
+### Complex Tables
+
+| Language | Typing | Performance | Learning Curve | Use Cases |
+|----------|--------|-------------|----------------|-----------|
+| TypeScript | Static | High | Medium | Large applications, teams |
+| JavaScript | Dynamic | High | Easy | Web development, prototyping |
+| Python | Dynamic | Medium | Easy | Data science, scripting, backend |
+| Rust | Static | Very High | Steep | Systems programming, performance-critical |
+| Go | Static | High | Medium | Backend services, cloud infrastructure |
+
+## Advanced Code Examples
+
+### Custom Hook Pattern
+
+```typescript
+import { useState, useEffect, useCallback, useRef } from 'react';
+
+interface UseAsyncOptions<T> {
+  immediate?: boolean;
+  onSuccess?: (data: T) => void;
+  onError?: (error: Error) => void;
+}
+
+interface UseAsyncReturn<T, Args extends any[]> {
+  execute: (...args: Args) => Promise<void>;
+  data: T | null;
+  loading: boolean;
+  error: Error | null;
+  reset: () => void;
+}
+
+function useAsync<T, Args extends any[]>(
+  asyncFunction: (...args: Args) => Promise<T>,
+  options: UseAsyncOptions<T> = {}
+): UseAsyncReturn<T, Args> {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const { immediate = false, onSuccess, onError } = options;
+  const mountedRef = useRef(true);
+
+  const execute = useCallback(
+    async (...args: Args) => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const result = await asyncFunction(...args);
+
+        if (mountedRef.current) {
+          setData(result);
+          onSuccess?.(result);
+        }
+      } catch (err) {
+        if (mountedRef.current) {
+          const error = err instanceof Error ? err : new Error('Unknown error');
+          setError(error);
+          onError?.(error);
+        }
+      } finally {
+        if (mountedRef.current) {
+          setLoading(false);
+        }
+      }
+    },
+    [asyncFunction, onSuccess, onError]
+  );
+
+  const reset = useCallback(() => {
+    setData(null);
+    setError(null);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (immediate) {
+      execute();
+    }
+  }, [immediate, execute]);
+
+  return { execute, data, loading, error, reset };
+}
+
+// Usage example
+function UserList() {
+  const { data, loading, error, execute } = useAsync(
+    async (query: string) => {
+      const response = await fetch(`/api/users?q=${query}`);
+      return response.json();
+    },
+    {
+      onSuccess: (users) => console.log('Loaded users:', users),
+      onError: (error) => console.error('Failed to load:', error),
+    }
+  );
+
+  return (
+    <div>
+      <button onClick={() => execute('admin')}>
+        Load Admin Users
+      </button>
+      {loading && <p>Loading...</p>}
+      {error && <p>Error: {error.message}</p>}
+      {data && <UserGrid users={data} />}
+    </div>
+  );
+}
+```
+
+## Performance Optimization Techniques
+
+<Callout type="success" title="Pro Tip">
+  Always measure performance before optimizing. Use the browser's Performance tab and React DevTools Profiler to identify bottlenecks.
+</Callout>
+
+### Memoization Example
+
+```typescript
+import { memo, useMemo, useCallback } from 'react';
+
+interface Item {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+interface ShoppingCartProps {
+  items: Item[];
+  onUpdateQuantity: (id: string, quantity: number) => void;
+  onRemoveItem: (id: string) => void;
+}
+
+const ShoppingCart = memo<ShoppingCartProps>(({
+  items,
+  onUpdateQuantity,
+  onRemoveItem
+}) => {
+  // Memoize expensive calculations
+  const totals = useMemo(() => {
+    return items.reduce(
+      (acc, item) => ({
+        items: acc.items + item.quantity,
+        price: acc.price + item.price * item.quantity,
+      }),
+      { items: 0, price: 0 }
+    );
+  }, [items]);
+
+  // Memoize event handlers to prevent unnecessary re-renders
+  const handleQuantityChange = useCallback(
+    (id: string, delta: number) => {
+      const item = items.find((i) => i.id === id);
+      if (item) {
+        onUpdateQuantity(id, Math.max(0, item.quantity + delta));
+      }
+    },
+    [items, onUpdateQuantity]
+  );
+
+  return (
+    <div className="shopping-cart">
+      <h2>Shopping Cart</h2>
+
+      <div className="cart-items">
+        {items.map((item) => (
+          <CartItem
+            key={item.id}
+            item={item}
+            onIncrease={() => handleQuantityChange(item.id, 1)}
+            onDecrease={() => handleQuantityChange(item.id, -1)}
+            onRemove={() => onRemoveItem(item.id)}
+          />
+        ))}
+      </div>
+
+      <div className="cart-summary">
+        <p>Total Items: {totals.items}</p>
+        <p>Total Price: ${totals.price.toFixed(2)}</p>
+      </div>
+    </div>
+  );
+});
+
+ShoppingCart.displayName = 'ShoppingCart';
+```
+
+## Best Practices Checklist
+
+Before publishing your blog post, make sure you've covered these points:
+
+- [ ] **Clear headline** that promises value
+- [ ] **Compelling introduction** that hooks readers
+- [ ] **Logical structure** with proper heading hierarchy
+- [ ] **Code examples** that are tested and work
+- [ ] **Visual elements** to break up text
+- [ ] **Callouts** for important information
+- [ ] **Internal links** to related content
+- [ ] **Conclusion** that summarizes key points
+- [ ] **Call to action** for reader engagement
+- [ ] **Proofreading** for typos and clarity
+
+## Data Visualization
+
+### Interactive Charts
+
+Visualize data with interactive charts powered by Chart.js:
+
+<Chart
+  type="bar"
+  title="Framework Performance Comparison"
+  data={{
+    labels: ['React', 'Vue', 'Svelte', 'Angular', 'Solid'],
+    datasets: [{
+      label: 'Lighthouse Score',
+      data: [92, 95, 98, 88, 99],
+      backgroundColor: [
+        'rgba(0, 191, 166, 0.6)',
+        'rgba(52, 211, 153, 0.6)',
+        'rgba(251, 113, 133, 0.6)',
+        'rgba(239, 68, 68, 0.6)',
+        'rgba(59, 130, 246, 0.6)'
+      ],
+      borderColor: 'rgba(0, 191, 166, 1)'
+    }]
+  }}
+/>
+
+<Chart
+  type="line"
+  title="Website Traffic Over Time"
+  data={{
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    datasets: [
+      {
+        label: 'Page Views',
+        data: [1200, 1900, 1500, 2500, 2200, 3000],
+        borderColor: 'rgba(0, 191, 166, 1)',
+        backgroundColor: 'rgba(0, 191, 166, 0.1)'
+      },
+      {
+        label: 'Unique Visitors',
+        data: [800, 1200, 1000, 1600, 1400, 1900],
+        borderColor: 'rgba(107, 211, 255, 1)',
+        backgroundColor: 'rgba(107, 211, 255, 0.1)'
+      }
+    ]
+  }}
+/>
+
+<Callout type="info" title="Chart Interactivity">
+  Hover over chart elements to see detailed values. Charts are fully responsive and adapt to different screen sizes.
+</Callout>
+
+### Mermaid Diagrams
+
+Create flowcharts, sequence diagrams, and more with Mermaid:
+
+<MermaidDiagram
+  title="Application Architecture Flow"
+  diagram={`
+graph TD
+    A[User Request] --> B{Authentication}
+    B -->|Valid| C[API Gateway]
+    B -->|Invalid| D[401 Error]
+    C --> E[Load Balancer]
+    E --> F[Service 1]
+    E --> G[Service 2]
+    E --> H[Service 3]
+    F --> I[(Database)]
+    G --> I
+    H --> I
+    I --> J[Response]
+    J --> K[User]
+  `}
+/>
+
+<MermaidDiagram
+  title="User Authentication Sequence"
+  diagram={`
+sequenceDiagram
+    participant U as User
+    participant F as Frontend
+    participant A as Auth Service
+    participant D as Database
+
+    U->>F: Enter credentials
+    F->>A: Login request
+    A->>D: Validate user
+    D-->>A: User data
+    A->>A: Generate JWT
+    A-->>F: Return token
+    F-->>U: Login successful
+    F->>F: Store token
+    U->>F: Access protected route
+    F->>A: Verify token
+    A-->>F: Token valid
+    F-->>U: Show protected content
+  `}
+/>
+
+<Callout type="success" title="Diagram Support">
+  Mermaid supports flowcharts, sequence diagrams, class diagrams, state diagrams, entity relationships, and more. Perfect for technical documentation!
+</Callout>
+
+## Accessibility Considerations
+
+<Callout type="info" title="Accessibility First">
+  All components in this blog system are built with accessibility in mind, including proper ARIA labels, keyboard navigation, and screen reader support.
+</Callout>
+
+### Key Features:
+
+- **Semantic HTML** - Proper heading hierarchy and landmark regions
+- **Keyboard Navigation** - All interactive elements are keyboard accessible
+- **Focus Indicators** - Clear visual focus states for navigation
+- **Alt Text** - All images include descriptive alternative text
+- **Color Contrast** - WCAG AA compliant color combinations
+- **Reduced Motion** - Respects `prefers-reduced-motion` setting
+
+## Conclusion
+
+This showcase demonstrates the full capabilities of the blog system. You have access to:
+
+✨ **Rich typography** for beautiful, readable content
+🎨 **Syntax highlighting** for code in multiple languages
+🎯 **Interactive components** for engaging experiences
+📊 **Data visualization** with charts and diagrams
+🔀 **Mermaid diagrams** for flowcharts and architecture
+📺 **Media embeds** including videos, audio, and live code
+🎭 **Callouts** for highlighting important information
+📱 **Responsive design** that works everywhere
+♿ **Accessibility** built-in from the ground up
+
+Whether you're writing technical tutorials, sharing insights, or documenting your journey, you have all the tools you need to create exceptional content.
+
+<Callout type="success" title="Ready to Write?">
+  Now that you've seen what's possible, start creating your own blog posts. Copy this file as a template and customize it with your own content!
+</Callout>
+
+---
+
+Have questions or suggestions? Reach out on [Twitter](https://twitter.com/hectorjaraba) or [GitHub](https://github.com/hector-jaraba). Happy writing! 🚀

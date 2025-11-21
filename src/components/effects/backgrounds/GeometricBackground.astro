@@ -1,0 +1,12 @@
+---
+import GeometricPatternBackground from './GeometricPatternBackground.astro';
+---
+
+<div class="relative bg-black">
+  <div class="top-0 w-0 h-0 sticky">
+    <GeometricPatternBackground />
+  </div>
+  <div class="overflow-x-hidden">
+    <slot />
+  </div>
+</div>

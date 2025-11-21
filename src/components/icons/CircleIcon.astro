@@ -1,0 +1,41 @@
+---
+// Animated Circle Icon
+---
+
+<svg width="60" height="60" viewBox="0 0 60 60">
+  <g class="rotating-circle">
+    <circle
+      cx="30"
+      cy="30"
+      r="25"
+      stroke="currentColor"
+      stroke-width="1"
+      fill="none"
+    />
+    <line x1="30" y1="5" x2="30" y2="15" stroke="currentColor" stroke-width="1.5" />
+    <circle cx="30" cy="30" r="5" fill="currentColor" />
+  </g>
+</svg>
+
+<style>
+  .rotating-circle {
+    animation: rotate-slow 20s linear infinite;
+    transform-origin: center;
+    transform-box: fill-box;
+  }
+
+  @keyframes rotate-slow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rotating-circle {
+      animation: none;
+    }
+  }
+</style>

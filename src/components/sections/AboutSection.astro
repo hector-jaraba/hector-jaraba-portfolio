@@ -1,0 +1,626 @@
+---
+import { Image } from 'astro:assets';
+import divingImage from '../../assets/images/diving.jpg';
+import meImage from '../../assets/images/me.jpg';
+import hectorImage from '../../assets/images/hector.jpg';
+import dogsImage from '../../assets/images/dogs.jpg';
+import startupImage from '../../assets/images/startup-weekend.jpg';
+import cathyhectorImage from '../../assets/images/cathyhector.jpg';
+import { getLangFromUrl, useTranslations } from '@/i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<section id="about" class="section-full bg-[#130D1E] py-10 pt-20 min-h-screen">
+  <div class="about-content max-w-4xl mx-auto px-6">
+    <button id="close-about-me" class="close-button is-hidden" aria-label="Close about me section">
+      <svg
+        class="arrow-icon"
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M10 12L6 8L10 4"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"></path>
+      </svg>
+      {t('aboutModal.goBack')}
+    </button>
+
+    <!-- Header with image -->
+    <div class="about-header mt-6">
+      <div class="profile-wrapper">
+        <svg
+          class="w-60 h-60 rotating-badge"
+          viewBox="0 0 100 100"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            id="circlePath"
+            fill="none"
+            d="
+            M 10, 50
+            a 40,40 0 1,1 80,0
+            a 40,40 0 1,1 -80,0
+          "
+          ></path>
+          <text id="text" font-family="monospace" font-size="12" font-weight="bold" fill="#c4b5fd">
+            <textPath id="textPath" href="#circlePath">Nice to meet ya! - Nice to meet ya!</textPath
+            >
+          </text>
+        </svg>
+        <Image src={meImage} alt="Héctor Jaraba" class="profile-image shadow-lg" />
+      </div>
+      <h2 class="about-title text-primary">{t('aboutModal.title')}</h2>
+    </div>
+
+    <!-- Animated Marquee -->
+    <div class="marquee-container">
+      <div class="marquee-content">
+        <div class="marquee-track">
+          <span class="marquee-item">{t('aboutModal.roles.engineer')}</span>
+          <span class="marquee-separator">✦</span>
+          <span class="marquee-item">{t('aboutModal.roles.scubaDiver')}</span>
+          <span class="marquee-separator">✦</span>
+          <span class="marquee-item">{t('aboutModal.roles.designer')}</span>
+          <span class="marquee-separator">✦</span>
+          <span class="marquee-item">{t('aboutModal.roles.barista')}</span>
+          <span class="marquee-separator">✦</span>
+          <span class="marquee-item">{t('aboutModal.roles.musician')}</span>
+          <span class="marquee-separator">✦</span>
+          <span class="marquee-item">{t('aboutModal.roles.dogLover')}</span>
+          <span class="marquee-separator">✦</span>
+          <span class="marquee-item">{t('aboutModal.roles.coffeeNerd')}</span>
+          <span class="marquee-separator">✦</span>
+          <span class="marquee-item">{t('aboutModal.roles.gamer')}</span>
+          <span class="marquee-separator">✦</span>
+          <span class="marquee-item">{t('aboutModal.roles.traveler')}</span>
+          <span class="marquee-separator">✦</span>
+        </div>
+        <div class="marquee-track" aria-hidden="true">
+          <span class="marquee-item">{t('aboutModal.roles.engineer')}</span>
+          <span class="marquee-separator">✦</span>
+          <span class="marquee-item">{t('aboutModal.roles.scubaDiver')}</span>
+          <span class="marquee-separator">✦</span>
+          <span class="marquee-item">{t('aboutModal.roles.designer')}</span>
+          <span class="marquee-separator">✦</span>
+          <span class="marquee-item">{t('aboutModal.roles.barista')}</span>
+          <span class="marquee-separator">✦</span>
+          <span class="marquee-item">{t('aboutModal.roles.musician')}</span>
+          <span class="marquee-separator">✦</span>
+          <span class="marquee-item">{t('aboutModal.roles.dogLover')}</span>
+          <span class="marquee-separator">✦</span>
+          <span class="marquee-item">{t('aboutModal.roles.coffeeNerd')}</span>
+          <span class="marquee-separator">✦</span>
+          <span class="marquee-item">{t('aboutModal.roles.gamer')}</span>
+          <span class="marquee-separator">✦</span>
+          <span class="marquee-item">{t('aboutModal.roles.traveler')}</span>
+          <span class="marquee-separator">✦</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Intro paragraph - featured -->
+    <div class="story-intro">
+      <div class="accent-line"></div>
+      <p class="intro-text text-balance" set:html={t('aboutModal.intro')} />
+    </div>
+    <Image
+      src={divingImage}
+      alt="Héctor diving in Bali"
+      class="story-image my-8 rounded-lg shadow-lg"
+    />
+
+    <!-- Story paragraphs with improved styling -->
+    <div class="story-section">
+      <p class="story-paragraph text-balance" set:html={t('aboutModal.paragraph1')} />
+      <p class="story-paragraph text-balance" set:html={t('aboutModal.paragraph2')} />
+    </div>
+
+    <Image src={dogsImage} alt="Héctor's dogs" class="story-image my-8 rounded-lg shadow-lg" />
+
+    <div class="story-section">
+      <p class="story-paragraph text-balance" set:html={t('aboutModal.paragraph3')} />
+
+      <div class="milestone-card">
+        <span class="milestone-age">{t('aboutModal.milestone1.age')}</span>
+        <p class="milestone-text">
+          {t('aboutModal.milestone1.text')}
+        </p>
+      </div>
+
+      <div class="milestone-card">
+        <span class="milestone-age">{t('aboutModal.milestone2.age')}</span>
+        <p class="milestone-text">
+          {t('aboutModal.milestone2.text')}
+        </p>
+      </div>
+    </div>
+
+    <Image
+      src={startupImage}
+      alt="Valencia Startup Weekend"
+      class="story-image my-8 rounded-lg shadow-lg"
+    />
+
+    <div class="story-section">
+      <p class="story-paragraph text-balance" set:html={t('aboutModal.paragraph3a')} />
+      <p class="story-paragraph text-balance" set:html={t('aboutModal.paragraph4')} />
+      <Image
+        src={cathyhectorImage}
+        alt="Héctor and Cath"
+        class="story-image rounded-lg shadow-lg"
+      />
+
+      <div class="closing-section">
+        <div class="closing-quote">
+          <div class="quote-mark">"</div>
+          <p class="quote-text">
+            {t('aboutModal.closingQuote')}
+          </p>
+        </div>
+
+        <Image
+          src={hectorImage}
+          alt="Héctor Jaraba"
+          class="story-image final-image rounded-lg shadow-lg"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .close-button {
+    position: sticky;
+    top: 2rem;
+    left: 0;
+    z-index: 9999;
+    background: rgba(139, 92, 246, 0.1);
+    backdrop-filter: blur(10px) invert(0.05);
+    -webkit-backdrop-filter: blur(10px) invert(0.05);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    pointer-events: auto !important;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease,
+      background 0.3s ease,
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    isolation: isolate;
+    opacity: 1;
+  }
+
+  .close-button.is-hidden {
+    opacity: 0;
+    pointer-events: none !important;
+  }
+
+  .arrow-icon {
+    transition: transform 0.3s ease;
+  }
+
+  .close-button:hover {
+    background: rgba(139, 92, 246, 0.2);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+  }
+
+  .close-button:hover .arrow-icon {
+    transform: translateX(-3px);
+  }
+
+  .close-button:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  /* About Header */
+  .about-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .rotating-badge {
+    position: absolute;
+    top: -90px;
+    right: -70px;
+    animation: rotate 20s linear infinite;
+    z-index: 1;
+  }
+
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .profile-wrapper {
+    position: relative;
+    margin-bottom: -4rem;
+    z-index: 2;
+  }
+
+  .profile-image {
+    width: 500px;
+    height: 500px;
+    border-radius: 0;
+    object-fit: cover;
+    border: none;
+    transition: transform 0.3s ease;
+    position: relative;
+    z-index: 2;
+  }
+
+  .profile-image:hover {
+    transform: scale(1.02);
+  }
+
+  .title-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #ff6b35, transparent);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .about-title {
+    font-weight: 700;
+    font-size: clamp(3rem, 12vw, 10rem);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    margin-top: 0;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 3;
+    color: rgba(196, 181, 253, 1);
+  }
+
+  /* Animated Marquee */
+  .marquee-container {
+    width: 100vw;
+    overflow: hidden;
+    background: transparent;
+    padding: 1.5rem 0;
+    margin: 2rem 0;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+  }
+
+  .marquee-content {
+    display: flex;
+    animation: marquee 30s linear infinite;
+    will-change: transform;
+  }
+
+  .marquee-track {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    gap: 3rem;
+  }
+
+  .marquee-item {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--primary);
+    text-transform: uppercase;
+  }
+
+  .marquee-separator {
+    font-size: 40px;
+    color: var(--primary);
+    opacity: 0.5;
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Pause animation on hover */
+  .marquee-container:hover .marquee-content {
+    animation-play-state: paused;
+  }
+
+  /* Respect reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-content {
+      animation: none;
+    }
+
+    .marquee-text:last-child {
+      display: none;
+    }
+  }
+
+  /* Story Intro - Featured */
+  .story-intro {
+    position: relative;
+    margin-bottom: 4rem;
+    padding-left: 3rem;
+  }
+
+  .accent-line {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 6px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--primary) 0%, rgba(139, 92, 246, 0.3) 100%);
+    border-radius: 3px;
+  }
+
+  .intro-text {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 600;
+  }
+
+  /* Story Sections */
+  .story-section {
+    margin: 5rem 0;
+  }
+
+  .story-paragraph {
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 2rem;
+    font-weight: 500;
+  }
+
+  .story-image {
+    width: 100%;
+    max-width: 800px;
+    height: auto;
+    margin: 4rem auto;
+    display: block;
+    border-radius: 0;
+    box-shadow: 0 20px 60px rgba(139, 92, 246, 0.3);
+  }
+
+  .final-image {
+    max-width: 500px;
+    height: auto;
+    margin: 3em auto;
+    display: block;
+    border-radius: 8px;
+  }
+
+  /* Milestone Cards */
+  .milestone-card {
+    position: relative;
+    padding: 3rem;
+    margin: 3rem 0;
+    background: rgba(139, 92, 246, 0.08);
+    border-left: 6px solid var(--primary);
+    border-radius: 0;
+    transition: all 0.3s ease;
+  }
+
+  .milestone-age {
+    display: inline-block;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: rgba(196, 181, 253, 1);
+    border-radius: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .milestone-text {
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    font-weight: 500;
+  }
+
+  /* Closing Section */
+  .closing-section {
+    margin: 5rem 0;
+  }
+
+  /* Closing Quote */
+  .closing-quote {
+    position: relative;
+    padding: 4rem 3rem 4rem 5rem;
+    margin: 0 0 3rem 0;
+    background: rgba(139, 92, 246, 0.05);
+    border-left: 8px solid var(--primary);
+    border-radius: 0;
+  }
+
+  .quote-mark {
+    position: absolute;
+    top: 2rem;
+    left: 1rem;
+    font-size: clamp(8rem, 15vw, 12rem);
+    line-height: 1;
+    color: rgba(139, 92, 246, 0.15);
+    font-family: Georgia, serif;
+    user-select: none;
+  }
+
+  .quote-text {
+    font-size: clamp(1.5rem, 3vw, 1.5rem);
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.95);
+    font-style: italic;
+    font-weight: 500;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Highlighted Text */
+  :global(.highlight) {
+    color: rgba(196, 181, 253, 1);
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .close-button {
+      top: 1rem;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+    }
+
+    .about-header {
+      margin-bottom: 2rem;
+    }
+
+    .rotating-badge {
+      width: 150px;
+      height: 150px;
+      top: -40px;
+      right: -40px;
+    }
+
+    .profile-wrapper {
+      margin-bottom: -2rem;
+    }
+
+    .profile-image {
+      width: 300px;
+      height: 300px;
+    }
+
+    .about-title {
+      font-size: clamp(2rem, 10vw, 3.5rem);
+      line-height: 0.9;
+      margin-bottom: 1.5rem;
+    }
+
+    .title-line {
+      height: 2px;
+    }
+
+    .marquee-container {
+      padding: 1rem 0;
+    }
+
+    .marquee-track {
+      gap: 2rem;
+    }
+
+    .marquee-item {
+      font-size: 24px;
+      letter-spacing: 0.08em;
+    }
+
+    .marquee-separator {
+      font-size: 24px;
+    }
+
+    .story-intro {
+      padding-left: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .accent-line {
+      width: 4px;
+    }
+
+    .intro-text {
+      font-size: clamp(1.125rem, 4vw, 1.5rem);
+    }
+
+    .story-section {
+      margin: 3rem 0;
+    }
+
+    .story-paragraph {
+      font-size: clamp(1.125rem, 3.5vw, 1.25rem);
+      margin-bottom: 1.5rem;
+    }
+
+    .story-image {
+      margin: 3rem auto;
+      box-shadow: 0 20px 60px rgba(139, 92, 246, 0.3);
+    }
+
+    .final-image {
+      width: 100%;
+      max-width: 350px;
+      height: auto;
+      margin: 2rem auto;
+      display: block;
+    }
+
+    .milestone-card {
+      padding: 2rem;
+      margin: 2rem 0;
+      border-left-width: 4px;
+    }
+
+    .milestone-age {
+      padding: 0.625rem 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .closing-section {
+      margin: 3rem 0;
+    }
+
+    .closing-quote {
+      padding: 3rem 2rem 3rem 3rem;
+      margin: 0 0 2rem 0;
+      border-left-width: 5px;
+    }
+
+    .quote-mark {
+      font-size: clamp(5rem, 12vw, 8rem);
+      left: 0.5rem;
+      top: 1.5rem;
+    }
+
+    .quote-text {
+      font-size: clamp(1.125rem, 4vw, 1.5rem);
+    }
+  }
+</style>

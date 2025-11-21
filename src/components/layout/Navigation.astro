@@ -1,0 +1,408 @@
+---
+import { navLinks } from '@/lib/navigation';
+import {
+  getLangFromUrl,
+  useTranslations,
+  languages,
+  type Locale,
+  getLocalizedPath,
+} from '@/i18n/utils';
+import { isFeatureEnabled } from '@/config/features';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const i18nEnabled = isFeatureEnabled('I18N_ENABLED');
+
+// Check if we're on a blog page
+const isBlogPage =
+  Astro.url.pathname.startsWith('/blog') || Astro.url.pathname.startsWith('/es/blog');
+
+// For blog pages, prepend the homepage path to hash links
+const localizedNavLinks = navLinks.map((link) => ({
+  ...link,
+  label: t(`nav.${link.label}`),
+  href: isBlogPage ? (lang === 'en' ? `/${link.href}` : `/${lang}${link.href}`) : link.href,
+}));
+---
+
+<nav class="fixed top-0 left-0 right-0 z-50 pointer-events-none" id="main-nav">
+  <div class="container-custom pointer-events-auto">
+    <div class="flex items-center justify-between h-20 md:h-24">
+      <!-- Logo -->
+      <a
+        href="/"
+        class="flex items-center hover:opacity-70 transition-all duration-700 hover:scale-105"
+        aria-label="Home"
+      >
+        <svg
+          class="w-11 h-11 md:w-12 md:h-12"
+          viewBox="0 0 357 356"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M60 0V136.5H129V0H189.5V129.5L254 60.5H206.5V0H333.5L0 355.5V0H60ZM60 197V268L125.5 197H60Z"
+            fill="white"></path>
+          <path
+            d="M263 273H207V355H263C310.5 355 357 309 357 243.5V0L297 62.5V243.5C297 266.755 287.457 290.479 263 295.5V273Z"
+            fill="white"></path>
+          <path d="M189 354.5V178.5L129 242.5V354.5H189Z" fill="white"></path>
+        </svg>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center gap-8">
+        {
+          localizedNavLinks.map((link) => (
+            <a
+              href={link.href}
+              data-nav-link
+              data-section={link.href.replace('#', '')}
+              class="nav-link relative px-4 py-2 overflow-hidden rounded-lg text-sm uppercase tracking-widest font-light transition-colors text-text-secondary hover:text-primary"
+            >
+              {link.label}
+            </a>
+          ))
+        }
+      </div>
+
+      <!-- Clock, Language Switcher and Connect Button -->
+      <div class="hidden md:flex items-center gap-6">
+        <!-- Language Switcher -->
+        {
+          i18nEnabled && (
+            <div class="flex items-center gap-2">
+              {Object.entries(languages).map(([locale, name]) => (
+                <a
+                  href={getLocalizedPath(
+                    Astro.url.pathname.replace(/^\/(en|es)/, ''),
+                    locale as Locale
+                  )}
+                  class={`text-xs uppercase tracking-wider font-light transition-colors ${
+                    lang === locale ? 'text-primary' : 'text-text-tertiary hover:text-primary'
+                  }`}
+                  aria-label={`Switch to ${name}`}
+                >
+                  {locale}
+                </a>
+              ))}
+            </div>
+          )
+        }
+
+        <a
+          href="#contact"
+          data-nav-link
+          data-section="contact"
+          class="connect-button relative px-6 py-3 border border-primary text-primary rounded-full font-light text-sm overflow-hidden"
+        >
+          {t('common.getInTouch')}
+        </a>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button
+        id="mobile-menu-button"
+        class="md:hidden p-2 text-text-primary hover:text-primary transition-colors"
+        aria-label="Toggle menu"
+        aria-expanded="false"
+        type="button"
+      >
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1"
+            d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div
+    id="mobile-menu"
+    class="md:hidden hidden bg-bg-900/95 backdrop-blur-lg border-t border-muted/10 pointer-events-auto"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="container-custom py-8 space-y-6">
+      {
+        localizedNavLinks.map((link) => (
+          <a
+            href={link.href}
+            data-nav-link
+            data-section={link.href.replace('#', '')}
+            class="mobile-nav-link block text-lg font-light py-2 transition-colors text-text-secondary hover:text-primary"
+          >
+            {link.label}
+          </a>
+        ))
+      }
+
+      <!-- Mobile Language Switcher -->
+      {
+        i18nEnabled && (
+          <div class="flex items-center gap-4 py-2">
+            {Object.entries(languages).map(([locale, name]) => (
+              <a
+                href={getLocalizedPath(
+                  Astro.url.pathname.replace(/^\/(en|es)/, ''),
+                  locale as Locale
+                )}
+                class={`text-sm uppercase tracking-wider font-light transition-colors ${
+                  lang === locale ? 'text-primary' : 'text-text-tertiary hover:text-primary'
+                }`}
+              >
+                {name}
+              </a>
+            ))}
+          </div>
+        )
+      }
+
+      <a
+        href="#contact"
+        data-nav-link
+        data-section="contact"
+        class="mobile-nav-link block px-6 py-3 border border-primary text-primary rounded-full font-light text-sm hover:bg-primary hover:text-bg-900 transition-all text-center"
+      >
+        {t('common.getInTouch')}
+      </a>
+    </div>
+  </div>
+</nav>
+
+<style>
+  .nav-link,
+  .connect-button {
+    --fill-width: 0%;
+  }
+
+  .nav-link::before,
+  .connect-button::before {
+    content: '';
+    @apply absolute top-0 left-0 h-full -z-10 transition-none;
+    width: var(--fill-width);
+  }
+
+  .nav-link::before {
+    @apply rounded-lg;
+    background: rgba(153, 161, 173, 0.15);
+  }
+
+  .nav-link.active {
+    @apply text-primary;
+  }
+
+  .nav-link.active::before {
+    background: rgba(229, 227, 255, 0.15);
+  }
+
+  .nav-link:not(.active):hover::before {
+    @apply w-full transition-[width] duration-300 ease-in-out;
+    background: rgba(153, 161, 173, 0.2);
+  }
+
+  .connect-button::before {
+    @apply rounded-full;
+    background: rgba(229, 227, 255, 0.1);
+  }
+
+  .connect-button.active::before {
+    @apply bg-primary;
+  }
+
+  .connect-button.active {
+    @apply text-bg-900;
+  }
+
+  .connect-button:not(.active):hover::before {
+    @apply w-full transition-[width] duration-300 ease-in-out bg-primary;
+  }
+
+  .connect-button:not(.active):hover {
+    @apply text-bg-900;
+  }
+</style>
+
+<script>
+  import { updateClock, getCurrentSectionIndex, updateNavProgress } from '@/lib/navigation';
+  import { onInit } from '@/lib/dom';
+
+  function initNavigation() {
+    const nav = document.getElementById('main-nav');
+    const isBlogPage =
+      window.location.pathname.startsWith('/blog') ||
+      window.location.pathname.startsWith('/es/blog');
+
+    // Mobile menu toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    mobileMenuButton?.addEventListener('click', () => {
+      const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+      mobileMenuButton.setAttribute('aria-expanded', (!isExpanded).toString());
+      mobileMenu?.classList.toggle('hidden');
+    });
+
+    // Close mobile menu when a link is clicked
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+    mobileNavLinks.forEach((link) => {
+      link.addEventListener('click', () => {
+        mobileMenuButton?.setAttribute('aria-expanded', 'false');
+        mobileMenu?.classList.add('hidden');
+      });
+    });
+
+    // Clock functionality
+    const clockElement = document.getElementById('clock-time');
+    const updateClockDisplay = () => {
+      if (clockElement) clockElement.textContent = updateClock();
+    };
+
+    updateClockDisplay();
+    setInterval(updateClockDisplay, 1000);
+
+    // Blog-specific: Hide navigation on scroll down and add glass effect
+    if (isBlogPage && nav) {
+      let lastScrollTop = 0;
+      let scrollTimeout: number;
+
+      const handleBlogScroll = () => {
+        const scrollTop = window.scrollY;
+
+        // Add glass effect when scrolled down
+        if (scrollTop > 50) {
+          nav.style.background = 'rgba(11, 15, 18, 0.8)';
+          nav.style.backdropFilter = 'blur(12px)';
+          nav.style.webkitBackdropFilter = 'blur(12px)';
+          nav.style.borderBottom = '1px solid rgba(153, 161, 173, 0.1)';
+        } else {
+          nav.style.background = 'transparent';
+          nav.style.backdropFilter = 'none';
+          nav.style.webkitBackdropFilter = 'none';
+          nav.style.borderBottom = 'none';
+        }
+
+        if (scrollTop > 100) {
+          // Only hide after scrolling past 100px
+          if (scrollTop > lastScrollTop) {
+            // Scrolling down - hide nav
+            nav.style.transform = 'translateY(-100%)';
+            nav.style.transition =
+              'transform 0.3s ease-in-out, background 0.3s ease-in-out, backdrop-filter 0.3s ease-in-out';
+          } else {
+            // Scrolling up - show nav
+            nav.style.transform = 'translateY(0)';
+            nav.style.transition =
+              'transform 0.3s ease-in-out, background 0.3s ease-in-out, backdrop-filter 0.3s ease-in-out';
+          }
+        } else {
+          // At top - always show
+          nav.style.transform = 'translateY(0)';
+          nav.style.transition = 'background 0.3s ease-in-out, backdrop-filter 0.3s ease-in-out';
+        }
+
+        lastScrollTop = scrollTop;
+      };
+
+      window.addEventListener(
+        'scroll',
+        () => {
+          if (scrollTimeout) cancelAnimationFrame(scrollTimeout);
+          scrollTimeout = requestAnimationFrame(handleBlogScroll);
+        },
+        { passive: true }
+      );
+
+      // Initial check
+      handleBlogScroll();
+
+      return; // Skip section tracking for blog pages
+    }
+
+    // Get all nav links for smooth scroll behavior
+    const allNavLinks = document.querySelectorAll('[data-nav-link]');
+    // Get desktop nav links only for progress tracking
+    const desktopNavLinks = document.querySelectorAll('[data-nav-link]:not(.mobile-nav-link)');
+
+    // Add smooth scroll behavior for hero slides (all nav links)
+    allNavLinks.forEach((link) => {
+      link.addEventListener('click', (e) => {
+        const sectionId = link.getAttribute('data-section');
+        const heroSection = document.getElementById('hero');
+
+        if (!heroSection) return;
+
+        const heroHeight = heroSection.offsetHeight;
+
+        if (sectionId === 'home') {
+          e.preventDefault();
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+          });
+        } else if (sectionId === 'about') {
+          e.preventDefault();
+          // Scroll to approximately 50% of hero section to show the about slide
+          // The about slide becomes fully visible at around 50% of the hero scroll
+          const targetScroll = heroHeight * 0.5;
+          window.scrollTo({
+            top: targetScroll,
+            behavior: 'smooth',
+          });
+        }
+        // Other sections will use default anchor behavior
+      });
+    });
+
+    const updateActiveSection = () => {
+      const scrollTop = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+
+      // Add glass effect when scrolled down
+      if (nav) {
+        if (scrollTop > 50) {
+          nav.style.backdropFilter = 'blur(12px)';
+          nav.style.webkitBackdropFilter = 'blur(12px)';
+          nav.style.transition = 'backdrop-filter 0.3s ease-in-out';
+        } else {
+          nav.style.backdropFilter = 'none';
+          nav.style.webkitBackdropFilter = 'none';
+          nav.style.transition = 'backdrop-filter 0.3s ease-in-out';
+        }
+      }
+
+      const currentIndex = getCurrentSectionIndex(
+        desktopNavLinks,
+        scrollTop,
+        windowHeight,
+        documentHeight
+      );
+      updateNavProgress(desktopNavLinks, currentIndex, scrollTop, windowHeight, documentHeight);
+    };
+
+    let scrollTimeout: number;
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (scrollTimeout) cancelAnimationFrame(scrollTimeout);
+        scrollTimeout = requestAnimationFrame(updateActiveSection);
+      },
+      { passive: true }
+    );
+
+    updateActiveSection();
+  }
+
+  // Initialize navigation on page load and navigation
+  onInit(initNavigation);
+</script>

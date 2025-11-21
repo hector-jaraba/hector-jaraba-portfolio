@@ -1,0 +1,39 @@
+---
+// Animated Triangle Icon
+---
+
+<svg width="60" height="60" viewBox="0 0 60 60">
+  <polygon
+    class="pulsing-polygon"
+    points="30,10 50,40 10,40"
+    stroke="currentColor"
+    stroke-width="1"
+    fill="none"
+  />
+  <circle cx="30" cy="30" r="3" fill="currentColor" />
+</svg>
+
+<style>
+  .pulsing-polygon {
+    animation: pulse-shape 2s ease-in-out infinite;
+    transform-origin: center;
+  }
+
+  @keyframes pulse-shape {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 0.7;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pulsing-polygon {
+      animation: none;
+    }
+  }
+</style>

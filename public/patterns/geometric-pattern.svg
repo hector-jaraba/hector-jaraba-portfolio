@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="100" viewBox="0 0 400 100">
+  <defs>
+    <pattern id="geometric-pattern" x="0" y="0" width="400" height="100" patternUnits="userSpaceOnUse">
+      <!-- Row 1 (y = 25) -->
+      <circle cx="25" cy="25" r="3" fill="rgba(196, 181, 253, 0.22)" />
+      <path d="M 75,17 L 83,25 L 75,33 L 67,25 Z"
+            stroke="rgba(196, 181, 253, 0.22)"
+            stroke-width="1"
+            fill="none" />
+      <path d="M 125,17 L 131.928,29 L 118.072,29 Z"
+            stroke="rgba(196, 181, 253, 0.22)"
+            stroke-width="1"
+            fill="none" />
+      <path d="M 175,33 L 181.928,21 L 168.072,21 Z"
+            stroke="rgba(196, 181, 253, 0.22)"
+            stroke-width="1"
+            fill="none" />
+      <path d="M 217,25 L 229,18.072 L 229,31.928 Z"
+            stroke="rgba(196, 181, 253, 0.22)"
+            stroke-width="1"
+            fill="none" />
+      <path d="M 283,25 L 271,18.072 L 271,31.928 Z"
+            stroke="rgba(196, 181, 253, 0.22)"
+            stroke-width="1"
+            fill="none" />
+      <circle cx="325" cy="25" r="3" fill="rgba(196, 181, 253, 0.22)" />
+      <path d="M 375,17 L 383,25 L 375,33 L 367,25 Z"
+            stroke="rgba(196, 181, 253, 0.22)"
+            stroke-width="1"
+            fill="none" />
+
+      <!-- Row 2 (y = 75) -->
+      <path d="M 25,67 L 33,75 L 25,83 L 17,75 Z"
+            stroke="rgba(196, 181, 253, 0.22)"
+            stroke-width="1"
+            fill="none" />
+      <path d="M 75,67 L 81.928,79 L 68.072,79 Z"
+            stroke="rgba(196, 181, 253, 0.22)"
+            stroke-width="1"
+            fill="none" />
+      <path d="M 125,83 L 131.928,71 L 118.072,71 Z"
+            stroke="rgba(196, 181, 253, 0.22)"
+            stroke-width="1"
+            fill="none" />
+      <path d="M 167,75 L 179,68.072 L 179,81.928 Z"
+            stroke="rgba(196, 181, 253, 0.22)"
+            stroke-width="1"
+            fill="none" />
+      <path d="M 233,75 L 221,68.072 L 221,81.928 Z"
+            stroke="rgba(196, 181, 253, 0.22)"
+            stroke-width="1"
+            fill="none" />
+      <circle cx="275" cy="75" r="3" fill="rgba(196, 181, 253, 0.22)" />
+      <path d="M 325,67 L 333,75 L 325,83 L 317,75 Z"
+            stroke="rgba(196, 181, 253, 0.22)"
+            stroke-width="1"
+            fill="none" />
+      <path d="M 375,67 L 381.928,79 L 368.072,79 Z"
+            stroke="rgba(196, 181, 253, 0.22)"
+            stroke-width="1"
+            fill="none" />
+    </pattern>
+  </defs>
+
+  <rect width="400" height="100" fill="url(#geometric-pattern)" />
+</svg>

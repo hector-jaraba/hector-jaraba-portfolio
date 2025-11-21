@@ -1,0 +1,788 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import BlogFooter from '@/components/layout/BlogFooter.astro';
+import { formatDate, getReadingTime } from '@/lib/blog';
+import { generateSEOMeta, generateStructuredData } from '@/lib/seo';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { title, description, publishDate, updatedDate, author, image, tags, category } = post.data;
+const readingTime = getReadingTime(post.body);
+
+// Extract headings for table of contents
+const headings = (await post.render()).headings.filter((h) => h.depth === 2 || h.depth === 3);
+
+// Generate SEO metadata
+const seo = generateSEOMeta({
+  title,
+  description,
+  canonical: `https://hectorjaraba.com/blog/${post.slug}`,
+  image: image?.src,
+  type: 'article',
+  author,
+  publishedTime: publishDate.toISOString(),
+  modifiedTime: updatedDate?.toISOString(),
+  tags,
+});
+
+// Generate structured data for search engines
+const structuredData = generateStructuredData('article', {
+  title,
+  description,
+  publishedTime: publishDate.toISOString(),
+  modifiedTime: updatedDate?.toISOString(),
+  image: image?.src,
+});
+---
+
+<BaseLayout seo={seo} structuredData={structuredData} showLoadingScreen={false}>
+  <article class="blog-post min-h-screen bg-[var(--bg-900)] pt-32 pb-20">
+    <div class="container-custom max-w-5xl">
+      <!-- Back Button -->
+      <a
+        href="/blog"
+        class="inline-flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors mb-8 group"
+      >
+        <svg
+          class="w-5 h-5 group-hover:-translate-x-1 transition-transform"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        <span>Back to blog</span>
+      </a>
+
+      <!-- Article Header -->
+      <header class="mb-16">
+        {
+          post.data.draft && (
+            <div class="mb-6 p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/50">
+              <div class="flex items-center gap-2 text-yellow-400">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+                <span class="font-semibold">Draft Post</span>
+              </div>
+              <p class="text-sm text-[var(--text-secondary)] mt-2">
+                This post is a draft and only visible in development mode. It will not be published
+                to production.
+              </p>
+            </div>
+          )
+        }
+        {
+          !post.data.draft && publishDate > new Date() && (
+            <div class="mb-6 p-4 rounded-lg bg-blue-500/10 border border-blue-500/50">
+              <div class="flex items-center gap-2 text-blue-400">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                <span class="font-semibold">Scheduled Post</span>
+              </div>
+              <p class="text-sm text-[var(--text-secondary)] mt-2">
+                This post is scheduled to publish on{' '}
+                {publishDate.toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}.
+                It's only visible in development mode.
+              </p>
+            </div>
+          )
+        }
+        <div class="mb-6">
+          <div class="flex flex-wrap items-center gap-4 text-sm text-[var(--text-tertiary)] mb-6">
+            <time datetime={publishDate.toISOString()}>
+              {formatDate(publishDate)}
+            </time>
+            <span>•</span>
+            <span>{readingTime}</span>
+            <span>•</span>
+            <span class="capitalize text-[var(--primary)]">{category}</span>
+          </div>
+
+          <h1 class="text-4xl md:text-6xl font-bold mb-6 text-[var(--text-primary)] leading-tight">
+            {title}
+          </h1>
+
+          <p class="text-xl text-[var(--text-secondary)] leading-relaxed max-w-3xl">
+            {description}
+          </p>
+        </div>
+
+        {
+          tags.length > 0 && (
+            <div class="flex flex-wrap gap-2 mb-8">
+              {tags.map((tag) => (
+                <span class="text-sm px-4 py-2 rounded-full bg-[var(--surface)] text-[var(--text-tertiary)] border border-[var(--muted-dark)]">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )
+        }
+
+        {
+          image && (
+            <div class="rounded-2xl overflow-hidden mb-8">
+              <img src={image.src} alt={image.alt} class="w-full h-auto object-cover" />
+            </div>
+          )
+        }
+
+        {
+          updatedDate && (
+            <p class="text-sm text-[var(--text-tertiary)] italic">
+              Last updated: {formatDate(updatedDate)}
+            </p>
+          )
+        }
+      </header>
+
+      <!-- Main Content with Sidebar -->
+      <div class="blog-content-wrapper">
+        <!-- Table of Contents (Desktop) -->
+        {
+          headings.length > 0 && (
+            <aside class="blog-toc hidden lg:block">
+              <div class="sticky top-32">
+                <h2 class="text-sm font-bold uppercase tracking-wider text-[var(--text-tertiary)] mb-4">
+                  Table of Contents
+                </h2>
+                <nav>
+                  <ul class="space-y-2">
+                    {headings.map((heading) => (
+                      <li style={`margin-left: ${(heading.depth - 2) * 1}rem`}>
+                        <a
+                          href={`#${heading.slug}`}
+                          class="text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors block py-1"
+                        >
+                          {heading.text}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              </div>
+            </aside>
+          )
+        }
+
+        <!-- Table of Contents (Mobile - Floating Button) -->
+        {
+          headings.length > 0 && (
+            <div class="mobile-toc-wrapper lg:hidden">
+              <button
+                id="mobile-toc-btn"
+                class="mobile-toc-button fixed bottom-6 right-6 w-14 h-14 bg-[var(--primary)] text-[var(--bg-900)] rounded-full shadow-lg flex items-center justify-center z-40 hover:scale-110 transition-transform"
+                aria-label="Toggle table of contents"
+              >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              </button>
+
+              <div
+                id="mobile-toc-overlay"
+                class="mobile-toc-overlay fixed inset-0 bg-black/50 z-40 hidden"
+              >
+                <div class="mobile-toc-content fixed bottom-0 left-0 right-0 bg-[var(--surface)] rounded-t-3xl max-h-[80vh] overflow-y-auto transform translate-y-full transition-transform duration-300">
+                  <div class="sticky top-0 bg-[var(--surface)] border-b border-[var(--muted-dark)] px-6 py-4 flex items-center justify-between">
+                    <h2 class="text-lg font-bold text-[var(--text-primary)]">Table of Contents</h2>
+                    <button
+                      id="mobile-toc-close"
+                      class="w-8 h-8 flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
+                      aria-label="Close table of contents"
+                    >
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  <nav class="px-6 py-6">
+                    <ul class="space-y-3">
+                      {headings.map((heading) => (
+                        <li style={`margin-left: ${(heading.depth - 2) * 1}rem`}>
+                          <a
+                            href={`#${heading.slug}`}
+                            class="mobile-toc-link text-base text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors block py-2 border-l-2 border-transparent hover:border-[var(--primary)] pl-3"
+                          >
+                            {heading.text}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          )
+        }
+
+        <!-- Article Content -->
+        <div class="blog-content prose prose-invert max-w-none overflow-x-hidden">
+          <slot />
+        </div>
+      </div>
+
+      <!-- Author Section -->
+      <footer class="mt-20 pt-12 border-t border-[var(--muted-dark)]">
+        <div class="flex items-start gap-6">
+          <div class="flex-shrink-0">
+            <div
+              class="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--accent-purple)] flex items-center justify-center text-2xl font-bold text-[var(--bg-900)]"
+            >
+              HJ
+            </div>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-[var(--text-primary)] mb-2">
+              Written by {author}
+            </h3>
+            <p class="text-[var(--text-secondary)] leading-relaxed">
+              Senior Frontend Engineer specializing in building exceptional web experiences with
+              React, TypeScript, and modern frontend architectures.
+            </p>
+            <div class="flex gap-4 mt-4">
+              <a
+                href="https://github.com/hector-jaraba"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
+                aria-label="GitHub"
+              >
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+                  ></path>
+                </svg>
+              </a>
+              <a
+                href="https://linkedin.com/in/hjaraba"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
+                aria-label="LinkedIn"
+              >
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"
+                  ></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </article>
+
+  <BlogFooter />
+</BaseLayout>
+
+<style is:global>
+  .blog-content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4rem;
+    position: relative;
+  }
+
+  @media (min-width: 1024px) {
+    .blog-content-wrapper {
+      grid-template-columns: 250px 1fr;
+    }
+  }
+
+  .blog-toc a.active {
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  /* Prose Styling - Award-winning typography */
+  .prose {
+    color: var(--text-secondary);
+    font-size: 1.125rem;
+    line-height: 1.8;
+  }
+
+  .prose :is(h1, h2, h3, h4, h5, h6) {
+    color: var(--text-primary);
+    font-weight: 700;
+    margin-top: 2.5rem;
+    margin-bottom: 1.25rem;
+    line-height: 1.3;
+    scroll-margin-top: 6rem;
+  }
+
+  .prose h2 {
+    font-size: 2rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--muted-dark);
+  }
+
+  .prose h3 {
+    font-size: 1.5rem;
+  }
+
+  .prose h4 {
+    font-size: 1.25rem;
+  }
+
+  .prose p {
+    margin-bottom: 1.5rem;
+  }
+
+  .prose a {
+    color: var(--primary);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: all 0.2s ease;
+  }
+
+  .prose a:hover {
+    color: var(--primary-bright);
+    text-decoration-thickness: 2px;
+  }
+
+  .prose strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .prose code {
+    color: var(--primary);
+    background-color: var(--surface);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.875em;
+    font-family: var(--font-sans);
+    font-weight: 500;
+  }
+
+  /* Code block container */
+  .prose figure[data-rehype-pretty-code-figure] {
+    position: relative;
+    margin: 2.5rem 0;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    max-width: 100%;
+  }
+
+  /* Copy button */
+  .code-copy-button {
+    position: absolute;
+    top: 1.5rem;
+    right: 1rem;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #a6adc8;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-family: var(--font-sans);
+    transition: all 0.2s ease;
+    opacity: 0.7;
+  }
+
+  .code-copy-button:hover {
+    background: rgba(255, 255, 255, 0.15);
+    opacity: 1;
+  }
+
+  .code-copy-button.copied {
+    background: var(--primary);
+    color: var(--bg-900);
+  }
+
+  .code-copy-button svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .prose figure[data-rehype-pretty-code-figure] pre {
+    margin: 0;
+    padding: 0;
+    background: #1e1e2e !important;
+    overflow-x: auto;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .prose pre > code {
+    display: grid;
+    background: transparent !important;
+    padding: 5rem 0 1.5rem 0 !important;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    font-family: 'Inter', system-ui, sans-serif;
+    counter-reset: line;
+  }
+
+  .prose pre > code > [data-line] {
+    padding: 0 1.5rem;
+  }
+
+  /* Header bar with macOS style */
+  .prose figure[data-rehype-pretty-code-figure]::before {
+    content: '';
+    display: block;
+    height: 3rem;
+    background: #2a2a3e;
+  }
+
+  /* macOS traffic lights */
+  .prose figure[data-rehype-pretty-code-figure]::after {
+    content: '';
+    position: absolute;
+    top: 1.125rem;
+    left: 1rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background: #ff5f56;
+    box-shadow:
+      1.25rem 0 0 #ffbd2e,
+      2.5rem 0 0 #27c93f;
+    z-index: 2;
+  }
+
+  /* Language label */
+  .prose figure[data-rehype-pretty-code-figure] > figcaption {
+    position: absolute;
+    top: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    font-family: var(--font-sans);
+    color: #a6adc8;
+    z-index: 2;
+    font-weight: 500;
+  }
+
+  /* Custom scrollbar */
+  .prose pre::-webkit-scrollbar {
+    height: 0.5rem;
+  }
+
+  .prose pre::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  .prose pre::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 0.25rem;
+  }
+
+  .prose pre::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .prose ul,
+  .prose ol {
+    margin: 1.5rem 0;
+    padding-left: 1.75rem;
+  }
+
+  .prose li {
+    margin-bottom: 0.75rem;
+  }
+
+  .prose blockquote {
+    border-left: 4px solid var(--primary);
+    padding-left: 1.5rem;
+    margin: 2rem 0;
+    font-style: italic;
+    color: var(--text-secondary);
+  }
+
+  .prose img,
+  .prose video {
+    border-radius: 1rem;
+    margin: 2.5rem 0;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .prose figure {
+    margin: 2.5rem 0;
+  }
+
+  .prose figcaption {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-tertiary);
+    margin-top: 0.75rem;
+  }
+
+  .prose hr {
+    border: none;
+    border-top: 1px solid var(--muted-dark);
+    margin: 3rem 0;
+  }
+
+  /* Table wrapper for horizontal scroll on mobile */
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .prose thead,
+  .prose tbody,
+  .prose tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  @media (max-width: 768px) {
+    .prose table {
+      min-width: 600px;
+    }
+  }
+
+  .prose th,
+  .prose td {
+    border: 1px solid var(--muted-dark);
+    padding: 0.75rem;
+    text-align: left;
+  }
+
+  .prose th {
+    background-color: var(--surface);
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  /* Anchor links for headings */
+  .prose .anchor-link {
+    text-decoration: none;
+    display: block;
+    position: relative;
+  }
+
+  .prose .anchor-link:hover {
+    color: var(--primary);
+  }
+
+  /* Custom media components */
+  .prose .callout {
+    background-color: var(--surface);
+    border-left: 4px solid var(--primary);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin: 2rem 0;
+  }
+
+  .prose .callout-title {
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+</style>
+
+<script>
+  // Table of contents active link tracking
+  const tocLinks = document.querySelectorAll('.blog-toc a');
+  const headings = document.querySelectorAll('.prose h2, .prose h3');
+
+  const observerOptions = {
+    rootMargin: '-100px 0px -80% 0px',
+    threshold: 0,
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        tocLinks.forEach((link) => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === `#${id}`) {
+            link.classList.add('active');
+          }
+        });
+      }
+    });
+  }, observerOptions);
+
+  headings.forEach((heading) => observer.observe(heading));
+
+  // Smooth scroll for TOC links - let browser handle it with scroll-margin-top
+  document.documentElement.style.scrollBehavior = 'smooth';
+
+  // Mobile TOC functionality
+  const mobileTocBtn = document.getElementById('mobile-toc-btn');
+  const mobileTocOverlay = document.getElementById('mobile-toc-overlay');
+  const mobileTocClose = document.getElementById('mobile-toc-close');
+  const mobileTocContent = document.querySelector('.mobile-toc-content');
+  const mobileTocLinks = document.querySelectorAll('.mobile-toc-link');
+
+  function openMobileToc() {
+    if (mobileTocOverlay && mobileTocContent) {
+      mobileTocOverlay.classList.remove('hidden');
+      // Trigger reflow to enable transition
+      setTimeout(() => {
+        mobileTocContent.classList.remove('translate-y-full');
+      }, 10);
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeMobileToc() {
+    if (mobileTocOverlay && mobileTocContent) {
+      mobileTocContent.classList.add('translate-y-full');
+      setTimeout(() => {
+        mobileTocOverlay.classList.add('hidden');
+        document.body.style.overflow = '';
+      }, 300);
+    }
+  }
+
+  // Open TOC on button click
+  mobileTocBtn?.addEventListener('click', openMobileToc);
+
+  // Close TOC on close button click
+  mobileTocClose?.addEventListener('click', closeMobileToc);
+
+  // Close TOC on overlay click (outside content)
+  mobileTocOverlay?.addEventListener('click', (e) => {
+    if (e.target === mobileTocOverlay) {
+      closeMobileToc();
+    }
+  });
+
+  // Close TOC when clicking on a link
+  mobileTocLinks.forEach((link) => {
+    link.addEventListener('click', () => {
+      closeMobileToc();
+    });
+  });
+
+  // Add language labels and copy buttons to code blocks
+  document.querySelectorAll('figure[data-rehype-pretty-code-figure]').forEach((figure) => {
+    const pre = figure.querySelector('pre');
+    if (!pre) return;
+
+    const codeEl = pre.querySelector('code');
+    if (!codeEl) return;
+
+    // Get language from data attribute
+    const language = codeEl.getAttribute('data-language') || '';
+
+    if (language) {
+      // Language label formatting
+      const languageLabels: Record<string, string> = {
+        javascript: 'JS',
+        typescript: 'TS',
+        jsx: 'JSX',
+        tsx: 'TSX',
+        python: 'PY',
+        css: 'CSS',
+        html: 'HTML',
+        bash: 'BASH',
+        json: 'JSON',
+        yaml: 'YAML',
+        markdown: 'MD',
+      };
+
+      const label = languageLabels[language.toLowerCase()] || language.toUpperCase();
+
+      // Create or update figcaption
+      let figcaption = figure.querySelector('figcaption');
+      if (!figcaption) {
+        figcaption = document.createElement('figcaption');
+        figure.insertBefore(figcaption, figure.firstChild);
+      }
+      figcaption.textContent = `${label} snippet.${language}`;
+    }
+
+    // Add copy button
+    const copyButton = document.createElement('button');
+    copyButton.className = 'code-copy-button';
+    copyButton.setAttribute('aria-label', 'Copy code to clipboard');
+    copyButton.innerHTML = `
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+      </svg>
+      <span>Copy</span>
+    `;
+
+    // Get the code text
+    const getCodeText = () => {
+      return Array.from(codeEl.querySelectorAll('[data-line]'))
+        .map((line) => line.textContent)
+        .join('\n');
+    };
+
+    // Copy functionality
+    copyButton.addEventListener('click', async () => {
+      const code = getCodeText();
+
+      try {
+        await navigator.clipboard.writeText(code);
+
+        // Update button state
+        copyButton.classList.add('copied');
+        copyButton.innerHTML = `
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span>Copied!</span>
+        `;
+
+        // Reset after 2 seconds
+        setTimeout(() => {
+          copyButton.classList.remove('copied');
+          copyButton.innerHTML = `
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <span>Copy</span>
+          `;
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy code:', err);
+      }
+    });
+
+    figure.appendChild(copyButton);
+  });
+</script>

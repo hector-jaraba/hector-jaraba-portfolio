@@ -1,0 +1,132 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Footer from '@/components/layout/Footer.astro';
+import { generateSEOMeta } from '@/lib/seo';
+
+const seo = generateSEOMeta({
+  title: '404 - Page Not Found',
+  description: 'The page you are looking for does not exist.',
+  canonical: 'https://hectorjaraba.com/404',
+});
+---
+
+<BaseLayout seo={seo} showLoadingScreen={false}>
+  <main class="min-h-screen bg-[var(--bg-900)] flex items-center justify-center px-6 py-32">
+    <div class="max-w-4xl w-full text-center">
+      <!-- 404 Animation Container -->
+      <div class="mb-16 relative" data-404-animation>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div
+            class="glitch-text font-bold"
+            style="font-size: clamp(5rem, 20vw, 6rem); line-height: 1; color: var(--primary);"
+            data-text="404"
+          >
+            404
+          </div>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div class="space-y-6 mb-16">
+        <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-[var(--text-primary)]">
+          Page Not Found
+        </h2>
+        <p
+          class="text-lg sm:text-xl md:text-2xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed"
+        >
+          The page you're looking for doesn't exist or has been moved.
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <a
+          href="/"
+          class="w-full sm:w-auto px-10 py-4 bg-[var(--primary)] text-[var(--bg-900)] rounded-full font-semibold text-lg hover:scale-105 transition-transform duration-300"
+        >
+          Go Home
+        </a>
+        <button
+          onclick="history.back()"
+          class="w-full sm:w-auto px-10 py-4 border border-[var(--muted-dark)] text-[var(--text-secondary)] rounded-full font-semibold text-lg hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all duration-300"
+        >
+          Go Back
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  @keyframes glitch {
+    0% {
+      transform: translate(0);
+    }
+    20% {
+      transform: translate(-2px, 2px);
+    }
+    40% {
+      transform: translate(-2px, -2px);
+    }
+    60% {
+      transform: translate(2px, 2px);
+    }
+    80% {
+      transform: translate(2px, -2px);
+    }
+    100% {
+      transform: translate(0);
+    }
+  }
+
+  @keyframes glitch-shadow {
+    0%,
+    100% {
+      text-shadow:
+        2px 2px 0 rgba(0, 191, 166, 0.4),
+        -2px -2px 0 rgba(107, 211, 255, 0.4);
+    }
+    25% {
+      text-shadow:
+        -2px 2px 0 rgba(0, 191, 166, 0.4),
+        2px -2px 0 rgba(107, 211, 255, 0.4);
+    }
+    50% {
+      text-shadow:
+        2px -2px 0 rgba(0, 191, 166, 0.4),
+        -2px 2px 0 rgba(107, 211, 255, 0.4);
+    }
+    75% {
+      text-shadow:
+        -2px -2px 0 rgba(0, 191, 166, 0.4),
+        2px 2px 0 rgba(107, 211, 255, 0.4);
+    }
+  }
+
+  .glitch-text {
+    position: relative;
+    animation: glitch 2s infinite;
+  }
+
+  .glitch-text::before,
+  .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .glitch-text::before {
+    animation: glitch-shadow 3s infinite;
+    opacity: 0.8;
+  }
+
+  .glitch-text::after {
+    animation: glitch-shadow 2.5s infinite reverse;
+    opacity: 0.8;
+  }
+</style>

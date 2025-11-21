@@ -1,0 +1,141 @@
+---
+// Custom cursor with dynamic effects
+---
+
+<div id="cursor" class="custom-cursor"></div>
+<div id="cursor-follower" class="custom-cursor-follower"></div>
+
+<style>
+  .custom-cursor,
+  .custom-cursor-follower {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: difference;
+  }
+
+  .custom-cursor {
+    width: 8px;
+    height: 8px;
+    background-color: var(--primary);
+    transform: translate(-50%, -50%);
+    transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
+  }
+
+  .custom-cursor-follower {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--primary);
+    background-color: transparent;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+    opacity: 0.5;
+  }
+
+  .custom-cursor.hover,
+  .custom-cursor-follower.hover {
+    width: 60px;
+    height: 60px;
+  }
+
+  .custom-cursor.hover {
+    background-color: transparent;
+    border: 1px solid var(--primary);
+  }
+
+  @media (hover: none) or (pointer: coarse) {
+    .custom-cursor,
+    .custom-cursor-follower {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .custom-cursor,
+    .custom-cursor-follower {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function initCustomCursor() {
+    // Check if device has mouse
+    if (window.matchMedia('(hover: none)').matches) {
+      return;
+    }
+
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursor-follower');
+
+    if (!cursor || !follower) return;
+
+    let mouseX = 0;
+    let mouseY = 0;
+    let followerX = 0;
+    let followerY = 0;
+
+    // Update cursor position
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursor.style.left = `${mouseX}px`;
+      cursor.style.top = `${mouseY}px`;
+    });
+
+    // Smooth follower animation
+    function animateFollower() {
+      if (!follower) return;
+
+      const distX = mouseX - followerX;
+      const distY = mouseY - followerY;
+
+      followerX += distX * 0.1;
+      followerY += distY * 0.1;
+
+      follower.style.left = `${followerX}px`;
+      follower.style.top = `${followerY}px`;
+
+      requestAnimationFrame(animateFollower);
+    }
+
+    animateFollower();
+
+    // Add hover effect for interactive elements
+    const interactiveElements = document.querySelectorAll('a, button, [role="button"]');
+
+    interactiveElements.forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.classList.add('hover');
+        follower.classList.add('hover');
+      });
+
+      el.addEventListener('mouseleave', () => {
+        cursor.classList.remove('hover');
+        follower.classList.remove('hover');
+      });
+    });
+
+    // Hide cursor when it leaves the window
+    document.addEventListener('mouseleave', () => {
+      cursor.style.opacity = '0';
+      follower.style.opacity = '0';
+    });
+
+    document.addEventListener('mouseenter', () => {
+      cursor.style.opacity = '1';
+      follower.style.opacity = '0.5';
+    });
+  }
+
+  // Initialize on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCustomCursor);
+  } else {
+    initCustomCursor();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initCustomCursor);
+</script>

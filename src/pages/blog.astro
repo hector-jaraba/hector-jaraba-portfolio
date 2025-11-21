@@ -1,0 +1,331 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BlogFooter from '@/components/layout/BlogFooter.astro';
+import { formatDate, getReadingTime } from '@/lib/blog';
+import { generateSEOMeta } from '@/lib/seo';
+import { isFeatureEnabled } from '@/config/features';
+
+// Feature flag: Check if blog is enabled
+if (!isFeatureEnabled('BLOG_ENABLED')) {
+  return Astro.redirect('/');
+}
+
+const allPosts = await getCollection('blog', ({ data }) => {
+  const now = new Date();
+  const isPublished = data.publishDate <= now;
+
+  // In production, hide drafts and scheduled posts
+  if (import.meta.env.PROD) {
+    return !data.draft && isPublished;
+  }
+
+  // In dev, show all posts (including drafts and scheduled)
+  return true;
+});
+
+// Sort posts: featured first, then by publish date
+const sortedPosts = allPosts.sort((a, b) => {
+  // Featured posts come first
+  if (a.data.featured && !b.data.featured) return -1;
+  if (!a.data.featured && b.data.featured) return 1;
+
+  // Within same featured status, sort by date
+  return b.data.publishDate.valueOf() - a.data.publishDate.valueOf();
+});
+
+// Get unique categories from existing posts
+const existingCategories = [...new Set(sortedPosts.map((post) => post.data.category))];
+const categories = ['all', ...existingCategories.sort()];
+
+const seo = generateSEOMeta({
+  title: 'Blog',
+  description:
+    'Articles, tutorials, and thoughts on frontend engineering, architecture, and web performance.',
+  canonical: 'https://hectorjaraba.com/blog',
+});
+---
+
+<BaseLayout seo={seo} showLoadingScreen={false}>
+  <main class="min-h-screen bg-[var(--bg-900)] pt-32 pb-20">
+    <div class="container-custom">
+      <!-- Hero Section -->
+      <section class="mb-20">
+        <div class="blog-hero-content" data-animate-hero>
+          <h1 class="text-5xl md:text-7xl font-bold mb-6 text-[var(--text-primary)]">
+            <span class="blog-title-word">Thoughts</span>
+            <span class="blog-title-word">&</span>
+            <span class="blog-title-word">Insights</span>
+          </h1>
+          <p class="text-xl text-[var(--text-secondary)] max-w-2xl leading-relaxed">
+            Deep dives into frontend engineering, architecture patterns, and building exceptional
+            web experiences.
+          </p>
+        </div>
+      </section>
+
+      <!-- Category Filter -->
+      <section class="mb-12">
+        <div class="flex flex-wrap gap-3" data-category-filter>
+          {
+            categories.map((category) => (
+              <button
+                data-category={category}
+                class="category-btn px-6 py-2.5 rounded-full border border-[var(--muted-dark)] text-[var(--text-secondary)] hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all duration-300 capitalize"
+              >
+                {category}
+              </button>
+            ))
+          }
+        </div>
+      </section>
+
+      <!-- Posts List -->
+      <section class="blog-list space-y-1">
+        {
+          sortedPosts.map((post, index) => {
+            const readingTime = getReadingTime(post.body);
+            return (
+              <article
+                class="blog-item group"
+                data-category={post.data.category}
+                data-animate-card
+                style={`--card-index: ${index}`}
+              >
+                <a
+                  href={`/blog/${post.slug}`}
+                  class="blog-item-link block py-6 px-4 -mx-4 mb-3 rounded-lg hover:bg-[var(--surface)] transition-all duration-300"
+                >
+                  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    {/* Left: Title and Meta */}
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center gap-3 mb-2">
+                        <h2 class="text-xl md:text-2xl font-semibold text-[var(--text-primary)] group-hover:text-[var(--primary)] transition-colors duration-200">
+                          {post.data.title}
+                        </h2>
+                        {post.data.featured && (
+                          <span
+                            class="px-2.5 py-1 text-xs font-bold rounded bg-[var(--primary)]/20 text-[var(--primary)] border border-[var(--primary)]/50 flex-shrink-0"
+                            title="Featured"
+                          >
+                            <span class="hidden sm:inline">⭐ Featured</span>
+                            <span class="inline sm:hidden">⭐</span>
+                          </span>
+                        )}
+                        {post.data.draft && (
+                          <span class="draft-badge px-2.5 py-1 text-xs font-bold uppercase rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/50 whitespace-nowrap flex-shrink-0">
+                            Draft
+                          </span>
+                        )}
+                        {!post.data.draft && post.data.publishDate > new Date() && (
+                          <span class="px-2.5 py-1 text-xs font-bold uppercase rounded bg-blue-500/20 text-blue-400 border border-blue-500/50 whitespace-nowrap flex-shrink-0">
+                            Scheduled
+                          </span>
+                        )}
+                      </div>
+                      <p class="text-[var(--text-secondary)] text-sm md:text-base mb-3 line-clamp-2">
+                        {post.data.description}
+                      </p>
+                      <div class="flex flex-wrap items-center gap-3 text-xs text-[var(--text-tertiary)]">
+                        <time datetime={post.data.publishDate.toISOString()}>
+                          {formatDate(post.data.publishDate)}
+                        </time>
+                        <span>·</span>
+                        <span>{readingTime}</span>
+                        <span>·</span>
+                        <span class="capitalize text-[var(--primary)]">{post.data.category}</span>
+                      </div>
+                    </div>
+
+                    {/* Right: Arrow */}
+                    <div class="flex-shrink-0 self-start md:self-center">
+                      <div class="w-8 h-8 flex items-center justify-center rounded-full border border-[var(--muted-dark)] group-hover:border-[var(--primary)] group-hover:bg-[var(--primary)] transition-all duration-300">
+                        <svg
+                          class="w-4 h-4 text-[var(--text-tertiary)] group-hover:text-[var(--bg-900)] group-hover:translate-x-1 transition-all duration-300"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M17 8l4 4m0 0l-4 4m4-4H3"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              </article>
+            );
+          })
+        }
+      </section>
+
+      {
+        allPosts.length === 0 && (
+          <div class="text-center py-20">
+            <p class="text-2xl text-[var(--text-secondary)]">No posts found. Check back soon!</p>
+          </div>
+        )
+      }
+    </div>
+  </main>
+
+  <BlogFooter />
+</BaseLayout>
+
+<style>
+  .blog-list {
+    width: 100%;
+  }
+
+  .blog-item {
+    opacity: 0;
+    transform: translateY(20px);
+    border-bottom: 1px solid var(--muted-dark);
+  }
+
+  .blog-item.is-visible {
+    animation: fadeInUp 0.5s ease-out forwards;
+    animation-delay: calc(var(--card-index) * 0.05s);
+  }
+
+  .blog-item.last-visible {
+    border-bottom-color: transparent;
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .category-btn.active {
+    background-color: var(--primary);
+    color: var(--bg-900);
+    border-color: var(--primary);
+  }
+
+  .blog-title-word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .blog-title-word.is-visible {
+    animation: slideInWord 0.6s ease-out forwards;
+  }
+
+  .blog-title-word:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+
+  .blog-title-word:nth-child(2) {
+    animation-delay: 0.2s;
+    margin: 0 0.5rem;
+  }
+
+  .blog-title-word:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  @keyframes slideInWord {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Hover effect for the entire row */
+  .blog-item-link:hover {
+    transform: translateX(4px);
+  }
+</style>
+
+<script>
+  // Hero animation
+  const heroContent = document.querySelector('[data-animate-hero]');
+  if (heroContent) {
+    const words = heroContent.querySelectorAll('.blog-title-word');
+    setTimeout(() => {
+      words.forEach((word) => word.classList.add('is-visible'));
+    }, 100);
+  }
+
+  // Card animations on scroll
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -100px 0px',
+  };
+
+  const cardObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        cardObserver.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('[data-animate-card]').forEach((card) => {
+    cardObserver.observe(card);
+  });
+
+  // Category filtering
+  const categoryButtons = document.querySelectorAll('.category-btn[data-category]');
+  const blogItems = document.querySelectorAll('.blog-item');
+
+  // Helper function to update last visible item
+  function updateLastVisibleItem() {
+    // Remove last-visible class from all items
+    blogItems.forEach((item) => item.classList.remove('last-visible'));
+
+    // Find the last visible item
+    const visibleItems = Array.from(blogItems).filter((item) => {
+      const htmlItem = item as HTMLElement;
+      return htmlItem.style.display !== 'none';
+    });
+
+    if (visibleItems.length > 0) {
+      visibleItems[visibleItems.length - 1].classList.add('last-visible');
+    }
+  }
+
+  // Set 'all' as active by default
+  const allButton = document.querySelector('.category-btn[data-category="all"]');
+  allButton?.classList.add('active');
+
+  // Initialize last visible item on page load
+  updateLastVisibleItem();
+
+  categoryButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const category = button.getAttribute('data-category');
+
+      // Update active button
+      categoryButtons.forEach((btn) => btn.classList.remove('active'));
+      button.classList.add('active');
+
+      // Filter blog items
+      blogItems.forEach((item) => {
+        const itemCategory = item.getAttribute('data-category');
+        const htmlItem = item as HTMLElement;
+
+        if (category === 'all' || itemCategory === category) {
+          htmlItem.style.display = 'block';
+          // Re-trigger animation
+          item.classList.remove('is-visible');
+          setTimeout(() => item.classList.add('is-visible'), 10);
+        } else {
+          htmlItem.style.display = 'none';
+        }
+      });
+
+      // Update last visible item after filtering
+      updateLastVisibleItem();
+    });
+  });
+</script>

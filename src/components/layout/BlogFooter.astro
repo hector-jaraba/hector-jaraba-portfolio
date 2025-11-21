@@ -1,0 +1,16 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="bg-[var(--surface)] border-t border-[var(--muted-dark)]">
+  <div class="container-custom py-12">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-xs text-[var(--text-tertiary)] font-light">
+        © {currentYear} Héctor Jaraba. All rights reserved.
+      </p>
+      <p class="text-sm text-[var(--text-secondary)] font-light">
+        Built with <span class="text-primary font-medium">Astro</span>
+      </p>
+    </div>
+  </div>
+</footer>

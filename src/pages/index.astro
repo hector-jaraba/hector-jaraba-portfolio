@@ -1,0 +1,41 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import HeroSection from '@/components/sections/HeroSection.astro';
+import AboutModal from '@/components/modals/AboutModal.astro';
+import ExpertiseSection from '@/components/sections/ExpertiseSection.astro';
+import TechStackSection from '@/components/sections/TechStackSection.astro';
+import WorkExperienceSection from '@/components/sections/WorkExperienceSection.astro';
+import ContactSection from '@/components/sections/ContactSection.astro';
+import { generateStructuredData } from '@/lib/seo';
+import GeometricBackground from '@/components/effects/backgrounds/GeometricBackground.astro';
+import { getLangFromUrl, useTranslations } from '@/i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const seo = {
+  title: t('seo.home.title'),
+  description: t('seo.home.description'),
+  canonical: 'https://hectorjaraba.com',
+};
+
+const structuredData = generateStructuredData('person', {
+  github: 'https://github.com/hectorjaraba',
+  linkedin: 'https://linkedin.com/in/hjaraba',
+});
+---
+
+<BaseLayout seo={seo} structuredData={structuredData}>
+  <HeroSection />
+  <GeometricBackground>
+    <ExpertiseSection />
+    <TechStackSection />
+    <WorkExperienceSection />
+    <ContactSection />
+  </GeometricBackground>
+  <AboutModal />
+</BaseLayout>
+
+<script>
+  window.scrollTo(0, 0);
+</script>

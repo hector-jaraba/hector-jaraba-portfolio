@@ -1,0 +1,275 @@
+---
+title: 'Building Scalable React Architectures'
+description: 'Learn how to architect large-scale React applications that remain maintainable and performant as your team and codebase grow.'
+publishDate: 2024-03-15
+category: 'architecture'
+tags: ['React', 'Architecture', 'Scalability', 'Best Practices']
+featured: true
+image:
+  src: '/images/blog/react-architecture.svg'
+  alt: 'React architecture diagram'
+---
+
+import Callout from '../../components/blog/Callout.astro';
+import YouTubeEmbed from '../../components/blog/YouTubeEmbed.astro';
+
+Building large-scale React applications presents unique challenges. As codebases grow, maintaining code quality, performance, and developer experience becomes increasingly difficult. In this article, I'll share architectural patterns and best practices I've refined over years of building production applications.
+
+## The Foundation: Project Structure
+
+A well-organized project structure is crucial for scalability. Here's the structure I recommend for enterprise applications:
+
+```typescript
+src/
+├── features/           # Feature-based modules
+│   ├── auth/
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   ├── services/
+│   │   ├── types/
+│   │   └── index.ts
+│   └── dashboard/
+├── shared/            # Shared utilities
+│   ├── components/   # Reusable UI components
+│   ├── hooks/        # Custom hooks
+│   ├── utils/        # Helper functions
+│   └── types/        # TypeScript types
+├── core/             # Core app logic
+│   ├── api/          # API client
+│   ├── config/       # Configuration
+│   └── store/        # State management
+└── app/              # App entry and routing
+```
+
+<Callout type="info" title="Key Principle">
+  Organize by feature, not by file type. Each feature should be self-contained with its own components, hooks, and business logic.
+</Callout>
+
+## State Management Strategy
+
+Choosing the right state management solution depends on your app's complexity:
+
+### Local State First
+
+Always start with local state. Don't reach for global state management until you need it:
+
+```tsx
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <button onClick={() => setCount(c => c + 1)}>
+      Count: {count}
+    </button>
+  );
+}
+```
+
+### Server State with React Query
+
+For server data, use specialized libraries like React Query or SWR:
+
+```typescript
+import { useQuery } from '@tanstack/react-query';
+
+function UserProfile({ userId }: { userId: string }) {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['user', userId],
+    queryFn: () => fetchUser(userId),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  if (isLoading) return <Skeleton />;
+  if (error) return <ErrorMessage error={error} />;
+
+  return <Profile user={data} />;
+}
+```
+
+<Callout type="success" title="Performance Win">
+  React Query handles caching, background updates, and request deduplication automatically, eliminating thousands of lines of boilerplate code.
+</Callout>
+
+## Component Design Patterns
+
+### Composition over Configuration
+
+Favor composable components over prop-heavy APIs:
+
+```tsx
+// ❌ Configuration hell
+<DataTable
+  columns={columns}
+  data={data}
+  pagination={true}
+  sorting={true}
+  filtering={true}
+  rowSelection={true}
+  // ...20 more props
+/>
+
+// ✅ Composable API
+<DataTable data={data}>
+  <DataTable.Header>
+    <DataTable.Column sortable>Name</DataTable.Column>
+    <DataTable.Column>Email</DataTable.Column>
+  </DataTable.Header>
+  <DataTable.Body />
+  <DataTable.Footer>
+    <DataTable.Pagination />
+  </DataTable.Footer>
+</DataTable>
+```
+
+### Compound Components
+
+Use the compound component pattern for related components:
+
+```typescript
+// tabs/index.tsx
+export const Tabs = ({ children, defaultTab }: TabsProps) => {
+  const [activeTab, setActiveTab] = useState(defaultTab);
+
+  return (
+    <TabsContext.Provider value={{ activeTab, setActiveTab }}>
+      <div className="tabs">{children}</div>
+    </TabsContext.Provider>
+  );
+};
+
+Tabs.List = TabsList;
+Tabs.Tab = Tab;
+Tabs.Panel = TabPanel;
+
+// Usage
+<Tabs defaultTab="profile">
+  <Tabs.List>
+    <Tabs.Tab id="profile">Profile</Tabs.Tab>
+    <Tabs.Tab id="settings">Settings</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panel id="profile">Profile content</Tabs.Panel>
+  <Tabs.Panel id="settings">Settings content</Tabs.Panel>
+</Tabs>
+```
+
+## Performance Optimization
+
+### Code Splitting
+
+Split your code at route boundaries:
+
+```typescript
+import { lazy, Suspense } from 'react';
+import { Routes, Route } from 'react-router-dom';
+
+const Dashboard = lazy(() => import('./features/dashboard'));
+const Settings = lazy(() => import('./features/settings'));
+
+function App() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <Routes>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/settings" element={<Settings />} />
+      </Routes>
+    </Suspense>
+  );
+}
+```
+
+### Memoization Strategy
+
+Use memoization wisely - not everywhere:
+
+```typescript
+// ✅ Good: Expensive calculation
+const expensiveValue = useMemo(() => {
+  return data.reduce((acc, item) => {
+    // Complex calculation
+    return acc + computeScore(item);
+  }, 0);
+}, [data]);
+
+// ❌ Bad: Simple calculation
+const doubledValue = useMemo(() => value * 2, [value]);
+```
+
+<Callout type="warning" title="Premature Optimization">
+  Don't memoize everything. Profile first, optimize second. Memoization adds overhead and complexity.
+</Callout>
+
+## Type Safety with TypeScript
+
+Leverage TypeScript's type system for better DX:
+
+```typescript
+// Generic component with type inference
+interface ListProps<T> {
+  items: T[];
+  renderItem: (item: T) => React.ReactNode;
+  keyExtractor: (item: T) => string;
+}
+
+function List<T>({ items, renderItem, keyExtractor }: ListProps<T>) {
+  return (
+    <ul>
+      {items.map((item) => (
+        <li key={keyExtractor(item)}>{renderItem(item)}</li>
+      ))}
+    </ul>
+  );
+}
+
+// Usage with full type safety
+<List
+  items={users}
+  renderItem={(user) => <UserCard user={user} />}
+  keyExtractor={(user) => user.id}
+/>
+```
+
+## Testing Strategy
+
+### Component Testing
+
+Test behavior, not implementation:
+
+```typescript
+import { render, screen, userEvent } from '@testing-library/react';
+
+describe('LoginForm', () => {
+  it('submits form with email and password', async () => {
+    const onSubmit = jest.fn();
+    render(<LoginForm onSubmit={onSubmit} />);
+
+    await userEvent.type(
+      screen.getByLabelText(/email/i),
+      'user@example.com'
+    );
+    await userEvent.type(
+      screen.getByLabelText(/password/i),
+      'password123'
+    );
+    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+
+    expect(onSubmit).toHaveBeenCalledWith({
+      email: 'user@example.com',
+      password: 'password123',
+    });
+  });
+});
+```
+
+## Conclusion
+
+Building scalable React applications requires thoughtful architecture decisions from day one. Focus on:
+
+1. **Clear boundaries** between features
+2. **Appropriate state management** for different data types
+3. **Composable components** over configuration
+4. **Strategic optimization** based on profiling
+5. **Strong typing** for maintainability
+
+These patterns have helped me scale applications from small projects to enterprise platforms serving millions of users. The key is to start simple and add complexity only when needed.
+
+What architectural patterns have worked well in your projects? Share your thoughts on [Twitter](https://twitter.com/hectorjaraba) or [LinkedIn](https://linkedin.com/in/hjaraba).

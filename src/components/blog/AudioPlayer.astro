@@ -1,0 +1,26 @@
+---
+interface Props {
+  src: string;
+  title?: string;
+}
+
+const { src, title } = Astro.props;
+---
+
+<div class="audio-player my-8 p-6 bg-[var(--surface)] rounded-xl">
+  {title && <div class="text-[var(--text-primary)] font-semibold mb-4">{title}</div>}
+  <audio controls class="w-full audio-element">
+    <source src={src} />
+    Your browser does not support the audio element.
+  </audio>
+</div>
+
+<style>
+  .audio-element {
+    filter: brightness(0.9) contrast(1.1);
+  }
+
+  .audio-element::-webkit-media-controls-panel {
+    background-color: var(--bg-800);
+  }
+</style>

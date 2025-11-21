@@ -1,0 +1,172 @@
+{
+  "hero": {
+    "label": "Ingeniero Frontend Senior<br/>Valencia, España",
+    "title": "Creando experiencias digitales excepcionales mediante aplicaciones escalables y de alto rendimiento que llevan el desarrollo web al siguiente nivel.",
+    "name": "Héctor Jaraba",
+    "currentCompany": "Actualmente en",
+    "companyName": "New Work SE",
+    "paragraph1": "Trabajando remotamente desde Valencia, me especializo en <span class=\"highlight-hero\" data-word=\"React\">React</span> y <span class=\"highlight-hero\" data-word=\"Vue\">Vue</span>, desde la optimización del rendimiento hasta el diseño de sistemas escalables con microfrontends. Más allá del código, me comprometo a formar ingenieros para construir productos escalables.",
+    "paragraph2": "Con <span class=\"highlight-hero\" data-word=\"7+\">7+</span> <span class=\"highlight-hero\" data-word=\"años\">años</span> de experiencia en startups y empresas consolidadas, he impulsado iniciativas que mejoran la experiencia de desarrollo y establecen mejores prácticas en comunidades frontend.",
+    "moreAboutMe": "¿Más sobre mí?",
+    "keepScrolling": "o sigue bajando"
+  },
+  "aboutModal": {
+    "goBack": "volver",
+    "title": "¿QUIÉN D*** SOY?",
+    "roles": {
+      "engineer": "INGENIERO",
+      "scubaDiver": "BUCEADOR",
+      "designer": "DISEÑADOR",
+      "barista": "BARISTA",
+      "musician": "MÚSICO",
+      "dogLover": "AMANTE DE LOS ANIMALES",
+      "gamer": "GAMER",
+      "traveler": "VIAJERO"
+    },
+    "intro": "Más allá de lo serio de la ingeniería, soy básicamente una mezcla de <span class=\"highlight\">curiosidad</span>, <span class=\"highlight\">cafeína</span> y <span class=\"highlight\">buen rollo</span>. Soy buceador avanzado y me encanta explorar arrecifes, naufragios y cualquier pez que me encuentre (sobre todo tiburones). He tenido la suerte de viajar y bucear por buena parte de Asia.",
+    "paragraph1": "También soy un <span class=\"highlight\">loco por el café</span>. Incluso hice un curso de barista, lo que oficialmente hizo que mi ritual matutino del café durara mucho más de lo necesario (pero al menos sabe increíble). Cuando no estoy tomando café o viajando, seguramente esté jugando.",
+    "paragraph2": "Me encantan los perros. Tengo dos perritos que actúan como mis jefes personales: me recuerdan cuándo es hora de pasear, comer o tomar un descanso del código.",
+    "paragraph3": "Mi amor por los ordenadores comenzó pronto. Mi padre los reparaba, y yo estaba obsesionado con todo el proceso: los cables, los componentes, el <em>\"no toques eso\"</em>… así que naturalmente lo toqué todo.",
+    "milestone1": {
+      "age": "A LOS 11 AÑOS",
+      "text": "Me prohibieron la entrada a todos los cibercafés de mi barrio después de escribir un pequeño script en C que mataba el proceso del temporizador para que mis amigos y yo pudiéramos jugar gratis. Un modelo de negocio cuestionable, pero claras señales de un futuro en tecnología."
+    },
+    "milestone2": {
+      "age": "A LOS 16 AÑOS",
+      "text": "Gané el tercer premio en el Valencia Startup Weekend con una idea para ayudar a personas con discapacidades a comunicarse usando solo un dedo. Ese proyecto caló hondo: fue el momento en que me di cuenta de que la tecnología de verdad podía ayudar a las personas."
+    },
+    "paragraph3a": "Ese proyecto marcó el rumbo de todo lo que vino después. Estudié Ingeniería Informática en la UPV, profundizando en algoritmos, arquitectura de sistemas y los fundamentos que hacen que el software realmente funcione. Justo después de graduarme, me lancé a un MBA — me di cuenta de que construir productos que impactan no es solo escribir código limpio, es entender el panorama completo. Desde entonces, he trabajado profesionalmente en startups y empresas consolidadas, y sigo siendo esa misma persona que cree que la tecnología debe ayudar a las personas.",
+    "paragraph4": "Y en algún momento del camino, tuve la increíble suerte de casarme con <span class=\"highlight\">el amor de mi vida</span>. Mi compañera de viaje favorita, compañera de buceo, la que testea mis bugs y la persona que hace que cada aventura sea aún mejor.",
+    "closingQuote": "Todo esto —viajes, buceo, café, juegos, perros y una vida de curiosidad— da forma a quién soy como ingeniero y como persona. Me encanta construir cosas, explorar nuevos mundos (digitales o submarinos) y resolver problemas creativamente… preferiblemente con un buen espresso cerca."
+  },
+  "expertise": {
+    "title": "Qué Hago",
+    "subtitle": "De la arquitectura a la implementación, convierto retos complejos en soluciones elegantes y escalables. Cada línea de código tiene un propósito: rendimiento, experiencia y personas.",
+    "cards": [
+      {
+        "title": "Liderazgo Técnico y Mentoría",
+        "description": "Mentoría de Ingenieros / Guía Arquitectural / Colaboración entre Equipos / Liderazgo Comunidad Frontend / Entrevistas Técnicas / Promoción de Buenas Prácticas"
+      },
+      {
+        "title": "Arquitectura Frontend Moderna",
+        "description": "React & Next.js / TypeScript / Vue 3 Composition API / Sistemas Microfrontend / Design Systems / Estructuras Monorepo / SSR y Rendimiento"
+      },
+      {
+        "title": "Experiencia del Desarrollador",
+        "description": "Flujos de Trabajo con IA / Diseño de Pipelines CI/CD / GitHub Actions / Optimización de Build / Estándares de Calidad"
+      },
+      {
+        "title": "Testing y Calidad",
+        "description": "Test-Driven Development / Estrategias de Testing Automatizado / Testing de Componentes e Integración / Jest, Vitest y Testing Library / Playwright y Cypress / Auditoría de Rendimiento"
+      }
+    ]
+  },
+  "techStack": {
+    "title": "Stack Tecnológico",
+    "subtitle": "Tecnologías con las que construyo aplicaciones web modernas y escalables",
+    "technologies": [
+      [
+        "REACT",
+        "NEXT.JS",
+        "VUE 3",
+        "TYPESCRIPT",
+        "VITE",
+        "JEST",
+        "STORYBOOK",
+        "SINGLE-SPA",
+        "PLAYWRIGHT",
+        "CYPRESS",
+        "VITEST",
+        "LIGHTHOUSE",
+        "TAILWIND",
+        "GRAPHQL"
+      ],
+      [
+        "GITHUB ACTIONS",
+        "TESTING LIBRARY",
+        "VUEX",
+        "NUXT.JS",
+        "MONOREPO",
+        "MICROFRONTENDS",
+        "VUETIFY",
+        "WEBPACK",
+        "NODE.JS",
+        "EXPRESS",
+        "DOCKER",
+        "ESLINT",
+        "PRETTIER",
+        "CLAUDE CODE",
+        "MCP SERVERS"
+      ]
+    ]
+  },
+  "workExperience": {
+    "title": "Experiencia",
+    "jobs": [
+      {
+        "title": "Fundador",
+        "company": "ableto",
+        "period": "2015 - 2018",
+        "description": "Fundación de startup tecnológica. App de comunicación asistiva premiada (3er premio Startup Weekend Valencia)."
+      },
+      {
+        "title": "Consultor de Soluciones",
+        "company": "everis",
+        "period": "2018 - 2019",
+        "description": "Desarrollo de software y arquitectura de soluciones. Trabajo en aplicaciones empresariales con enfoque en soluciones escalables."
+      },
+      {
+        "title": "Director de Tecnología",
+        "company": "ELITE SPORTS 17",
+        "period": "2019",
+        "description": "Liderazgo de estrategia técnica y decisiones de infraestructura. Gestión del roadmap tecnológico y prioridades de desarrollo."
+      },
+      {
+        "title": "Desarrollador Frontend",
+        "company": "S2 Grupo",
+        "period": "2019 - 2020",
+        "description": "Desarrollo de aplicaciones de ciberseguridad con Vue y Nuxt. Desarrollo de design system e implementación de estrategia de testing."
+      },
+      {
+        "title": "Ingeniero Frontend Senior",
+        "company": "mimacom",
+        "period": "2020 - 2022",
+        "description": "Desarrollo de aplicaciones bancarias con Vue 3, TypeScript en arquitectura de microfrontends. Creación de design system compartido basado en Vuetify."
+      },
+      {
+        "title": "Ingeniero Frontend Senior",
+        "company": "NEW WORK SE",
+        "period": "2022 - Actualidad",
+        "description": "Liderando iniciativas frontend con React y TypeScript. Contribución a adopción de desarrollo asistido por IA y mentoría de ingenieros."
+      }
+    ]
+  },
+  "contact": {
+    "title": "Trabajemos Juntos",
+    "description": "Abierto a posiciones senior frontend y puestos de liderazgo técnico. Charlemos sobre cómo podemos crear experiencias digitales excepcionales.",
+    "copyright": "Todos los derechos reservados.",
+    "downloadCV": "Descargar CV",
+    "linkedin": "LinkedIn"
+  },
+  "footer": {
+    "brandDescription": "Ingeniero Frontend Senior especializado en React, TypeScript y desarrollo de aplicaciones web de alto rendimiento.",
+    "quickLinks": "Enlaces Rápidos",
+    "about": "Sobre mí",
+    "projects": "Proyectos",
+    "contact": "Contacto",
+    "downloadCV": "Descargar CV",
+    "connect": "Conectar",
+    "copyright": "Todos los derechos reservados.",
+    "builtWith": "Construido con"
+  },
+  "seo": {
+    "home": {
+      "title": "Héctor Jaraba - Ingeniero Frontend Senior",
+      "description": "Ingeniero Frontend Senior especializado en React, TypeScript y desarrollo de aplicaciones web de alto rendimiento. Echa un vistazo a mi portafolio y contáctame."
+    }
+  },
+  "common": {
+    "getInTouch": "Charlemos",
+    "loading": "Cargando"
+  }
+}

@@ -1,0 +1,59 @@
+---
+title: 'This is a Draft Post - Not Published'
+description: 'This post demonstrates the draft functionality. It will only be visible in development mode and will not appear in production.'
+publishDate: 2024-03-25
+category: 'tutorial'
+tags: ['Draft', 'Example', 'Testing']
+featured: false
+draft: true
+image:
+  src: '/images/blog/showcase-hero.svg'
+  alt: 'Draft post example'
+---
+
+import Callout from '../../components/blog/Callout.astro';
+
+This is a draft post! It should only be visible when running in development mode.
+
+## Draft Functionality
+
+<Callout type="warning" title="Draft Mode Active">
+  This post has `draft: true` in its frontmatter, which means it will not be published to production. It's perfect for working on posts before they're ready to go live.
+</Callout>
+
+### How It Works
+
+1. **In Development**: Draft posts are visible in the blog list with a yellow "DRAFT" badge
+2. **In Production**: Draft posts are completely hidden and won't generate pages
+3. **SEO Safe**: Search engines won't index draft content
+
+### Use Cases for Drafts
+
+- **Work in Progress**: Write and preview posts before publishing
+- **Review Cycle**: Share draft links with team members for feedback
+- **Scheduled Content**: Prepare posts ahead of time
+- **Iterative Writing**: Save progress without publishing
+
+<Callout type="info" title="Publishing a Draft">
+  When you're ready to publish, simply change `draft: true` to `draft: false` in the frontmatter, or remove the draft field entirely (defaults to false).
+</Callout>
+
+## Code Example in Draft
+
+```typescript
+// Example code in a draft post
+interface DraftPost {
+  title: string;
+  draft: boolean;
+  publishDate: Date;
+}
+
+function publishPost(post: DraftPost): DraftPost {
+  return {
+    ...post,
+    draft: false,
+  };
+}
+```
+
+This post will not appear in production builds! 🎉

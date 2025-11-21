@@ -1,0 +1,188 @@
+---
+interface Props {
+  /**
+   * Size of the circle in pixels
+   * @default 300
+   */
+  size?: number;
+
+  /**
+   * X position (can use any CSS unit: %, px, rem, vw)
+   * @default '50%'
+   */
+  top?: string;
+
+  /**
+   * Y position (can use any CSS unit: %, px, rem, vh)
+   * @default '50%'
+   */
+  bottom?: string;
+  left?: string;
+  right?: string;
+
+  /**
+   * Color of the circle (hex, rgb, hsl, or CSS variable)
+   * @default 'var(--accent-purple)'
+   */
+  color?: string;
+
+  /**
+   * Opacity of the circle (0-1)
+   * @default 0.3
+   */
+  opacity?: number;
+
+  /**
+   * Blur intensity in pixels
+   * @default 100
+   */
+  blur?: number;
+
+  /**
+   * z-index value
+   * @default -1
+   */
+  zIndex?: number;
+
+  /**
+   * Additional CSS classes
+   */
+  class?: string;
+
+  /**
+   * Enable subtle floating animation
+   * @default false
+   */
+  animate?: boolean;
+
+  /**
+   * Animation duration in seconds (if animate is true)
+   * @default 8
+   */
+  animationDuration?: number;
+}
+
+const {
+  size = 300,
+  top,
+  bottom,
+  left,
+  right,
+  color = 'var(--accent-purple)',
+  opacity = 0.3,
+  blur = 100,
+  zIndex = -1,
+  class: className = '',
+  animate = false,
+  animationDuration = 8,
+} = Astro.props;
+---
+
+<div
+  aria-hidden="true"
+  class={`diffused-circle-wrapper ${className}`}
+  style={{
+    '--circle-top': top,
+    '--circle-bottom': bottom,
+    '--circle-left': left,
+    '--circle-right': right,
+    '--circle-z': zIndex,
+  }}
+  data-diffused-circle
+>
+  <div
+    class={`diffused-circle ${animate ? 'animate' : ''}`}
+    style={{
+      '--circle-size': `${size}px`,
+      '--circle-color': color,
+      '--circle-opacity': opacity,
+      '--circle-blur': `${blur}px`,
+      '--animation-duration': `${animationDuration}s`,
+    }}
+  >
+  </div>
+</div>
+
+<style>
+  .diffused-circle-wrapper {
+    position: absolute;
+    left: var(--circle-left);
+    top: var(--circle-top);
+    right: var(--circle-right);
+    bottom: var(--circle-bottom);
+    z-index: var(--circle-z);
+    pointer-events: none;
+  }
+
+  .diffused-circle {
+    position: relative;
+    width: var(--circle-size);
+    height: var(--circle-size);
+    pointer-events: none;
+    /* Force GPU layer for better performance */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  /* Apply animation to the inner circle */
+  .diffused-circle.animate {
+    animation: float var(--animation-duration) ease-in-out infinite;
+  }
+
+  /* Pause animations when resizing */
+  .diffused-circle.animate.resizing {
+    animation-play-state: paused;
+  }
+
+  .diffused-circle::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, var(--circle-color) 0%, transparent 70%);
+    opacity: var(--circle-opacity);
+    filter: blur(var(--circle-blur));
+    /* Force GPU compositing for blur */
+    transform: translateZ(0);
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0) scale(1) translateZ(0);
+    }
+    50% {
+      transform: translateY(-20px) scale(1.05) translateZ(0);
+    }
+  }
+
+  /* Respect reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .diffused-circle.animate {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  // Pause animations during resize for better performance
+  let resizeTimeout: number;
+
+  function handleResize() {
+    const circles = document.querySelectorAll('.diffused-circle.animate');
+    circles.forEach((circle) => circle.classList.add('resizing'));
+
+    clearTimeout(resizeTimeout);
+    resizeTimeout = window.setTimeout(() => {
+      circles.forEach((circle) => circle.classList.remove('resizing'));
+    }, 150); // Resume animations 150ms after resize stops
+  }
+
+  // Use passive listener for better performance
+  window.addEventListener('resize', handleResize, { passive: true });
+
+  // Cleanup on page transition
+  document.addEventListener('astro:before-preparation', () => {
+    window.removeEventListener('resize', handleResize);
+  });
+</script>

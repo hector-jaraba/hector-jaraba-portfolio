@@ -1,0 +1,466 @@
+---
+title: 'Advanced TypeScript Patterns for React Developers'
+description: 'Level up your TypeScript skills with advanced patterns, generics, and type utilities that will make your React code more robust and maintainable.'
+publishDate: 2024-01-10
+category: 'typescript'
+tags: ['TypeScript', 'React', 'Type Safety', 'Advanced']
+featured: false
+---
+
+import Callout from '../../components/blog/Callout.astro';
+
+TypeScript has become the de facto standard for React development, but many developers barely scratch the surface of its capabilities. Let's explore advanced patterns that will take your type safety to the next level.
+
+## Generic Components
+
+### Polymorphic Components
+
+Create components that work with any element type:
+
+```typescript
+type AsProp<C extends React.ElementType> = {
+  as?: C;
+};
+
+type PropsToOmit<C extends React.ElementType, P> = keyof (AsProp<C> & P);
+
+type PolymorphicComponentProp<
+  C extends React.ElementType,
+  Props = {}
+> = React.PropsWithChildren<Props & AsProp<C>> &
+  Omit<React.ComponentPropsWithoutRef<C>, PropsToOmit<C, Props>>;
+
+type TextProps<C extends React.ElementType> = PolymorphicComponentProp<
+  C,
+  { color?: string }
+>;
+
+function Text<C extends React.ElementType = 'span'>({
+  as,
+  color,
+  children,
+  ...props
+}: TextProps<C>) {
+  const Component = as || 'span';
+  return (
+    <Component style={{ color }} {...props}>
+      {children}
+    </Component>
+  );
+}
+
+// Usage - all type-safe!
+<Text>Default span</Text>
+<Text as="h1">Heading</Text>
+<Text as="a" href="/link">Link with href autocomplete</Text>
+```
+
+### Generic List Component
+
+Type-safe lists with full inference:
+
+```typescript
+interface ListProps<T> {
+  items: T[];
+  renderItem: (item: T, index: number) => React.ReactNode;
+  keyExtractor: (item: T) => string | number;
+  emptyMessage?: string;
+}
+
+function List<T>({
+  items,
+  renderItem,
+  keyExtractor,
+  emptyMessage = 'No items',
+}: ListProps<T>) {
+  if (items.length === 0) {
+    return <div>{emptyMessage}</div>;
+  }
+
+  return (
+    <ul>
+      {items.map((item, index) => (
+        <li key={keyExtractor(item)}>
+          {renderItem(item, index)}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+// Full type inference!
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+<List
+  items={users}
+  renderItem={(user) => <div>{user.name}</div>} // user is typed as User
+  keyExtractor={(user) => user.id} // user is typed as User
+/>
+```
+
+## Advanced Type Utilities
+
+### Discriminated Unions
+
+Type-safe state management:
+
+```typescript
+type RequestState<T> =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'success'; data: T }
+  | { status: 'error'; error: Error };
+
+function DataComponent() {
+  const [state, setState] = useState<RequestState<User>>({
+    status: 'idle',
+  });
+
+  // TypeScript knows which properties exist based on status
+  if (state.status === 'success') {
+    return <div>{state.data.name}</div>; // data exists
+  }
+
+  if (state.status === 'error') {
+    return <div>{state.error.message}</div>; // error exists
+  }
+
+  return <div>Loading...</div>;
+}
+```
+
+### Utility Types for Props
+
+Extract and manipulate prop types:
+
+```typescript
+// Extract component props
+type ButtonProps = React.ComponentProps<typeof Button>;
+
+// Make props optional
+type PartialButtonProps = Partial<ButtonProps>;
+
+// Make props required
+type RequiredButtonProps = Required<ButtonProps>;
+
+// Pick specific props
+type ButtonColors = Pick<ButtonProps, 'primary' | 'secondary'>;
+
+// Omit specific props
+type ButtonWithoutSize = Omit<ButtonProps, 'size'>;
+
+// Readonly props
+type ReadonlyButtonProps = Readonly<ButtonProps>;
+```
+
+## Type Guards
+
+### Custom Type Guards
+
+Create type-safe checks:
+
+```typescript
+interface Cat {
+  type: 'cat';
+  meow: () => void;
+}
+
+interface Dog {
+  type: 'dog';
+  bark: () => void;
+}
+
+type Animal = Cat | Dog;
+
+// Type guard
+function isCat(animal: Animal): animal is Cat {
+  return animal.type === 'cat';
+}
+
+function AnimalComponent({ animal }: { animal: Animal }) {
+  if (isCat(animal)) {
+    animal.meow(); // TypeScript knows it's a Cat
+  } else {
+    animal.bark(); // TypeScript knows it's a Dog
+  }
+}
+```
+
+### Assertion Functions
+
+Assert types at runtime:
+
+```typescript
+function assertIsString(value: unknown): asserts value is string {
+  if (typeof value !== 'string') {
+    throw new Error('Value must be a string');
+  }
+}
+
+function processValue(value: unknown) {
+  assertIsString(value);
+  // TypeScript now knows value is a string
+  return value.toUpperCase();
+}
+```
+
+## Conditional Types
+
+### Type-safe API Responses
+
+```typescript
+type ApiResponse<T extends 'success' | 'error'> = T extends 'success'
+  ? { status: 'success'; data: any }
+  : { status: 'error'; error: string };
+
+type SuccessResponse = ApiResponse<'success'>;
+// { status: 'success'; data: any }
+
+type ErrorResponse = ApiResponse<'error'>;
+// { status: 'error'; error: string }
+```
+
+### Deeply Partial Type
+
+Make all nested properties optional:
+
+```typescript
+type DeepPartial<T> = T extends object
+  ? {
+      [P in keyof T]?: DeepPartial<T[P]>;
+    }
+  : T;
+
+interface Config {
+  api: {
+    baseUrl: string;
+    timeout: number;
+  };
+  features: {
+    darkMode: boolean;
+  };
+}
+
+// All properties are optional, even nested ones
+const partialConfig: DeepPartial<Config> = {
+  api: {
+    baseUrl: 'https://api.example.com',
+    // timeout is optional
+  },
+  // features is optional
+};
+```
+
+## Template Literal Types
+
+### Type-safe CSS Properties
+
+```typescript
+type CSSUnit = 'px' | 'em' | 'rem' | '%';
+type Size = `${number}${CSSUnit}`;
+
+interface SpacingProps {
+  padding?: Size;
+  margin?: Size;
+}
+
+const Box = ({ padding, margin }: SpacingProps) => (
+  <div style={{ padding, margin }}>Content</div>
+);
+
+<Box padding="16px" margin="1rem" /> // ✅ Valid
+<Box padding="16" /> // ❌ Type error
+```
+
+### Route Types
+
+```typescript
+type Route = '/home' | '/about' | '/contact';
+type UserRoute = `/user/${string}`;
+type PostRoute = `/post/${number}`;
+
+type AppRoute = Route | UserRoute | PostRoute;
+
+function navigate(route: AppRoute) {
+  // Type-safe navigation
+}
+
+navigate('/home'); // ✅
+navigate('/user/123'); // ✅
+navigate('/post/456'); // ✅
+navigate('/invalid'); // ❌ Type error
+```
+
+## Mapped Types
+
+### Create Getters and Setters
+
+```typescript
+type Getters<T> = {
+  [K in keyof T as `get${Capitalize<string & K>}`]: () => T[K];
+};
+
+type Setters<T> = {
+  [K in keyof T as `set${Capitalize<string & K>}`]: (value: T[K]) => void;
+};
+
+interface State {
+  count: number;
+  name: string;
+}
+
+type StateGetters = Getters<State>;
+// {
+//   getCount: () => number;
+//   getName: () => string;
+// }
+
+type StateSetters = Setters<State>;
+// {
+//   setCount: (value: number) => void;
+//   setName: (value: string) => void;
+// }
+```
+
+### Type-safe Event Handlers
+
+```typescript
+type EventHandlers<T> = {
+  [K in keyof T as `on${Capitalize<string & K>}`]?: (
+    value: T[K]
+  ) => void;
+};
+
+interface FormValues {
+  email: string;
+  password: string;
+}
+
+type FormHandlers = EventHandlers<FormValues>;
+// {
+//   onEmail?: (value: string) => void;
+//   onPassword?: (value: string) => void;
+// }
+
+function Form({ onEmail, onPassword }: FormHandlers) {
+  return (
+    <form>
+      <input onChange={(e) => onEmail?.(e.target.value)} />
+      <input onChange={(e) => onPassword?.(e.target.value)} />
+    </form>
+  );
+}
+```
+
+## Recursive Types
+
+### Nested Menu Structure
+
+```typescript
+interface MenuItem {
+  label: string;
+  href?: string;
+  children?: MenuItem[];
+}
+
+const menu: MenuItem = {
+  label: 'Root',
+  children: [
+    {
+      label: 'Products',
+      children: [
+        { label: 'Electronics', href: '/electronics' },
+        { label: 'Clothing', href: '/clothing' },
+      ],
+    },
+  ],
+};
+```
+
+## Type Branding
+
+### Nominal Types
+
+```typescript
+type UserId = string & { readonly __brand: 'UserId' };
+type OrderId = string & { readonly __brand: 'OrderId' };
+
+function createUserId(id: string): UserId {
+  return id as UserId;
+}
+
+function createOrderId(id: string): OrderId {
+  return id as OrderId;
+}
+
+function getUser(id: UserId) {
+  // Fetch user
+}
+
+const userId = createUserId('user-123');
+const orderId = createOrderId('order-456');
+
+getUser(userId); // ✅
+getUser(orderId); // ❌ Type error - prevents mixing up IDs
+```
+
+<Callout type="success" title="Type Safety Win">
+  Type branding prevents accidentally passing the wrong type of ID, catching bugs at compile time.
+</Callout>
+
+## Const Assertions
+
+### Type-safe Constants
+
+```typescript
+// Without const assertion
+const colors = ['red', 'green', 'blue'];
+// Type: string[]
+
+// With const assertion
+const colors = ['red', 'green', 'blue'] as const;
+// Type: readonly ['red', 'green', 'blue']
+
+type Color = typeof colors[number];
+// Type: 'red' | 'green' | 'blue'
+
+function setColor(color: Color) {
+  // Only accepts 'red', 'green', or 'blue'
+}
+```
+
+## Function Overloads
+
+### Type-safe API Calls
+
+```typescript
+function api(endpoint: '/users'): Promise<User[]>;
+function api(endpoint: `/user/${string}`): Promise<User>;
+function api(endpoint: '/posts'): Promise<Post[]>;
+function api(endpoint: string): Promise<unknown> {
+  return fetch(endpoint).then((r) => r.json());
+}
+
+// TypeScript infers correct return types
+const users = await api('/users'); // Promise<User[]>
+const user = await api('/user/123'); // Promise<User>
+const posts = await api('/posts'); // Promise<Post[]>
+```
+
+## Conclusion
+
+Advanced TypeScript patterns enable you to:
+
+1. **Catch bugs early** with stronger type safety
+2. **Improve DX** with better autocomplete and IntelliSense
+3. **Self-document code** through expressive types
+4. **Refactor confidently** with compiler assistance
+5. **Scale effectively** as your codebase grows
+
+The key is to use these patterns judiciously—not every component needs advanced types, but knowing when and how to use them makes you a more effective developer.
+
+Want to discuss TypeScript patterns? Find me on [Twitter](https://twitter.com/hectorjaraba) or [LinkedIn](https://linkedin.com/in/hjaraba).

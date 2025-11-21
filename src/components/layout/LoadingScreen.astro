@@ -1,0 +1,204 @@
+---
+import { getLangFromUrl, useTranslations } from '@/i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<div id="loading-screen" class="loading-screen">
+  <div class="loading-content">
+    <svg class="loading-logo" viewBox="0 0 357 356" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g class="logo-group-1">
+        <path
+          d="M60 0V136.5H129V0H189.5V129.5L254 60.5H206.5V0H333.5L0 355.5V0H60ZM60 197V268L125.5 197H60Z"
+        ></path>
+      </g>
+      <g class="logo-group-2">
+        <path
+          d="M263 273H207V355H263C310.5 355 357 309 357 243.5V0L297 62.5V243.5C297 266.755 287.457 290.479 263 295.5V273Z"
+        ></path>
+      </g>
+      <g class="logo-group-3">
+        <path d="M189 354.5V178.5L129 242.5V354.5H189Z"></path>
+      </g>
+    </svg>
+
+    <div class="loading-text">
+      <span class="loading-label">{t('common.loading')}</span>
+      <div class="loading-bar">
+        <div class="loading-progress"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--bg-900);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition:
+      opacity 0.8s ease,
+      visibility 0.8s ease;
+  }
+
+  .loading-screen.loaded {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+  }
+
+  .loading-logo {
+    width: 120px;
+    height: 120px;
+  }
+
+  .loading-logo path {
+    fill: white;
+  }
+
+  .logo-group-1 path {
+    animation: fadeInOut 2s ease-in-out infinite;
+    animation-delay: 0s;
+  }
+
+  .logo-group-2 path {
+    animation: fadeInOut 2s ease-in-out infinite;
+    animation-delay: 0.3s;
+  }
+
+  .logo-group-3 path {
+    animation: fadeInOut 2s ease-in-out infinite;
+    animation-delay: 0.6s;
+  }
+
+  @keyframes fadeInOut {
+    0%,
+    100% {
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  .loading-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    min-width: 200px;
+  }
+
+  .loading-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 300;
+    animation: fadeText 2s ease-in-out infinite;
+  }
+
+  @keyframes fadeText {
+    0%,
+    100% {
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  .loading-bar {
+    width: 200px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .loading-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    animation: progress 2s ease-in-out infinite;
+    width: 50%;
+  }
+
+  @keyframes progress {
+    0% {
+      left: -50%;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .logo-group-1,
+    .logo-group-2,
+    .logo-group-3,
+    .loading-label {
+      animation: none;
+      opacity: 1;
+    }
+
+    .loading-progress {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  function initLoadingScreen() {
+    const loadingScreen = document.getElementById('loading-screen');
+
+    if (!loadingScreen) return;
+
+    const hideLoading = () => {
+      loadingScreen.classList.add('loaded');
+
+      const loadingCompleteEvent = new CustomEvent('loading-complete');
+      document.dispatchEvent(loadingCompleteEvent);
+
+      setTimeout(() => {
+        loadingScreen.remove();
+      }, 800);
+    };
+
+    if (document.readyState === 'complete') {
+      setTimeout(hideLoading, 2000);
+    } else {
+      window.addEventListener('load', () => {
+        setTimeout(hideLoading, 2000);
+      });
+    }
+
+    setTimeout(hideLoading, 5000);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLoadingScreen);
+  } else {
+    initLoadingScreen();
+  }
+
+  document.addEventListener('astro:page-load', initLoadingScreen);
+</script>

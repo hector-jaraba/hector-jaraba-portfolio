@@ -1,0 +1,283 @@
+---
+interface Props {
+  text?: string;
+  as?: 'button' | 'link';
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'primary' | 'accent' | 'ghost';
+  class?: string;
+  id?: string;
+  disabled?: boolean;
+  ariaLabel?: string;
+  target?: '_blank' | '_self' | '_parent' | '_top';
+  download?: boolean | string;
+}
+
+const {
+  text,
+  as = 'button',
+  href = '#',
+  type = 'button',
+  size,
+  variant = 'primary',
+  class: className = '',
+  id,
+  disabled = false,
+  ariaLabel,
+  target,
+  download,
+} = Astro.props;
+
+const buttonClasses = [
+  'shine-button',
+  size ? `shine-button--${size}` : 'shine-button--responsive',
+  `shine-button--${variant}`,
+  className,
+];
+---
+
+{
+  as === 'link' && (
+    <a
+      class:list={buttonClasses}
+      id={id}
+      href={href}
+      role="button"
+      aria-label={ariaLabel}
+      target={target}
+      download={download}
+    >
+      <div class="shine-button__border-mask">
+        <div class="shine-button__border-glow" />
+      </div>
+      <span class="shine-button__content">
+        {text}
+        <slot />
+      </span>
+    </a>
+  )
+}
+
+{
+  as === 'button' && (
+    <button
+      class:list={buttonClasses}
+      id={id}
+      type={type}
+      disabled={disabled}
+      aria-label={ariaLabel}
+    >
+      <div class="shine-button__border-mask">
+        <div class="shine-button__border-glow" />
+      </div>
+      <span class="shine-button__content">
+        {text}
+        <slot />
+      </span>
+    </button>
+  )
+}
+
+<style>
+  .shine-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-family: var(--font-sans);
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    overflow: hidden;
+    transition:
+      background-color var(--duration-normal) var(--ease-in-out),
+      transform var(--duration-fast) var(--ease-out);
+    will-change: transform, background-color;
+  }
+
+  /* Sizes */
+
+  .shine-button--responsive {
+    @apply py-2.5 px-5 text-sm rounded-md md:py-4 md:px-7 md:text-base md:rounded-lg lg:py-5 lg:px-8 lg:text-lg lg:rounded-xl;
+  }
+  .shine-button--sm {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    border-radius: var(--radius-md);
+  }
+
+  .shine-button--md {
+    padding: 1rem 1.75rem;
+    font-size: 1rem;
+    border-radius: var(--radius-lg);
+  }
+
+  .shine-button--lg {
+    padding: 1.25rem 2rem;
+    font-size: 1.125rem;
+    border-radius: var(--radius-xl);
+  }
+
+  .shine-button--primary {
+    background: rgba(139, 92, 246, 0.1);
+    color: var(--primary);
+  }
+
+  .shine-button--primary:hover {
+    background: rgba(139, 92, 246, 0.2);
+  }
+
+  .shine-button--accent {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--accent-blue);
+  }
+
+  .shine-button--accent:hover {
+    background: rgba(99, 102, 241, 0.2);
+  }
+
+  .shine-button--ghost {
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-primary);
+  }
+
+  .shine-button--ghost:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .shine-button:hover {
+    transform: translateY(-2px);
+  }
+
+  .shine-button:active {
+    transform: translateY(0);
+  }
+
+  .shine-button:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  .shine-button:disabled,
+  .shine-button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .shine-button__content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .shine-button__border-mask {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    pointer-events: none;
+
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+  }
+
+  .shine-button__border-glow {
+    position: absolute;
+    inset: -250px;
+    background: conic-gradient(
+      from 0deg,
+      transparent 0%,
+      var(--primary-bright) 5%,
+      var(--primary) 10%,
+      var(--accent-purple) 15%,
+      transparent 20%,
+      transparent 100%
+    );
+    animation: rotate-shine 3s linear infinite;
+    will-change: transform;
+  }
+
+  .shine-button--primary .shine-button__border-glow {
+    background: conic-gradient(
+      from 0deg,
+      transparent 0%,
+      var(--primary-bright) 5%,
+      var(--primary) 10%,
+      var(--accent-purple) 15%,
+      transparent 20%,
+      transparent 100%
+    );
+  }
+
+  .shine-button--accent .shine-button__border-glow {
+    background: conic-gradient(
+      from 0deg,
+      transparent 0%,
+      var(--accent-lavender) 5%,
+      var(--accent-blue) 10%,
+      var(--accent-purple) 15%,
+      transparent 20%,
+      transparent 100%
+    );
+  }
+
+  .shine-button--ghost .shine-button__border-glow {
+    background: conic-gradient(
+      from 0deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.5) 5%,
+      rgba(255, 255, 255, 0.3) 10%,
+      rgba(255, 255, 255, 0.1) 15%,
+      transparent 20%,
+      transparent 100%
+    );
+  }
+
+  @keyframes rotate-shine {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .shine-button:hover .shine-button__border-glow {
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shine-button {
+      transition: none;
+    }
+
+    .shine-button:hover {
+      transform: none;
+    }
+
+    .shine-button__border-glow {
+      animation: none;
+      background: linear-gradient(90deg, transparent, var(--primary) 50%, transparent);
+    }
+
+    .shine-button--accent .shine-button__border-glow {
+      background: linear-gradient(90deg, transparent, var(--accent-blue) 50%, transparent);
+    }
+
+    .shine-button--ghost .shine-button__border-glow {
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3) 50%, transparent);
+    }
+  }
+</style>

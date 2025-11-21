@@ -1,0 +1,221 @@
+---
+import { getLangFromUrl, useTranslations } from '@/i18n/utils';
+import { translations } from '@/i18n/utils';
+import ExpertiseCard from '@/components/ui/cards/ExpertiseCard.astro';
+import CircleIcon from '@/components/icons/CircleIcon.astro';
+import RectIcon from '@/components/icons/RectIcon.astro';
+import TriangleIcon from '@/components/icons/TriangleIcon.astro';
+import WaveIcon from '@/components/icons/WaveIcon.astro';
+import DiffusedCircles from '@/components/effects/DiffusedCircles.astro';
+
+const circles = [
+  {
+    top: '-150px',
+    left: '-200px',
+    size: 450,
+    color: '#8b5cf6',
+    opacity: 0.5,
+    blur: 80,
+    animate: true,
+  },
+  {
+    bottom: '-190px',
+    right: '-190px',
+    size: 450,
+    color: '#8b5cf6',
+    opacity: 0.6,
+    blur: 60,
+    animate: true,
+    animationDuration: 15,
+  },
+];
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const expertiseCards = translations[lang].expertise.cards;
+
+const icons = [CircleIcon, RectIcon, TriangleIcon, WaveIcon];
+---
+
+<section id="work" class="section-full">
+  <div class="section-content">
+    <div class="expertise-header">
+      <h2 class="section-title scroll-reveal">{t('expertise.title')}</h2>
+      <p class="section-subtitle scroll-reveal">
+        {t('expertise.subtitle')}
+      </p>
+    </div>
+
+    <div class="expertise-grid">
+      <div class="cards-wrapper">
+        <DiffusedCircles circles={circles} zIndex={0} />
+        {
+          expertiseCards.map((card: any, index: number) => {
+            const Icon = icons[index];
+            return (
+              <ExpertiseCard title={card.title} description={card.description}>
+                <Icon slot="icon" />
+              </ExpertiseCard>
+            );
+          })
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .section-full {
+    min-height: 120vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    scroll-snap-align: start;
+    padding: 6rem 2rem 8rem;
+  }
+
+  .circles-bg {
+    z-index: 0;
+  }
+
+  .section-content {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 1;
+  }
+
+  .expertise-header {
+    text-align: center;
+    padding-bottom: 4rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .section-title {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 2rem;
+    letter-spacing: -0.02em;
+  }
+
+  .section-subtitle {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: var(--text-tertiary);
+    font-weight: 300;
+  }
+
+  .expertise-grid {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .cards-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    align-items: center;
+    justify-items: center;
+    gap: 2rem;
+  }
+
+  @media (max-width: 1200px) {
+    .cards-wrapper {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .cards-wrapper {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initExpertiseAnimations() {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const revealElements = document.querySelectorAll('#work .scroll-reveal');
+    revealElements.forEach((element, index) => {
+      gsap.fromTo(
+        element,
+        {
+          opacity: 0,
+          y: 30,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power2.out',
+          delay: index * 0.1,
+          scrollTrigger: {
+            trigger: element,
+            start: 'top bottom-=100',
+            toggleActions: 'play none none none',
+          },
+        }
+      );
+    });
+
+    if (prefersReducedMotion) {
+      const flipCards = document.querySelectorAll('.flip-card');
+      flipCards.forEach((card) => {
+        (card as HTMLElement).style.transform = 'rotateY(180deg)';
+      });
+      return;
+    }
+
+    const cardContainers = document.querySelectorAll('.flip-card-container');
+
+    cardContainers.forEach((container, index) => {
+      const flipCard = container.querySelector('.flip-card') as HTMLElement;
+
+      gsap.fromTo(
+        flipCard,
+        {
+          rotateY: 0,
+        },
+        {
+          rotateY: 180,
+          ease: 'power1.inOut',
+          scrollTrigger: {
+            trigger: container,
+            start: `top center+=${200 - index * 50}`,
+            end: `top center-=${100 + index * 50}`,
+            scrub: 0.5,
+          },
+        }
+      );
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initExpertiseAnimations);
+  } else {
+    initExpertiseAnimations();
+  }
+
+  document.addEventListener('astro:page-load', initExpertiseAnimations);
+</script>

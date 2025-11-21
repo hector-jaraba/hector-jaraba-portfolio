@@ -1,0 +1,55 @@
+---
+import type { SEOProps } from '@/lib/seo';
+import { generateSEOMeta } from '@/lib/seo';
+
+interface Props extends SEOProps {}
+
+const seo = generateSEOMeta(Astro.props);
+---
+
+<!-- Primary Meta Tags -->
+<title>{seo.title}</title>
+<meta name="title" content={seo.title} />
+<meta name="description" content={seo.description} />
+<meta name="author" content={seo.author} />
+{seo.tags.length > 0 && <meta name="keywords" content={seo.tags.join(', ')} />}
+
+<!-- Canonical URL -->
+<link rel="canonical" href={seo.canonical} />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={seo.type} />
+<meta property="og:url" content={seo.canonical} />
+<meta property="og:title" content={seo.title} />
+<meta property="og:description" content={seo.description} />
+<meta property="og:image" content={seo.image} />
+<meta property="og:site_name" content="Héctor Jaraba" />
+{seo.publishedTime && <meta property="article:published_time" content={seo.publishedTime} />}
+{seo.modifiedTime && <meta property="article:modified_time" content={seo.modifiedTime} />}
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={seo.canonical} />
+<meta property="twitter:title" content={seo.title} />
+<meta property="twitter:description" content={seo.description} />
+<meta property="twitter:image" content={seo.image} />
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+<!-- Viewport and Theme -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0d0d0d" />
+<meta name="color-scheme" content="dark" />
+
+<!-- Preload Critical Resources -->
+<link rel="preload" href="/fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/Inter-SemiBold.woff2" as="font" type="font/woff2" crossorigin />
+
+<!-- Robots -->
+<meta name="robots" content="index, follow" />
+<meta name="googlebot" content="index, follow" />
+
+<!-- Performance & Security -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />

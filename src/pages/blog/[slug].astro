@@ -1,0 +1,37 @@
+---
+import { getCollection } from 'astro:content';
+import BlogPostLayout from '@/layouts/BlogPostLayout.astro';
+import { isFeatureEnabled } from '@/config/features';
+
+export async function getStaticPaths() {
+  // Feature flag: Check if blog is enabled
+  if (!isFeatureEnabled('BLOG_ENABLED')) {
+    return [];
+  }
+
+  const posts = await getCollection('blog', ({ data }) => {
+    const now = new Date();
+    const isPublished = data.publishDate <= now;
+
+    // In production, hide drafts and scheduled posts
+    if (import.meta.env.PROD) {
+      return !data.draft && isPublished;
+    }
+
+    // In dev, show all posts (including drafts and scheduled)
+    return true;
+  });
+
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+---
+
+<BlogPostLayout post={post}>
+  <Content />
+</BlogPostLayout>

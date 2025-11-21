@@ -1,0 +1,149 @@
+---
+// Expertise Card Component
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<div class="flip-card-container">
+  <div class="flip-card">
+    <!-- Front of card -->
+    <div class="flip-card-front">
+      <div class="card-icon">
+        <slot name="icon" />
+      </div>
+      <h3 class="card-title">{title}</h3>
+    </div>
+
+    <!-- Back of card -->
+    <div class="flip-card-back">
+      <div class="card-icon">
+        <slot name="icon" />
+      </div>
+      <h3 class="card-title">{title}</h3>
+      <p class="card-description">{description}</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Flip Card Styles */
+  .flip-card-container {
+    perspective: 1000px;
+    height: 400px;
+    width: 100%;
+    max-width: 330px;
+    justify-items: center;
+  }
+
+  .flip-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+  }
+
+  .flip-card-front,
+  .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    padding: 3rem 2rem;
+    background: radial-gradient(
+      circle at left bottom,
+      rgba(30, 20, 50, 0.8) 0%,
+      rgba(11, 15, 18, 0.95) 70%,
+      rgba(8, 8, 10, 1) 100%
+    );
+    backdrop-filter: blur(10px);
+    border: 2px solid #513690;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .flip-card-front {
+    z-index: 2;
+  }
+
+  .flip-card-back {
+    transform: rotateY(180deg);
+    justify-content: flex-start;
+    padding: 2rem;
+  }
+
+  /* Simple hover effect */
+  .flip-card-container:hover .flip-card-front,
+  .flip-card-container:hover .flip-card-back {
+    box-shadow: 0px 0px 20px #582ff3;
+  }
+
+  /* Card front - centered content */
+  .flip-card-front .card-icon {
+    margin-bottom: 2rem;
+    color: var(--primary);
+  }
+
+  .flip-card-front .card-title {
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: var(--primary);
+    margin-bottom: 0;
+    letter-spacing: -0.01em;
+  }
+
+  /* Card back - detailed content */
+  .flip-card-back .card-icon {
+    margin-bottom: 1rem;
+    color: var(--primary);
+    flex-shrink: 0;
+  }
+
+  .flip-card-back .card-title {
+    font-size: 1.25rem;
+    font-weight: 300;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+    flex-shrink: 0;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+  }
+
+  .flip-card-back .card-description {
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: var(--text-tertiary);
+    font-weight: 300;
+    margin-top: 0;
+  }
+
+  .card-icon svg {
+    width: 60px;
+    height: 60px;
+  }
+
+  @media (max-width: 768px) {
+    .flip-card-container {
+      height: 350px;
+    }
+
+    .flip-card-front .card-title {
+      font-size: 1.5rem;
+    }
+
+    .flip-card-back .card-title {
+      font-size: 1.25rem;
+    }
+  }
+</style>

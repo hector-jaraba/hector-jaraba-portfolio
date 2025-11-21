@@ -1,0 +1,407 @@
+---
+import AboutSection from '@/components/sections/AboutSection.astro';
+---
+
+<div id="about-modal" class="about-modal">
+  <AboutSection />
+</div>
+
+<style>
+  .about-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9990;
+    background: #000;
+    overflow-y: auto;
+    overflow-x: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate3d(0, 100%, 0);
+    will-change: transform, opacity;
+    isolation: isolate;
+  }
+
+  .about-modal.is-open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .about-modal::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .about-modal::-webkit-scrollbar-track {
+    background: rgba(139, 92, 246, 0.1);
+  }
+
+  .about-modal::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
+  }
+
+  .about-modal::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 92, 246, 0.8);
+  }
+
+  .about-modal :global(.profile-wrapper),
+  .about-modal :global(.about-title),
+  .about-modal :global(.marquee-container),
+  .about-modal :global(.story-intro),
+  .about-modal :global(.story-paragraph),
+  .about-modal :global(.milestone-card),
+  .about-modal :global(.story-image),
+  .about-modal :global(.closing-quote) {
+    opacity: 0;
+  }
+</style>
+
+<script>
+  import { getGsap } from '@/lib/gsap';
+  const gsap = getGsap();
+
+  function initAboutModal() {
+    const openButton = document.getElementById('more-about-me');
+    const closeButton = document.getElementById('close-about-me');
+    const modal = document.getElementById('about-modal');
+    const body = document.body;
+    const html = document.documentElement;
+
+    if (!openButton || !closeButton || !modal) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const animationDuration = prefersReducedMotion ? 0 : 0.6;
+
+    let scrollPosition = 0;
+    let isModalOpen = false;
+
+    const openModal = (addToHistory = true) => {
+      if (isModalOpen) return;
+      isModalOpen = true;
+
+      if (addToHistory) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('aboutModal', 'open');
+        window.history.pushState({ aboutModal: true }, '', url);
+      }
+
+      scrollPosition = window.scrollY;
+
+      html.style.overflow = 'hidden';
+      html.style.position = 'fixed';
+      html.style.width = '100%';
+      html.style.top = `-${scrollPosition}px`;
+      html.style.left = '0';
+      html.style.right = '0';
+
+      body.style.overflow = 'hidden';
+      body.style.position = 'fixed';
+      body.style.top = `-${scrollPosition}px`;
+      body.style.width = '100%';
+      body.style.left = '0';
+      body.style.right = '0';
+
+      const nav = document.querySelector('nav');
+      const navContainer = nav?.querySelector('.pointer-events-auto') as HTMLElement;
+      if (nav) {
+        gsap.to(nav, {
+          opacity: 0,
+          pointerEvents: 'none',
+          duration: animationDuration * 0.5,
+          ease: 'power2.out',
+        });
+        if (navContainer) {
+          navContainer.style.pointerEvents = 'none';
+        }
+      }
+
+      modal.classList.add('is-open');
+
+      gsap.to(modal, {
+        opacity: 1,
+        transform: 'translate3d(0, 0, 0)',
+        duration: animationDuration,
+        ease: 'power3.out',
+        onStart: () => {
+          modal.scrollTop = 0;
+        },
+        onComplete: () => {
+          closeButton.classList.remove('is-hidden');
+          setupScrollAnimations();
+        },
+      });
+    };
+
+    const setupScrollAnimations = () => {
+      const aboutContent = modal.querySelector('.about-content');
+      if (!aboutContent) return;
+
+      const profileWrapper = aboutContent.querySelector('.profile-wrapper');
+      const aboutTitle = aboutContent.querySelector('.about-title');
+      const marqueeContainer = aboutContent.querySelector('.marquee-container');
+      const storyIntro = aboutContent.querySelector('.story-intro');
+      const storyParagraphs = aboutContent.querySelectorAll('.story-paragraph');
+      const milestoneCards = aboutContent.querySelectorAll('.milestone-card');
+      const storyImages = aboutContent.querySelectorAll('.story-image');
+      const closingQuote = aboutContent.querySelector('.closing-quote');
+
+      const scrollConfig = {
+        scroller: modal,
+        start: 'top 80%',
+        toggleActions: 'play none none none',
+      };
+
+      if (profileWrapper) {
+        gsap.fromTo(
+          profileWrapper,
+          { opacity: 0, y: 30, scale: 0.95 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: animationDuration * 0.8,
+            ease: 'power2.out',
+            scrollTrigger: {
+              ...scrollConfig,
+              trigger: profileWrapper,
+            },
+          }
+        );
+      }
+
+      if (aboutTitle) {
+        gsap.fromTo(
+          aboutTitle,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: animationDuration * 0.6,
+            ease: 'power2.out',
+            scrollTrigger: {
+              ...scrollConfig,
+              trigger: aboutTitle,
+            },
+          }
+        );
+      }
+
+      if (marqueeContainer) {
+        gsap.fromTo(
+          marqueeContainer,
+          { opacity: 0, x: -50 },
+          {
+            opacity: 1,
+            x: 0,
+            duration: animationDuration * 0.6,
+            ease: 'power2.out',
+            scrollTrigger: {
+              ...scrollConfig,
+              trigger: marqueeContainer,
+            },
+          }
+        );
+      }
+
+      if (storyIntro) {
+        gsap.fromTo(
+          storyIntro,
+          { opacity: 0, x: -30 },
+          {
+            opacity: 1,
+            x: 0,
+            duration: animationDuration * 0.6,
+            ease: 'power2.out',
+            scrollTrigger: {
+              ...scrollConfig,
+              trigger: storyIntro,
+            },
+          }
+        );
+      }
+
+      storyParagraphs.forEach((paragraph) => {
+        gsap.fromTo(
+          paragraph,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: animationDuration * 0.5,
+            ease: 'power2.out',
+            scrollTrigger: {
+              ...scrollConfig,
+              trigger: paragraph,
+            },
+          }
+        );
+      });
+
+      milestoneCards.forEach((card) => {
+        gsap.fromTo(
+          card,
+          { opacity: 0, y: 30, scale: 0.95 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: animationDuration * 0.6,
+            ease: 'power2.out',
+            scrollTrigger: {
+              ...scrollConfig,
+              trigger: card,
+            },
+          }
+        );
+      });
+
+      storyImages.forEach((image) => {
+        gsap.fromTo(
+          image,
+          { opacity: 0, scale: 0.9 },
+          {
+            opacity: 1,
+            scale: 1,
+            duration: animationDuration * 0.7,
+            ease: 'power2.out',
+            scrollTrigger: {
+              ...scrollConfig,
+              trigger: image,
+            },
+          }
+        );
+      });
+
+      if (closingQuote) {
+        gsap.fromTo(
+          closingQuote,
+          { opacity: 0, scale: 0.95 },
+          {
+            opacity: 1,
+            scale: 1,
+            duration: animationDuration * 0.6,
+            ease: 'power2.out',
+            scrollTrigger: {
+              ...scrollConfig,
+              trigger: closingQuote,
+            },
+          }
+        );
+      }
+    };
+
+    const closeModal = (removeFromHistory = true) => {
+      if (!isModalOpen) return;
+      isModalOpen = false;
+
+      if (removeFromHistory) {
+        const url = new URL(window.location.href);
+        if (url.searchParams.has('aboutModal')) {
+          window.history.back();
+        }
+      }
+
+      closeButton.classList.add('is-hidden');
+
+      const nav = document.querySelector('nav');
+      const navContainer = nav?.querySelector('.pointer-events-auto') as HTMLElement;
+      if (nav) {
+        gsap.to(nav, {
+          opacity: 1,
+          pointerEvents: 'auto',
+          duration: animationDuration * 0.5,
+          ease: 'power2.in',
+        });
+        if (navContainer) {
+          navContainer.style.pointerEvents = 'auto';
+        }
+      }
+
+      gsap.to(modal, {
+        opacity: 0,
+        transform: 'translate3d(0, 100%, 0)',
+        duration: animationDuration,
+        ease: 'power3.in',
+        onStart: () => {
+          html.style.overflow = '';
+          html.style.position = '';
+          html.style.top = '';
+          html.style.width = '';
+          html.style.left = '';
+          html.style.right = '';
+
+          body.style.overflow = '';
+          body.style.position = '';
+          body.style.top = '';
+          body.style.width = '';
+          body.style.left = '';
+          body.style.right = '';
+
+          window.scrollTo({
+            top: scrollPosition,
+            left: 0,
+            behavior: 'instant' as ScrollBehavior,
+          });
+        },
+        onComplete: () => {
+          modal.classList.remove('is-open');
+
+          const aboutContent = modal.querySelector('.about-content');
+          if (aboutContent) {
+            const allAnimatableElements = aboutContent.querySelectorAll(
+              '.profile-wrapper, .about-title, .marquee-container, .story-intro, .story-paragraph, .milestone-card, .story-image, .closing-quote'
+            );
+
+            gsap.killTweensOf(allAnimatableElements);
+            gsap.set(allAnimatableElements, { clearProps: 'all' });
+          }
+        },
+      });
+    };
+
+    window.addEventListener('popstate', () => {
+      const url = new URL(window.location.href);
+      const hasAboutModal = url.searchParams.has('aboutModal');
+
+      if (hasAboutModal && !isModalOpen) {
+        openModal(false);
+      } else if (!hasAboutModal && isModalOpen) {
+        closeModal(false);
+      }
+    });
+
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('aboutModal')) {
+      openModal(false);
+    }
+
+    openButton.addEventListener('click', (e: Event) => {
+      e.preventDefault();
+      openModal();
+    });
+
+    closeButton.addEventListener('click', (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+      closeModal();
+    });
+
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+        e.preventDefault();
+        closeModal();
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAboutModal);
+  } else {
+    initAboutModal();
+  }
+
+  document.addEventListener('astro:page-load', initAboutModal);
+</script>

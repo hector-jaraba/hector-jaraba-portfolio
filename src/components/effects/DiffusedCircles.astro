@@ -1,0 +1,65 @@
+---
+import DiffusedCircle from './DiffusedCircle.astro';
+
+interface CircleConfig {
+  size?: number;
+  top?: string;
+  bottom?: string;
+  left?: string;
+  right?: string;
+  color?: string;
+  opacity?: number;
+  blur?: number;
+  animate?: boolean;
+  animationDuration?: number;
+}
+
+interface Props {
+  /**
+   * Array of circle configurations
+   */
+  circles: CircleConfig[];
+
+  /**
+   * Container class for positioning
+   */
+  class?: string;
+
+  /**
+   * z-index for all circles
+   * @default -1
+   */
+  zIndex?: number;
+}
+
+const { circles, class: className = '', zIndex = -1 } = Astro.props;
+---
+
+<div aria-hidden="true" class={`diffused-circles-container ${className}`}>
+  {
+    circles.map((circle) => (
+      <DiffusedCircle
+        size={circle.size}
+        top={circle.top}
+        bottom={circle.bottom}
+        left={circle.left}
+        right={circle.right}
+        color={circle.color}
+        opacity={circle.opacity}
+        blur={circle.blur}
+        zIndex={zIndex}
+        animate={circle.animate}
+        animationDuration={circle.animationDuration}
+      />
+    ))
+  }
+</div>
+
+<style>
+  .diffused-circles-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: visible;
+  }
+</style>

@@ -1,0 +1,27 @@
+---
+interface Props {
+  id: string;
+  username?: string;
+  title?: string;
+  height?: number;
+  defaultTab?: string;
+}
+
+const { id, username = 'team', title = 'CodePen Embed', height = 500, defaultTab = 'result' } = Astro.props;
+// CodePen embed URL format: https://codepen.io/{username}/embed/{pen-id}
+const embedUrl = `https://codepen.io/${username}/embed/${id}?default-tab=${defaultTab}&theme-id=dark`;
+---
+
+<div class="codepen-wrapper my-8 rounded-xl overflow-hidden">
+  <iframe
+    height={height}
+    style="width: 100%;"
+    title={title}
+    src={embedUrl}
+    loading="lazy"
+    allowfullscreen={true}
+    allow="accelerometer; camera; encrypted-media; geolocation; gyroscope; microphone; midi"
+    sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+  >
+  </iframe>
+</div>

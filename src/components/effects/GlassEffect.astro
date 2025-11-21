@@ -1,0 +1,117 @@
+---
+import { Image } from 'astro:assets';
+import hectorGlassImage from '@/assets/images/hector-glass.png';
+interface Props {
+  imageSrc: string;
+  imageAlt?: string;
+  containerClass?: string;
+  enableScrollEffects?: boolean;
+}
+
+const {
+  imageSrc,
+  imageAlt = 'Glass effect image',
+  containerClass = '',
+  enableScrollEffects = false,
+} = Astro.props;
+const instanceId = `glass-${Math.random().toString(36).substring(2, 11)}`;
+---
+
+<div
+  class={`w-screen h-screen overflow-hidden bg-black ${containerClass}`}
+  id="glass-effect"
+  data-glass-id={instanceId}
+  data-enable-scroll={enableScrollEffects}
+  data-image-src={imageSrc}
+>
+  <div class="absolute inset-0 z-[1] will-change-transform pointer-events-none">
+    <Image
+      class="absolute inset-0 w-full h-full object-cover object-center opacity-50"
+      src={hectorGlassImage}
+      alt={imageAlt}
+      loading="eager"
+      fetchpriority="high"
+      format="avif"
+      quality={60}
+      widths={[400, 640, 750, 828, 1080, 1200, 1920]}
+      sizes="(max-width: 640px) 400px, (max-width: 768px) 640px, (max-width: 1024px) 828px, 100vw"
+    />
+  </div>
+
+  <div class="absolute inset-0 z-[2] pointer-events-none hidden md:block">
+    <canvas data-glass-canvas class="w-full h-full block opacity-100 mix-blend-normal"></canvas>
+  </div>
+  <div class="absolute inset-0 bg-violet-500/20" style="mix-blend-mode: multiply;"></div>
+  <div class="absolute inset-0 z-[3] flex items-center justify-center pointer-events-none">
+    <div class="pointer-events-auto">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<script>
+  import { useDevices } from '@/lib/devices';
+  import { GlassEffect } from '@/lib/webgl/glass-effect';
+  import { onInit } from '@/lib/dom';
+  import { getScrollTrigger } from '@/lib/gsap';
+
+  const ScrollTrigger = getScrollTrigger();
+
+  async function initGlassEffects() {
+    const containers = document.querySelectorAll('[data-glass-id]');
+
+    for (const container of containers) {
+      const canvas = container.querySelector('[data-glass-canvas]') as HTMLCanvasElement;
+      const imageSrc = container.getAttribute('data-image-src');
+      const enableScroll = container.getAttribute('data-enable-scroll') === 'true';
+      const { isAbleToRunEffects } = useDevices();
+
+      if (!canvas || !imageSrc || !isAbleToRunEffects) continue;
+
+      try {
+        // Create and load image programmatically
+        const img = new Image();
+        img.crossOrigin = 'anonymous'; // Important for WebGL CORS
+        img.src = imageSrc;
+
+        // Wait for image to load
+        await img.decode();
+
+        // Create WebGL effect with loaded image
+        const effect = new GlassEffect(canvas, img);
+
+        // Add scroll-triggered zoom if enabled
+        if (enableScroll) {
+          ScrollTrigger.create({
+            trigger: container,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+            onUpdate: (self) => {
+              const progress = self.progress;
+              // Zoom from 1.5 to 2.0 based on scroll
+              const zoom = 1.0 + progress * -0.5;
+              effect.updateConfig({ textureScale: zoom });
+
+              // Increase distortion effects on scroll
+              effect.updateConfig({
+                displacementAmplitude: 0.005 + progress * 0.055,
+                warpAmplitude: 0.022 + progress * 0.028,
+                blurAmount: 0.009 + progress * 0.001,
+                autoMoveAmplitude: 0.046 + progress * 0.054,
+              });
+            },
+          });
+        }
+
+        // Store effect instance for external control
+        (container as any).glassEffect = effect;
+      } catch (error) {
+        console.warn('Failed to load image or create WebGL effect:', error);
+      }
+    }
+  }
+
+  // Simplified initialization with onInit utility
+  onInit(initGlassEffects);
+</script>

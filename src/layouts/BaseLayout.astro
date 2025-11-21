@@ -1,0 +1,47 @@
+---
+import SEOHead from '@/components/layout/SEOHead.astro';
+import Navigation from '@/components/layout/Navigation.astro';
+import CustomCursor from '@/components/layout/CustomCursor.astro';
+import LoadingScreen from '@/components/layout/LoadingScreen.astro';
+import type { SEOProps } from '@/lib/seo';
+import '@/styles/global.css';
+
+interface Props {
+  seo: SEOProps;
+  structuredData?: any;
+  showLoadingScreen?: boolean;
+}
+
+const { seo, structuredData, showLoadingScreen = true } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <SEOHead {...seo} />
+
+    {
+      structuredData && (
+        <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+      )
+    }
+  </head>
+  <body class="cursor-none">
+    {showLoadingScreen && <LoadingScreen />}
+    <CustomCursor />
+    <Navigation />
+
+    <main id="main-content">
+      <slot />
+    </main>
+  </body>
+</html>
+
+<script>
+  import '@/lib/animations/titleReveal';
+  import { showConsoleMessage } from '@/lib/console-art';
+
+  // Show console easter egg
+  showConsoleMessage();
+</script>

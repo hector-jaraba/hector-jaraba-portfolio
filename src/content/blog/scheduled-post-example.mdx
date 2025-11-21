@@ -1,0 +1,67 @@
+---
+title: 'Future Post - Scheduled Publishing Demo'
+description: 'This post is scheduled to publish in the future. It demonstrates the automatic scheduled publishing feature that hides posts until their publish date arrives.'
+publishDate: 2025-12-31T10:00:00
+category: 'tutorial'
+tags: ['Scheduling', 'Publishing', 'Demo']
+featured: false
+draft: false
+image:
+  src: '/images/blog/showcase-hero.svg'
+  alt: 'Scheduled post example'
+---
+
+import Callout from '../../components/blog/Callout.astro';
+
+# This Post is From the Future! 🚀
+
+This post demonstrates the **scheduled publishing** feature. It has a publish date set to December 31st, 2025 at 10:00 AM.
+
+## How Scheduled Publishing Works
+
+<Callout type="info" title="Automatic Publishing">
+  Posts are automatically published when their `publishDate` arrives. No manual intervention needed!
+</Callout>
+
+### Behavior
+
+**In Development Mode:**
+- ✅ Scheduled posts are **visible** with a blue "SCHEDULED" badge
+- ✅ You can preview and edit them before they go live
+- ✅ Warning banner shows the scheduled publish date/time
+
+**In Production:**
+- 🔒 Scheduled posts are **hidden** until their publish date
+- ✅ Automatically become visible when the date/time arrives
+- ✅ No build required - it's all handled at request time
+
+## Setting a Scheduled Post
+
+Just set a future `publishDate` in your frontmatter:
+
+\`\`\`yaml
+---
+title: 'My Future Post'
+publishDate: 2025-12-31T10:00:00  # ISO 8601 format with time
+# OR
+publishDate: 2025-12-31  # Just the date (defaults to midnight)
+---
+\`\`\`
+
+<Callout type="success" title="Time Zone Support">
+  The `publishDate` supports full ISO 8601 format including timezone information. If no timezone is specified, it uses the server's local time.
+</Callout>
+
+## Use Cases
+
+1. **Content Planning** - Write posts ahead of time
+2. **Coordinated Launches** - Schedule posts for specific dates
+3. **Time Zone Targeting** - Publish at optimal times
+4. **Editorial Calendar** - Plan content weeks/months in advance
+
+<Callout type="warning" title="Important Note">
+  Remember that this post will automatically become visible on December 31st, 2025 at 10:00 AM. Make sure it's ready before that time!
+</Callout>
+
+This feature works seamlessly with drafts - you can have a post that's both scheduled AND in draft mode for maximum flexibility during the writing process.
+

@@ -1,0 +1,374 @@
+---
+// Fireflies animated background effect
+interface Props {
+  count?: number;
+  className?: string;
+}
+
+const { count = 20, className = '' } = Astro.props;
+---
+
+<div class={`fireflies-container ${className}`} data-fireflies-count={count}>
+  <canvas class="fireflies-canvas" id="fireflies-canvas"></canvas>
+</div>
+
+<style>
+  .fireflies-container {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .fireflies-canvas {
+    width: 100%;
+    height: 100%;
+    opacity: 0.4; /* More subtle overall opacity */
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fireflies-canvas {
+      opacity: 0.2;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+
+  interface Firefly {
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    radius: number;
+    opacity: number;
+    glowIntensity: number;
+    color: { r: number; g: number; b: number };
+    timeline: gsap.core.Timeline;
+    spawnedFromArrow?: boolean;
+  }
+
+  class FirefliesEffect {
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
+    private fireflies: Firefly[] = [];
+    private animationId: number | null = null;
+    private isReducedMotion: boolean;
+    private count: number;
+    private colors: { r: number; g: number; b: number }[];
+    private arrowTipPosition: { x: number; y: number } | null = null;
+    private hasSpawnedFromArrow: boolean = false;
+
+    constructor(canvas: HTMLCanvasElement, count: number) {
+      this.canvas = canvas;
+      this.ctx = canvas.getContext('2d')!;
+      this.count = count;
+      this.isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Color palette from CSS variables (pale violet/lavender theme)
+      this.colors = [
+        { r: 196, g: 181, b: 253 }, // --primary: #c4b5fd
+        { r: 167, g: 139, b: 250 }, // --primary-dim: #a78bfa
+        { r: 221, g: 214, b: 254 }, // --primary-bright: #ddd6fe
+        { r: 139, g: 92, b: 246 },  // --accent-purple: #8b5cf6
+        { r: 99, g: 102, b: 241 },  // --accent-blue: #6366f1
+        { r: 224, g: 231, b: 255 }, // --accent-lavender: #e0e7ff
+      ];
+
+      this.resize();
+      this.init();
+      this.animate();
+      this.trackArrow();
+
+      // Handle resize
+      window.addEventListener('resize', () => this.resize());
+
+      // Handle visibility change
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          this.pause();
+        } else {
+          this.resume();
+        }
+      });
+    }
+
+    private trackArrow() {
+      // Watch for arrow tip position when it enters contact section
+      const arrow = document.querySelector('#timeline-arrow') as SVGElement;
+      if (!arrow) return;
+
+      const checkArrowPosition = () => {
+        if (this.hasSpawnedFromArrow) return;
+
+        const arrowRect = arrow.getBoundingClientRect();
+        const contactSection = document.querySelector('#contact') as HTMLElement;
+
+        if (!contactSection) return;
+
+        const contactRect = contactSection.getBoundingClientRect();
+        const canvasRect = this.canvas.getBoundingClientRect();
+
+        // Check if arrow tip (bottom of arrow) is in contact section
+        const arrowBottom = arrowRect.bottom;
+        const arrowCenterX = arrowRect.left + arrowRect.width / 2;
+
+        // When arrow bottom enters contact section, spawn fireflies from tip
+        if (arrowBottom >= contactRect.top && arrowBottom <= contactRect.bottom) {
+          // Convert arrow tip position to canvas coordinates
+          this.arrowTipPosition = {
+            x: arrowCenterX - canvasRect.left,
+            y: arrowBottom - canvasRect.top
+          };
+
+          // Spawn fireflies from arrow tip
+          this.spawnFromArrow();
+          this.hasSpawnedFromArrow = true;
+        }
+      };
+
+      // Check on scroll
+      window.addEventListener('scroll', checkArrowPosition);
+
+      // Also check periodically
+      const intervalId = setInterval(() => {
+        if (this.hasSpawnedFromArrow) {
+          clearInterval(intervalId);
+        }
+        checkArrowPosition();
+      }, 100);
+    }
+
+    private spawnFromArrow() {
+      if (!this.arrowTipPosition) return;
+
+      const spawnCount = 6; // Reduced from 15 to 6 for subtlety
+
+      for (let i = 0; i < spawnCount; i++) {
+        const angle = (Math.random() * Math.PI * 2);
+        const velocity = Math.random() * 0.8 + 0.3; // Slower, more gentle velocity
+        const color = this.colors[Math.floor(Math.random() * this.colors.length)];
+
+        const firefly: Firefly = {
+          x: this.arrowTipPosition.x,
+          y: this.arrowTipPosition.y,
+          vx: Math.cos(angle) * velocity,
+          vy: Math.sin(angle) * velocity,
+          radius: Math.random() * 1.5 + 0.8, // Smaller particles
+          opacity: 0,
+          glowIntensity: Math.random() * 8 + 8, // Reduced glow
+          color: color,
+          timeline: gsap.timeline({ repeat: -1 }),
+          spawnedFromArrow: true
+        };
+
+        // Animate spawn with gentle fade-in
+        gsap.to(firefly, {
+          opacity: Math.random() * 0.3 + 0.2, // More subtle opacity
+          duration: 1.5, // Longer, smoother fade-in
+          ease: 'power1.out'
+        });
+
+        // Create gentle pulsing glow animation
+        if (!this.isReducedMotion) {
+          const duration = Math.random() * 3 + 3; // Slower pulsing
+          const delay = Math.random() * 2;
+
+          firefly.timeline
+            .to(firefly, {
+              glowIntensity: Math.random() * 12 + 10,
+              opacity: Math.random() * 0.4 + 0.25,
+              duration: duration / 2,
+              ease: 'sine.inOut',
+              delay: delay
+            })
+            .to(firefly, {
+              glowIntensity: Math.random() * 6 + 4,
+              opacity: Math.random() * 0.2 + 0.15,
+              duration: duration / 2,
+              ease: 'sine.inOut'
+            });
+        }
+
+        this.fireflies.push(firefly);
+      }
+    }
+
+    private resize() {
+      const rect = this.canvas.getBoundingClientRect();
+      this.canvas.width = rect.width * window.devicePixelRatio;
+      this.canvas.height = rect.height * window.devicePixelRatio;
+      this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    }
+
+    private init() {
+      const rect = this.canvas.getBoundingClientRect();
+
+      for (let i = 0; i < this.count; i++) {
+        const color = this.colors[Math.floor(Math.random() * this.colors.length)];
+
+        const firefly: Firefly = {
+          x: Math.random() * rect.width,
+          y: Math.random() * rect.height,
+          vx: (Math.random() - 0.5) * 0.3, // Slower movement
+          vy: (Math.random() - 0.5) * 0.3,
+          radius: Math.random() * 1.5 + 0.8, // Smaller particles
+          opacity: Math.random() * 0.25 + 0.15, // More subtle opacity
+          glowIntensity: Math.random() * 8 + 6, // Reduced glow intensity
+          color: color,
+          timeline: gsap.timeline({ repeat: -1 })
+        };
+
+        // Create gentle pulsing glow animation with GSAP
+        if (!this.isReducedMotion) {
+          const duration = Math.random() * 3 + 3; // Slower pulsing
+          const delay = Math.random() * 3;
+
+          firefly.timeline
+            .to(firefly, {
+              glowIntensity: Math.random() * 12 + 10,
+              opacity: Math.random() * 0.35 + 0.25,
+              duration: duration / 2,
+              ease: 'sine.inOut',
+              delay: delay
+            })
+            .to(firefly, {
+              glowIntensity: Math.random() * 6 + 4,
+              opacity: Math.random() * 0.2 + 0.1,
+              duration: duration / 2,
+              ease: 'sine.inOut'
+            });
+        }
+
+        this.fireflies.push(firefly);
+      }
+    }
+
+    private animate() {
+      const rect = this.canvas.getBoundingClientRect();
+
+      // Clear canvas
+      this.ctx.clearRect(0, 0, rect.width, rect.height);
+
+      // Update and draw each firefly
+      this.fireflies.forEach(firefly => {
+        // Update position (slower movement for reduced motion)
+        const speed = this.isReducedMotion ? 0.1 : 0.8; // Even slower, smoother movement
+        firefly.x += firefly.vx * speed;
+        firefly.y += firefly.vy * speed;
+
+        // Bounce off edges with some randomness
+        if (firefly.x < 0 || firefly.x > rect.width) {
+          firefly.vx *= -1;
+          firefly.vx += (Math.random() - 0.5) * 0.1;
+        }
+        if (firefly.y < 0 || firefly.y > rect.height) {
+          firefly.vy *= -1;
+          firefly.vy += (Math.random() - 0.5) * 0.1;
+        }
+
+        // Keep within bounds
+        firefly.x = Math.max(0, Math.min(rect.width, firefly.x));
+        firefly.y = Math.max(0, Math.min(rect.height, firefly.y));
+
+        // Add slight randomness to velocity
+        if (!this.isReducedMotion && Math.random() < 0.01) {
+          firefly.vx += (Math.random() - 0.5) * 0.1;
+          firefly.vy += (Math.random() - 0.5) * 0.1;
+
+          // Clamp velocity
+          const maxSpeed = 0.8;
+          firefly.vx = Math.max(-maxSpeed, Math.min(maxSpeed, firefly.vx));
+          firefly.vy = Math.max(-maxSpeed, Math.min(maxSpeed, firefly.vy));
+        }
+
+        // Draw firefly with glow
+        this.drawFirefly(firefly);
+      });
+
+      this.animationId = requestAnimationFrame(() => this.animate());
+    }
+
+    private drawFirefly(firefly: Firefly) {
+      const { x, y, radius, opacity, glowIntensity, color } = firefly;
+
+      // Outer glow
+      const gradient = this.ctx.createRadialGradient(x, y, 0, x, y, glowIntensity);
+      gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`);
+      gradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity * 0.3})`);
+      gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+
+      this.ctx.fillStyle = gradient;
+      this.ctx.beginPath();
+      this.ctx.arc(x, y, glowIntensity, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Core - slightly brighter
+      const coreR = Math.min(255, color.r + 30);
+      const coreG = Math.min(255, color.g + 30);
+      const coreB = Math.min(255, color.b + 30);
+      this.ctx.fillStyle = `rgba(${coreR}, ${coreG}, ${coreB}, ${Math.min(1, opacity * 1.5)})`;
+      this.ctx.beginPath();
+      this.ctx.arc(x, y, radius, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
+
+    public pause() {
+      if (this.animationId !== null) {
+        cancelAnimationFrame(this.animationId);
+        this.animationId = null;
+      }
+      this.fireflies.forEach(f => f.timeline.pause());
+    }
+
+    public resume() {
+      if (this.animationId === null) {
+        this.animate();
+      }
+      this.fireflies.forEach(f => f.timeline.resume());
+    }
+
+    public destroy() {
+      this.pause();
+      this.fireflies.forEach(f => f.timeline.kill());
+      this.fireflies = [];
+      window.removeEventListener('resize', () => this.resize());
+    }
+  }
+
+  // Initialize fireflies
+  function initFireflies() {
+    const canvas = document.getElementById('fireflies-canvas') as HTMLCanvasElement;
+    if (!canvas) return;
+
+    const container = canvas.closest('[data-fireflies-count]') as HTMLElement;
+    const count = parseInt(container?.dataset.firefliesCount || '20', 10);
+
+    // Store instance for cleanup
+    const effect = new FirefliesEffect(canvas, count);
+
+    // Store on element for potential cleanup
+    (canvas as any).__firefliesEffect = effect;
+  }
+
+  // Initialize on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFireflies);
+  } else {
+    initFireflies();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initFireflies);
+
+  // Cleanup on page unload
+  document.addEventListener('astro:before-preparation', () => {
+    const canvas = document.getElementById('fireflies-canvas') as HTMLCanvasElement;
+    const effect = (canvas as any)?.__firefliesEffect;
+    if (effect) {
+      effect.destroy();
+    }
+  });
+</script>

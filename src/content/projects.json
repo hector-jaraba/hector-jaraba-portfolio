@@ -1,0 +1,109 @@
+[
+  {
+    "id": "ecommerce-platform",
+    "title": "E-Commerce Platform Redesign",
+    "slug": "ecommerce-platform",
+    "description": "Led the complete frontend redesign of a high-traffic e-commerce platform, improving performance by 40% and conversion rates by 25%.",
+    "featured": true,
+    "year": "2024",
+    "category": "web",
+    "tags": ["React", "Next.js", "TypeScript", "Tailwind CSS", "Performance"],
+    "image": "/images/projects/ecommerce.svg",
+    "link": "https://example.com",
+    "github": "",
+    "tech": [
+      "Next.js 14",
+      "React 18",
+      "TypeScript",
+      "Tailwind CSS",
+      "Vercel",
+      "Stripe API"
+    ],
+    "highlights": [
+      "Reduced initial load time from 3.2s to 1.1s",
+      "Implemented server-side rendering for SEO",
+      "Built reusable component library",
+      "Integrated real-time inventory updates"
+    ]
+  },
+  {
+    "id": "design-system",
+    "title": "Enterprise Design System",
+    "slug": "design-system",
+    "description": "Created a comprehensive design system and component library used across 15+ products, serving millions of users daily.",
+    "featured": true,
+    "year": "2023",
+    "category": "design-system",
+    "tags": ["React", "Storybook", "Design System", "TypeScript"],
+    "image": "/images/projects/design-system.svg",
+    "link": "",
+    "github": "",
+    "tech": [
+      "React",
+      "TypeScript",
+      "Storybook",
+      "CSS-in-JS",
+      "Figma Tokens",
+      "Chromatic"
+    ],
+    "highlights": [
+      "50+ reusable components",
+      "Full accessibility (WCAG 2.1 AA)",
+      "Automated visual regression testing",
+      "Comprehensive documentation"
+    ]
+  },
+  {
+    "id": "real-time-dashboard",
+    "title": "Real-Time Analytics Dashboard",
+    "slug": "real-time-dashboard",
+    "description": "Built a real-time analytics dashboard processing 100k+ events per second with sub-second latency and interactive visualizations.",
+    "featured": true,
+    "year": "2023",
+    "category": "web",
+    "tags": ["React", "WebSocket", "D3.js", "Performance"],
+    "image": "/images/projects/dashboard.svg",
+    "link": "",
+    "github": "",
+    "tech": [
+      "React",
+      "TypeScript",
+      "D3.js",
+      "WebSocket",
+      "Redis",
+      "Node.js"
+    ],
+    "highlights": [
+      "Real-time data visualization",
+      "Custom charting library",
+      "Optimized for 100k+ concurrent users",
+      "Sub-second data refresh"
+    ]
+  },
+  {
+    "id": "mobile-app",
+    "title": "Cross-Platform Mobile App",
+    "slug": "mobile-app",
+    "description": "Developed a feature-rich mobile application with offline-first capabilities and seamless sync across iOS and Android.",
+    "featured": false,
+    "year": "2022",
+    "category": "mobile",
+    "tags": ["React Native", "TypeScript", "Mobile"],
+    "image": "/images/projects/mobile.svg",
+    "link": "",
+    "github": "",
+    "tech": [
+      "React Native",
+      "TypeScript",
+      "Redux",
+      "SQLite",
+      "Firebase"
+    ],
+    "highlights": [
+      "Offline-first architecture",
+      "Push notifications",
+      "Biometric authentication",
+      "4.8+ star rating"
+    ]
+  }
+]

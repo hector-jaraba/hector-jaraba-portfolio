@@ -1,0 +1,465 @@
+---
+import { getLangFromUrl, useTranslations } from '@/i18n/utils';
+import Fireflies from '@/components/effects/Fireflies.astro';
+import DiffusedCircles from '../effects/DiffusedCircles.astro';
+import ShineButton from '@/components/ui/buttons/ShineButton.astro';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const circles = [
+  {
+    top: '20%',
+    left: '-20%',
+    size: 700,
+    color: '#8b5cf6',
+    opacity: 0.3,
+    blur: 100,
+    animate: true,
+  },
+];
+---
+
+<section id="contact" class="section-full">
+  <DiffusedCircles circles={circles} zIndex={0} />
+  <Fireflies count={30} />
+
+  <div class="section-content">
+    <div class="contact-content">
+      <h2 class="section-title scroll-reveal">{t('contact.title')}</h2>
+      <p class="scroll-reveal delay-1 text-lg/8 md:text-2xl/9 tracking-wide font-light mb-4">
+        {t('contact.description')}
+      </p>
+
+      <a href="mailto:hi@hectorjaraba.com" class="contact-email scroll-reveal delay-2">
+        hi@hectorjaraba.com
+      </a>
+
+      <div class="contact-actions scroll-reveal delay-3">
+        <ShineButton
+          as="link"
+          download="hector-jaraba-cv.pdf"
+          href="/cv-hector.pdf"
+          size="md"
+          variant="primary"
+          class="cv-download-button"
+          ariaLabel="Download Héctor Jaraba's CV"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          {t('contact.downloadCV')}
+        </ShineButton>
+
+        <a
+          href="https://www.linkedin.com/in/hjaraba"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="contact-link"
+        >
+          <span>{t('contact.linkedin')}</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M4 12l8-8m0 0v6m0-6H6" stroke="currentColor" stroke-width="1"></path>
+          </svg>
+        </a>
+      </div>
+
+      <p class="copyright scroll-reveal delay-5">
+        © {new Date().getFullYear()} Héctor Jaraba. {t('contact.copyright')}
+      </p>
+    </div>
+  </div>
+  <div class="moon-container">
+    <div class="moon-shadow"></div>
+    <div class="moon"></div>
+  </div>
+</section>
+
+<style>
+  .section-full {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    scroll-snap-align: start;
+    padding: 4rem 2rem;
+    overflow: hidden;
+  }
+
+  .section-content {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    z-index: 12;
+  }
+
+  .section-title {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 2rem;
+    letter-spacing: -0.02em;
+  }
+
+  .text-large {
+    font-size: 1.5rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    font-weight: 300;
+  }
+
+  .contact-content {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .contact-email {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 200;
+    color: var(--primary);
+    margin: 3rem 0;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  .contact-email:hover {
+    color: var(--primary-bright);
+    letter-spacing: 0.05em;
+  }
+
+  .contact-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    position: relative;
+    z-index: 1;
+    flex-wrap: wrap;
+  }
+
+  .contact-actions :global(.cv-download-button) {
+    position: relative;
+    z-index: 2;
+  }
+
+  .contact-actions :global(.cv-download-button svg) {
+    transition: transform var(--duration-normal) var(--ease-out);
+  }
+
+  .contact-actions :global(.cv-download-button:hover svg) {
+    transform: translateY(2px);
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+  }
+
+  .contact-link:hover {
+    color: var(--primary);
+  }
+  .contact-link svg {
+    transition: all 0.3s ease;
+  }
+  .contact-link:hover svg {
+    scale: 1.2;
+    translate: 2px 0px;
+  }
+
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .scroll-reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .delay-1 {
+    transition-delay: 0.1s;
+  }
+  .delay-2 {
+    transition-delay: 0.2s;
+  }
+  .delay-3 {
+    transition-delay: 0.3s;
+  }
+  .delay-4 {
+    transition-delay: 0.4s;
+  }
+  .delay-5 {
+    transition-delay: 0.5s;
+  }
+
+  .copyright {
+    @apply mt-12 text-sm font-light;
+    color: var(--text-tertiary);
+    position: relative;
+    z-index: 1;
+  }
+
+  .moon-container {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    bottom: 0;
+    width: 100%;
+    height: 15%;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .moon {
+    position: absolute;
+    width: 150vw;
+    height: 120vw;
+    max-width: 1400px;
+    max-height: 1400px;
+    border-radius: 50%;
+    z-index: 1;
+    pointer-events: none;
+    filter: blur(4px);
+
+    background: radial-gradient(
+      circle at 50% 30%,
+      rgba(139, 92, 246, 1) 0%,
+      rgba(124, 58, 237, 1) 20%,
+      rgba(109, 40, 217, 1) 40%,
+      rgba(91, 33, 182, 1) 60%,
+      rgba(76, 29, 149, 1) 80%,
+      rgba(59, 7, 100, 1) 100%
+    );
+  }
+
+  .moon-shadow {
+    position: absolute;
+    width: 150vw;
+    height: 120vw;
+    max-width: 1400px;
+    max-height: 1400px;
+    border-radius: 50%;
+    z-index: 0;
+    top: -20px;
+    pointer-events: none;
+    filter: blur(15px);
+
+    background: #582ff3;
+    animation: moonPulse 6s ease-in-out infinite;
+  }
+
+  @keyframes moonPulse {
+    0%,
+    100% {
+      top: -20px;
+    }
+    50% {
+      top: -15px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .contact-email {
+      @apply text-xl;
+    }
+
+    .contact-actions {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .contact-actions :global(.shine-button) {
+      width: 100%;
+      max-width: 300px;
+      justify-content: center;
+    }
+
+    .contact-actions .contact-link {
+      width: auto;
+    }
+
+    .copyright {
+      @apply mt-8;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-reveal {
+      opacity: 1;
+      transform: none;
+    }
+
+    .moon,
+    .moon::before {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  import { getGsap } from '@/lib/gsap';
+  import { onInit } from '@/lib/dom';
+
+  const gsap = getGsap();
+
+  function initScrollReveal() {
+    const revealElements = document.querySelectorAll('#contact .scroll-reveal');
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px',
+      }
+    );
+
+    revealElements.forEach((el) => observer.observe(el));
+  }
+
+  function initCVButtonAnimation() {
+    const cvButton = document.querySelector('.cv-download-button');
+    if (!cvButton) return;
+
+    const textSpan = cvButton.querySelector('.shine-button__content');
+    if (!textSpan) return;
+
+    const originalText = textSpan.innerHTML;
+    let isAnimating = false;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    cvButton.addEventListener('click', () => {
+      if (isAnimating) return;
+      isAnimating = true;
+
+      if (prefersReducedMotion) {
+        textSpan.innerHTML = 'Thanks! ;)';
+        setTimeout(() => {
+          textSpan.innerHTML = originalText;
+          isAnimating = false;
+        }, 1500);
+        return;
+      }
+
+      const tl = gsap.timeline({
+        onComplete: () => {
+          isAnimating = false;
+        },
+      });
+
+      tl.to(cvButton, {
+        scale: 0.95,
+        duration: 0.1,
+        ease: 'power2.in',
+      })
+        .to(
+          textSpan,
+          {
+            opacity: 0,
+            y: -5,
+            duration: 0.15,
+            ease: 'power2.in',
+          },
+          '<'
+        )
+        .call(() => {
+          textSpan.innerHTML = 'Thanks! ;)';
+        })
+        .to(cvButton, {
+          scale: 1.05,
+          duration: 0.2,
+          ease: 'back.out(3)',
+        })
+        .to(
+          textSpan,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.2,
+            ease: 'power2.out',
+          },
+          '<'
+        )
+        .to(cvButton, {
+          scale: 1,
+          duration: 0.15,
+          ease: 'power2.out',
+        })
+        .to(
+          cvButton,
+          {
+            boxShadow: '0 0 20px rgba(139, 92, 246, 0.6)',
+            duration: 0.3,
+            ease: 'power2.out',
+          },
+          '<'
+        )
+        .to({}, { duration: 0.8 })
+        .to(textSpan, {
+          opacity: 0,
+          y: 5,
+          duration: 0.15,
+          ease: 'power2.in',
+        })
+        .call(() => {
+          textSpan.innerHTML = originalText;
+        })
+        .to(textSpan, {
+          opacity: 1,
+          y: 0,
+          duration: 0.2,
+          ease: 'power2.out',
+        })
+        .to(
+          cvButton,
+          {
+            boxShadow: '0 0 0px rgba(139, 92, 246, 0)',
+            duration: 0.2,
+            ease: 'power2.out',
+          },
+          '<'
+        );
+    });
+  }
+
+  function init() {
+    initScrollReveal();
+    initCVButtonAnimation();
+  }
+
+  onInit(init);
+</script>

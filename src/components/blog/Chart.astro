@@ -1,0 +1,124 @@
+---
+interface Props {
+  type?: 'bar' | 'line' | 'pie';
+  data: {
+    labels: string[];
+    datasets: {
+      label: string;
+      data: number[];
+      backgroundColor?: string | string[];
+      borderColor?: string;
+    }[];
+  };
+  title?: string;
+}
+
+const { type = 'bar', data, title } = Astro.props;
+const chartId = `chart-${Math.random().toString(36).substring(2, 11)}`;
+---
+
+<div class="chart-container my-8">
+  {title && <h4 class="text-lg font-semibold text-[var(--text-primary)] mb-4 text-center">{title}</h4>}
+  <div class="bg-[var(--surface)] p-6 rounded-lg">
+    <div class="chart-wrapper" style="position: relative; width: 100%;">
+      <canvas id={chartId}></canvas>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ chartId, type, data }}>
+  // Chart.js implementation - we'll load it from CDN
+  (function() {
+    let chartInstance = null;
+
+    const loadChart = async () => {
+      // Load Chart.js from CDN if not already loaded
+      if (typeof Chart === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js';
+        document.head.appendChild(script);
+        await new Promise(resolve => script.onload = resolve);
+      }
+
+      const ctx = document.getElementById(chartId);
+      if (!ctx) return;
+
+      // Destroy existing chart if it exists
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: type,
+        data: data,
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: {
+              labels: {
+                color: '#99a1ad',
+                font: {
+                  family: 'Inter, system-ui, sans-serif'
+                }
+              }
+            }
+          },
+          scales: type !== 'pie' ? {
+            y: {
+              ticks: { color: '#99a1ad' },
+              grid: { color: 'rgba(153, 161, 173, 0.1)' }
+            },
+            x: {
+              ticks: { color: '#99a1ad' },
+              grid: { color: 'rgba(153, 161, 173, 0.1)' }
+            }
+          } : undefined
+        }
+      });
+
+      // Force resize after a short delay to ensure proper sizing
+      setTimeout(() => {
+        if (chartInstance) {
+          chartInstance.resize();
+        }
+      }, 100);
+    };
+
+    // Add window resize listener to force chart resize
+    let resizeTimeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        if (chartInstance) {
+          chartInstance.resize();
+        }
+      }, 150);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup on page navigation/unload
+    const cleanup = () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimeout);
+      if (chartInstance) {
+        chartInstance.destroy();
+        chartInstance = null;
+      }
+    };
+
+    // Listen for page navigation (for SPAs/view transitions)
+    document.addEventListener('astro:before-preparation', cleanup);
+    document.addEventListener('astro:before-swap', cleanup);
+
+    // Fallback for traditional page unload
+    window.addEventListener('beforeunload', cleanup);
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadChart);
+    } else {
+      loadChart();
+    }
+  })();
+</script>

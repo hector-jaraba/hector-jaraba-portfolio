@@ -1,0 +1,39 @@
+---
+// Animated Wave Icon
+---
+
+<svg width="60" height="60" viewBox="0 0 60 60">
+  <path
+    class="wave-path"
+    d="M 10 30 Q 20 20 30 30 T 50 30"
+    stroke="currentColor"
+    stroke-width="1"
+    fill="none"
+  />
+  <path
+    d="M 10 35 Q 20 25 30 35 T 50 35"
+    stroke="currentColor"
+    stroke-width="1"
+    fill="none"
+    opacity="0.5"
+  />
+</svg>
+
+<style>
+  .wave-path {
+    stroke-dasharray: 200;
+    animation: wave-move 3s linear infinite;
+  }
+
+  @keyframes wave-move {
+    to {
+      stroke-dashoffset: -200;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wave-path {
+      animation: none;
+    }
+  }
+</style>

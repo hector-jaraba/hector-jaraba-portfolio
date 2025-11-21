@@ -1,0 +1,40 @@
+{
+  "name": "hector-jaraba-portfolio",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Personal portfolio website for Héctor Jaraba, Senior Frontend Engineer",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/tailwind": "^5.1.3",
+    "@studio-freight/lenis": "^1.0.42",
+    "astro": "^5.14.5",
+    "astro-i18next": "1.0.0-beta.21",
+    "clsx": "^2.1.1",
+    "gsap": "^3.13.0",
+    "i18next": "^25.6.0",
+    "lenis": "^1.3.11",
+    "sharp": "^0.34.5",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.3"
+  },
+  "devDependencies": {
+    "@astrojs/mdx": "^4.3.7",
+    "@astrojs/rss": "^4.0.12",
+    "@types/greensock": "^1.15.32",
+    "@types/node": "^22.10.5",
+    "prettier": "^3.6.2",
+    "prettier-plugin-astro": "^0.14.1",
+    "reading-time": "^1.5.0",
+    "rehype-autolink-headings": "^7.1.0",
+    "rehype-pretty-code": "^0.14.1",
+    "rehype-slug": "^6.0.0",
+    "shiki": "^3.13.0"
+  }
+}

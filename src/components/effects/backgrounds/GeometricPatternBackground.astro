@@ -1,0 +1,210 @@
+<div id="geometric-pattern-bg-container" class="bg-black w-screen h-screen top-0 left-0">
+  <canvas id="geometric-pattern-bg" class="geometric-pattern-canvas"></canvas>
+</div>
+
+<style>
+  .geometric-pattern-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .bg-pattern-geometric {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgNDAwIDEwMCI+CiAgPGRlZnM+CiAgICA8cGF0dGVybiBpZD0iZ2VvbWV0cmljLXBhdHRlcm4iIHg9IjAiIHk9IjAiIHdpZHRoPSI0MDAiIGhlaWdodD0iMTAwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPCEtLSBSb3cgMSAoeSA9IDI1KSAtLT4KICAgICAgPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMyIgZmlsbD0icmdiYSgxOTYsIDE4MSwgMjUzLCAwLjIyKSIgLz4KICAgICAgPHBhdGggZD0iTSA3NSwxNyBMIDgzLDI1IEwgNzUsMzMgTCA2NywyNSBaIgogICAgICAgICAgICBzdHJva2U9InJnYmEoMTk2LCAxODEsIDI1MywgMC4yMikiCiAgICAgICAgICAgIHN0cm9rZS13aWR0aD0iMSIKICAgICAgICAgICAgZmlsbD0ibm9uZSIgLz4KICAgICAgPHBhdGggZD0iTSAxMjUsMTcgTCAxMzEuOTI4LDI5IEwgMTE4LjA3MiwyOSBaIgogICAgICAgICAgICBzdHJva2U9InJnYmEoMTk2LCAxODEsIDI1MywgMC4yMikiCiAgICAgICAgICAgIHN0cm9rZS13aWR0aD0iMSIKICAgICAgICAgICAgZmlsbD0ibm9uZSIgLz4KICAgICAgPHBhdGggZD0iTSAxNzUsMzMgTCAxODEuOTI4LDIxIEwgMTY4LjA3MiwyMSBaIgogICAgICAgICAgICBzdHJva2U9InJnYmEoMTk2LCAxODEsIDI1MywgMC4yMikiCiAgICAgICAgICAgIHN0cm9rZS13aWR0aD0iMSIKICAgICAgICAgICAgZmlsbD0ibm9uZSIgLz4KICAgICAgPHBhdGggZD0iTSAyMTcsMjUgTCAyMjksMTguMDcyIEwgMjI5LDMxLjkyOCBaIgogICAgICAgICAgICBzdHJva2U9InJnYmEoMTk2LCAxODEsIDI1MywgMC4yMikiCiAgICAgICAgICAgIHN0cm9rZS13aWR0aD0iMSIKICAgICAgICAgICAgZmlsbD0ibm9uZSIgLz4KICAgICAgPHBhdGggZD0iTSAyODMsMjUgTCAyNzEsMTguMDcyIEwgMjcxLDMxLjkyOCBaIgogICAgICAgICAgICBzdHJva2U9InJnYmEoMTk2LCAxODEsIDI1MywgMC4yMikiCiAgICAgICAgICAgIHN0cm9rZS13aWR0aD0iMSIKICAgICAgICAgICAgZmlsbD0ibm9uZSIgLz4KICAgICAgPGNpcmNsZSBjeD0iMzI1IiBjeT0iMjUiIHI9IjMiIGZpbGw9InJnYmEoMTk2LCAxODEsIDI1MywgMC4yMikiIC8+CiAgICAgIDxwYXRoIGQ9Ik0gMzc1LDE3IEwgMzgzLDI1IEwgMzc1LDMzIEwgMzY3LDI1IFoiCiAgICAgICAgICAgIHN0cm9rZT0icmdiYSgxOTYsIDE4MSwgMjUzLCAwLjIyKSIKICAgICAgICAgICAgc3Ryb2tlLXdpZHRoPSIxIgogICAgICAgICAgICBmaWxsPSJub25lIiAvPgoKICAgICAgPCEtLSBSb3cgMiAoeSA9IDc1KSAtLT4KICAgICAgPHBhdGggZD0iTSAyNSw2NyBMIDMzLDc1IEwgMjUsODMgTCAxNyw3NSBaIgogICAgICAgICAgICBzdHJva2U9InJnYmEoMTk2LCAxODEsIDI1MywgMC4yMikiCiAgICAgICAgICAgIHN0cm9rZS13aWR0aD0iMSIKICAgICAgICAgICAgZmlsbD0ibm9uZSIgLz4KICAgICAgPHBhdGggZD0iTSA3NSw2NyBMIDgxLjkyOCw3OSBMIDY4LjA3Miw3OSBaIgogICAgICAgICAgICBzdHJva2U9InJnYmEoMTk2LCAxODEsIDI1MywgMC4yMikiCiAgICAgICAgICAgIHN0cm9rZS13aWR0aD0iMSIKICAgICAgICAgICAgZmlsbD0ibm9uZSIgLz4KICAgICAgPHBhdGggZD0iTSAxMjUsODMgTCAxMzEuOTI4LDcxIEwgMTE4LjA3Miw3MSBaIgogICAgICAgICAgICBzdHJva2U9InJnYmEoMTk2LCAxODEsIDI1MywgMC4yMikiCiAgICAgICAgICAgIHN0cm9rZS13aWR0aD0iMSIKICAgICAgICAgICAgZmlsbD0ibm9uZSIgLz4KICAgICAgPHBhdGggZD0iTSAxNjcsNzUgTCAxNzksNjguMDcyIEwgMTc5LDgxLjkyOCBaIgogICAgICAgICAgICBzdHJva2U9InJnYmEoMTk2LCAxODEsIDI1MywgMC4yMikiCiAgICAgICAgICAgIHN0cm9rZS13aWR0aD0iMSIKICAgICAgICAgICAgZmlsbD0ibm9uZSIgLz4KICAgICAgPHBhdGggZD0iTSAyMzMsNzUgTCAyMjEsNjguMDcyIEwgMjIxLDgxLjkyOCBaIgogICAgICAgICAgICBzdHJva2U9InJnYmEoMTk2LCAxODEsIDI1MywgMC4yMikiCiAgICAgICAgICAgIHN0cm9rZS13aWR0aD0iMSIKICAgICAgICAgICAgZmlsbD0ibm9uZSIgLz4KICAgICAgPGNpcmNsZSBjeD0iMjc1IiBjeT0iNzUiIHI9IjMiIGZpbGw9InJnYmEoMTk2LCAxODEsIDI1MywgMC4yMikiIC8+CiAgICAgIDxwYXRoIGQ9Ik0gMzI1LDY3IEwgMzMzLDc1IEwgMzI1LDgzIEwgMzE3LDc1IFoiCiAgICAgICAgICAgIHN0cm9rZT0icmdiYSgxOTYsIDE4MSwgMjUzLCAwLjIyKSIKICAgICAgICAgICAgc3Ryb2tlLXdpZHRoPSIxIgogICAgICAgICAgICBmaWxsPSJub25lIiAvPgogICAgICA8cGF0aCBkPSJNIDM3NSw2NyBMIDM4MS45MjgsNzkgTCAzNjguMDcyLDc5IFoiCiAgICAgICAgICAgIHN0cm9rZT0icmdiYSgxOTYsIDE4MSwgMjUzLCAwLjIyKSIKICAgICAgICAgICAgc3Ryb2tlLXdpZHRoPSIxIgogICAgICAgICAgICBmaWxsPSJub25lIiAvPgogICAgPC9wYXR0ZXJuPgogIDwvZGVmcz4KCiAgPHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9InVybCgjZ2VvbWV0cmljLXBhdHRlcm4pIiAvPgo8L3N2Zz4K');
+    background-repeat: repeat;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+</style>
+
+<script>
+  import { useDevices } from '@/lib/devices';
+  const { isAbleToRunEffects } = useDevices();
+  function initGeometricPattern() {
+    if (!isAbleToRunEffects) return;
+    const canvas = document.getElementById('geometric-pattern-bg') as HTMLCanvasElement;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    interface Shape {
+      x: number;
+      y: number;
+      type:
+        | 'circle'
+        | 'diamond'
+        | 'triangle-up'
+        | 'triangle-down'
+        | 'triangle-left'
+        | 'triangle-right';
+      size: number;
+      hoverIntensity: number;
+      baseOpacity: number;
+    }
+
+    const shapes: Shape[] = [];
+    let mouseX = -1000;
+    let mouseY = -1000;
+    const hoverRadius = 120;
+
+    const resizeCanvas = () => {
+      const parent = canvas.parentElement;
+      if (!parent) return;
+
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = parent.offsetWidth * dpr;
+      canvas.height = parent.offsetHeight * dpr;
+      canvas.style.width = `${parent.offsetWidth}px`;
+      canvas.style.height = `${parent.offsetHeight}px`;
+      ctx.scale(dpr, dpr);
+
+      initShapes();
+    };
+
+    const initShapes = () => {
+      shapes.length = 0;
+
+      const gridSpacing = 50;
+      const cols = Math.ceil(canvas.width / gridSpacing) + 1;
+      const rows = Math.ceil(canvas.height / gridSpacing) + 1;
+
+      const pattern: Shape['type'][] = [
+        'circle',
+        'diamond',
+        'triangle-up',
+        'triangle-down',
+        'triangle-left',
+        'triangle-right',
+        'circle',
+        'diamond',
+      ];
+
+      let patternIndex = 0;
+
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          const type = pattern[patternIndex % pattern.length];
+          patternIndex++;
+
+          shapes.push({
+            x: col * gridSpacing,
+            y: row * gridSpacing,
+            type,
+            size: type === 'circle' ? 3 : 8,
+            hoverIntensity: 0,
+            baseOpacity: 0.15,
+          });
+        }
+      }
+    };
+
+    const updateMouse = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
+    };
+
+    const drawShape = (shape: Shape) => {
+      const { x, y, type, size, hoverIntensity, baseOpacity } = shape;
+      const alpha = hoverIntensity > 0.01 ? baseOpacity + hoverIntensity * 0.6 : baseOpacity;
+
+      // Pale violet color matching the new palette
+      ctx.fillStyle = `rgba(196, 181, 253, ${alpha})`;
+      ctx.strokeStyle = `rgba(196, 181, 253, ${alpha * 0.8})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+
+      switch (type) {
+        case 'circle':
+          ctx.arc(x, y, size, 0, Math.PI * 2);
+          ctx.fill();
+          break;
+
+        case 'diamond':
+          ctx.moveTo(x, y - size);
+          ctx.lineTo(x + size, y);
+          ctx.lineTo(x, y + size);
+          ctx.lineTo(x - size, y);
+          ctx.closePath();
+          hoverIntensity < 0.1 ? ctx.stroke() : ctx.fill();
+          break;
+
+        case 'triangle-up':
+          ctx.moveTo(x, y - size);
+          ctx.lineTo(x + size * 0.866, y + size * 0.5);
+          ctx.lineTo(x - size * 0.866, y + size * 0.5);
+          ctx.closePath();
+          hoverIntensity < 0.1 ? ctx.stroke() : ctx.fill();
+          break;
+
+        case 'triangle-down':
+          ctx.moveTo(x, y + size);
+          ctx.lineTo(x + size * 0.866, y - size * 0.5);
+          ctx.lineTo(x - size * 0.866, y - size * 0.5);
+          ctx.closePath();
+          hoverIntensity < 0.1 ? ctx.stroke() : ctx.fill();
+          break;
+
+        case 'triangle-left':
+          ctx.moveTo(x - size, y);
+          ctx.lineTo(x + size * 0.5, y - size * 0.866);
+          ctx.lineTo(x + size * 0.5, y + size * 0.866);
+          ctx.closePath();
+          hoverIntensity < 0.1 ? ctx.stroke() : ctx.fill();
+          break;
+
+        case 'triangle-right':
+          ctx.moveTo(x + size, y);
+          ctx.lineTo(x - size * 0.5, y - size * 0.866);
+          ctx.lineTo(x - size * 0.5, y + size * 0.866);
+          ctx.closePath();
+          hoverIntensity < 0.1 ? ctx.stroke() : ctx.fill();
+          break;
+      }
+    };
+
+    const updateShapes = () => {
+      shapes.forEach((shape) => {
+        const dx = mouseX - shape.x;
+        const dy = mouseY - shape.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const targetIntensity = Math.max(0, 1 - distance / hoverRadius);
+        shape.hoverIntensity += (targetIntensity - shape.hoverIntensity) * 0.15;
+      });
+    };
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      updateShapes();
+      shapes.forEach(drawShape);
+      requestAnimationFrame(animate);
+    };
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('mousemove', updateMouse);
+    animate();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGeometricPattern);
+  } else {
+    initGeometricPattern();
+  }
+
+  document.addEventListener('astro:page-load', initGeometricPattern);
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !isAbleToRunEffects) {
+    const canvas = document.getElementById('geometric-pattern-bg') as HTMLCanvasElement;
+    const container = document.getElementById('geometric-pattern-bg-container');
+    if (canvas) canvas.style.display = 'none';
+    if (container) container.classList.add('bg-pattern-geometric');
+  }
+</script>

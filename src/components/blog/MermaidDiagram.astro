@@ -1,0 +1,79 @@
+---
+interface Props {
+  diagram: string;
+  title?: string;
+}
+
+const { diagram, title } = Astro.props;
+const diagramId = `mermaid-${Math.random().toString(36).substring(2, 11)}`;
+---
+
+<div class="mermaid-container my-8">
+  {title && <h4 class="text-lg font-semibold text-[var(--text-primary)] mb-4 text-center">{title}</h4>}
+  <div class="bg-[var(--surface)] p-6 rounded-lg overflow-x-auto">
+    <pre id={diagramId} class="mermaid-diagram flex justify-center text-left">
+{diagram.trim()}
+    </pre>
+  </div>
+</div>
+
+<script>
+  // Load Mermaid from CDN
+  if (!window.mermaidLoaded) {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js';
+    script.onload = () => {
+      window.mermaid?.initialize({
+        startOnLoad: true,
+        theme: 'dark',
+        themeVariables: {
+          primaryColor: '#00bfa6',
+          primaryTextColor: '#fff',
+          primaryBorderColor: '#00bfa6',
+          lineColor: '#99a1ad',
+          secondaryColor: '#0f1720',
+          tertiaryColor: '#0b0f12',
+          background: 'transparent',
+          mainBkg: 'transparent',
+          secondBkg: 'transparent',
+          textColor: '#99a1ad',
+          fontSize: '16px'
+        }
+      });
+      window.mermaidLoaded = true;
+
+      // Render all mermaid diagrams
+      window.mermaid?.run({
+        querySelector: '.mermaid-diagram'
+      });
+    };
+    document.head.appendChild(script);
+  } else {
+    // If already loaded, just render
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        window.mermaid?.run({
+          querySelector: '.mermaid-diagram'
+        });
+      });
+    } else {
+      window.mermaid?.run({
+        querySelector: '.mermaid-diagram'
+      });
+    }
+  }
+</script>
+
+<style>
+  .mermaid-diagram :global(svg) {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .mermaid-container pre {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    border: none;
+  }
+</style>
