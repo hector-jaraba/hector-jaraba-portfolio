@@ -1,182 +1,180 @@
-# Héctor Jaraba - Portfolio Website
+# Héctor Jaraba — Portfolio
 
-A modern, high-performance portfolio website built with Astro, featuring smooth animations, dark design, and excellent performance scores.
+Source code for [hectorjaraba.com](https://hectorjaraba.com), the personal portfolio of Héctor Jaraba, Staff Frontend Engineer.
 
-## Features
+The production site is a statically generated, single-page portfolio with scroll-driven storytelling, responsive navigation, an interactive WebGL hero, engineering experience, technical expertise, and contact information. A full MDX blog system is included but is currently disabled in production.
 
-- **Fast & Performant**: Built with Astro for optimal performance (SSG, minimal JS)
-- **Modern Animations**: GSAP timeline animations with `prefers-reduced-motion` support
-- **Dark Theme**: Premium dark/obscure color palette with optional contrast mode
-- **Fully Responsive**: Mobile-first design with breakpoints for all devices
-- **SEO Optimized**: Complete meta tags, Open Graph, Twitter Cards, and JSON-LD structured data
-- **Accessible**: WCAG 2.1 AA compliant with keyboard navigation and screen reader support
-- **Progressive Enhancement**: Core content works without JavaScript
-- **Type-Safe**: Built with TypeScript for reliability and maintainability
-- **Blog System**: Full-featured blog with MDX, syntax highlighting, and rich media components (development only, behind feature flag)
+## Highlights
 
-## Tech Stack
+- Static output with Astro and inlined production CSS
+- Responsive, scroll-driven homepage with GSAP animations
+- Progressive WebGL hero with an optimized image fallback
+- Mobile navigation with focus management, keyboard support, and scroll locking
+- Reduced-motion and lower-capability device fallbacks
+- SEO metadata, Open Graph, Twitter cards, canonical URLs, and Person JSON-LD
+- MDX blog with drafts, scheduled posts, categories, reading time, syntax highlighting, and rich embeds
+- English and Spanish translation catalogs, with locale routing currently disabled
+- Custom 404 page and downloadable CV
 
-- **Framework**: [Astro](https://astro.build) v5.14+
-- **Content**: [MDX](https://mdxjs.com) for rich blog posts
-- **Styling**: [Tailwind CSS](https://tailwindcss.com) v3.4+
-- **Animations**: [GSAP](https://greensock.com/gsap/) v3.12+
-- **Syntax Highlighting**: [Shiki](https://shiki.matsu.io)
-- **Language**: TypeScript v5.7+
-- **Package Manager**: pnpm
+## Technology
 
-## Getting Started
+| Area                 | Implementation                                                    |
+| -------------------- | ----------------------------------------------------------------- |
+| Framework            | Astro 7                                                           |
+| Styling              | Tailwind CSS 4 through `@tailwindcss/vite`, plus scoped Astro CSS |
+| Language             | TypeScript 6 with Astro's strict configuration                    |
+| Motion               | GSAP 3 and ScrollTrigger                                          |
+| Visual effects       | Custom WebGL shaders with progressive image fallback              |
+| Content              | Astro Content Collections and MDX 8                               |
+| Code rendering       | Shiki through `rehype-pretty-code`                                |
+| Images               | Astro Assets and Sharp                                            |
+| Internationalization | Local translation catalogs with optional Astro locale routing     |
+| Package manager      | pnpm 10                                                           |
 
-### Prerequisites
+## Requirements
 
-- Node.js 18+ or 20+
-- pnpm 8+ (install with `npm install -g pnpm`)
+- Node.js `22.12.0` or newer
+- pnpm 10
 
-### Installation
+The repository includes `pnpm-lock.yaml`; use pnpm to keep dependency resolution reproducible.
 
-1. Clone the repository:
-
-```bash
-git clone https://github.com/hector-jaraba/personal-site.git
-cd personal-site
-```
-
-2. Install dependencies:
+## Local development
 
 ```bash
+git clone https://github.com/hector-jaraba/hector-jaraba-portfolio.git
+cd hector-jaraba-portfolio
 pnpm install
+pnpm dev
 ```
 
-3. Start the development server:
+The development server runs at [http://localhost:4321](http://localhost:4321).
 
-```bash
-pnpm run dev
-```
+## Commands
 
-The site will be available at `http://localhost:4321`
+| Command                   | Purpose                                           |
+| ------------------------- | ------------------------------------------------- |
+| `pnpm dev`                | Start the Astro development server                |
+| `pnpm start`              | Alias for the development server                  |
+| `pnpm build`              | Run `astro check` and create the production build |
+| `pnpm preview`            | Serve the generated production build locally      |
+| `pnpm astro -- <command>` | Run an Astro CLI command                          |
 
-### Available Scripts
+## Feature flags
 
-- `pnpm run dev` - Start development server with hot reload
-- `pnpm run build` - Build for production (includes type checking)
-- `pnpm run preview` - Preview production build locally
-- `pnpm run astro` - Run Astro CLI commands
+Feature flags live in [`src/config/features.ts`](./src/config/features.ts).
 
-## Project Structure
+| Flag           | Default | Current behavior                                                                                                              |
+| -------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `BLOG_ENABLED` | `false` | The blog is available automatically in development. Production redirects `/blog` to `/` and does not generate article routes. |
+| `I18N_ENABLED` | `false` | English remains the production route. Spanish translations exist, but Astro locale routing is not generated.                  |
 
-```
-/
-├── public/               # Static assets (favicon, images, fonts)
-│   ├── favicon.svg
-│   ├── images/
-│   └── fonts/
-├── src/
-│   ├── components/       # Reusable Astro components
-│   │   ├── blog/         # Blog-specific components
-│   │   │   ├── Callout.astro
-│   │   │   ├── YouTubeEmbed.astro
-│   │   │   ├── CodePen.astro
-│   │   │   ├── AudioPlayer.astro
-│   │   │   └── ImageComparison.astro
-│   │   ├── Footer.astro
-│   │   ├── Hero.astro
-│   │   ├── Navigation.astro
-│   │   ├── SEOHead.astro
-│   │   └── SmoothScroll.astro
-│   ├── content/          # Content collections
-│   │   ├── config.ts     # Collection schemas
-│   │   ├── projects.json
-│   │   └── blog/         # Blog posts (MDX)
-│   │       ├── building-scalable-react-architectures.mdx
-│   │       ├── optimizing-web-performance.mdx
-│   │       └── typescript-advanced-patterns.mdx
-│   ├── layouts/          # Page layouts
-│   │   ├── BaseLayout.astro
-│   │   └── BlogPostLayout.astro
-│   ├── pages/            # File-based routing
-│   │   ├── index.astro
-│   │   ├── about.astro
-│   │   ├── blog.astro    # Blog listing
-│   │   ├── contact.astro
-│   │   ├── projects.astro
-│   │   ├── blog/
-│   │   │   └── [slug].astro  # Dynamic blog posts
-│   │   └── projects/
-│   │       └── [slug].astro
-│   ├── styles/           # Global styles
-│   │   └── global.css
-│   └── utils/            # Utility functions
-│       └── seo.ts
-├── astro.config.mjs      # Astro configuration
-├── tailwind.config.mjs   # Tailwind configuration
-├── tsconfig.json         # TypeScript configuration
-└── package.json          # Dependencies and scripts
-```
+These are compile-time TypeScript constants. The current implementation does **not** read environment variables for feature flags.
 
-## Customization
+To publish the blog, set `BLOG_ENABLED` to `true` and rebuild. Setting `I18N_ENABLED` to `true` includes Astro's i18n configuration in the build; localized page routing should be completed and verified before publishing it.
 
-### Editing Content
+## Content
 
-#### Blog Posts
+### Portfolio content
 
-**Note: Blog is currently behind a feature flag and only accessible in development mode.**
+- Homepage copy and translated labels: `src/i18n/locales/`
+- Work experience data: `src/content/data/jobs.ts`
+- Project collection data: `src/content/projects.json`
+- CV download: `public/cv-hector.pdf`
+- Images imported through Astro Assets: `src/assets/images/`
 
-To access in development:
+The projects collection is defined and validated, but there are currently no public project routes.
 
-```bash
-pnpm run dev
-# Navigate to http://localhost:4321/blog
-```
+### Blog posts
 
-See [BLOG_FEATURE_FLAG.md](./BLOG_FEATURE_FLAG.md) for instructions on enabling in production.
-
-Create new blog posts in `src/content/blog/` as `.mdx` files. See [BLOG_GUIDE.md](./BLOG_GUIDE.md) for comprehensive documentation.
-
-Quick example:
+Blog posts live in `src/content/blog/` as Markdown or MDX files. The schema is defined in [`src/content.config.ts`](./src/content.config.ts).
 
 ```mdx
 ---
-title: 'My Blog Post'
-description: 'A short description'
-publishDate: 2024-03-15
+title: 'My article'
+description: 'A short summary used in article listings and SEO metadata.'
+publishDate: 2026-09-02
 category: 'frontend'
-tags: ['React', 'TypeScript']
+tags: ['Astro', 'TypeScript']
+featured: false
+draft: true
 ---
 
-Your content here with full Markdown and MDX support...
+Article content goes here.
 ```
 
-Features:
+Supported categories are:
 
-- Automatic table of contents
-- Syntax highlighting for code blocks
-- Rich media components (YouTube, CodePen, audio, etc.)
-- Reading time calculation
-- SEO optimization
-- Category filtering
+- `frontend`
+- `architecture`
+- `performance`
+- `design-systems`
+- `react`
+- `typescript`
+- `tutorial`
+- `opinion`
 
-## Performance
+Development shows drafts and scheduled posts. Production only includes non-draft posts whose `publishDate` has passed.
 
-This site is optimized for Lighthouse scores ≥90 in all categories:
+Available MDX components include callouts, YouTube and CodePen embeds, an audio player, charts, Mermaid diagrams, and image comparisons. See the [Blog System Guide](./docs/BLOG_GUIDE.md) for authoring details.
 
-- **Performance**: Code-splitting, lazy loading, minimal JS
-- **Accessibility**: Semantic HTML, ARIA labels, keyboard navigation
-- **Best Practices**: HTTPS, secure headers, optimized images
-- **SEO**: Meta tags, structured data, sitemap
+## Project structure
 
-### Performance Tips
+```text
+.
+├── public/
+│   ├── fonts/                  # Self-hosted Inter font files
+│   ├── patterns/               # Static visual assets
+│   ├── cv-hector.pdf
+│   ├── favicon.svg
+│   └── social-preview.png
+├── src/
+│   ├── assets/images/          # Images processed by Astro Assets
+│   ├── components/
+│   │   ├── blog/               # MDX and blog UI components
+│   │   ├── effects/            # WebGL, fireflies, circles, and backgrounds
+│   │   ├── layout/             # Navigation, SEO, loading screen, and footers
+│   │   ├── modals/             # About modal
+│   │   ├── sections/           # Homepage sections
+│   │   └── ui/                 # Shared UI components
+│   ├── config/                 # Feature flags and redirect definitions
+│   ├── content/
+│   │   ├── blog/               # MDX articles
+│   │   ├── data/               # Structured portfolio data
+│   │   └── projects.json
+│   ├── i18n/                   # Translation catalogs and helpers
+│   ├── layouts/                # Base and blog post layouts
+│   ├── lib/                    # Animation, SEO, device, and WebGL utilities
+│   ├── pages/                  # Homepage, blog, article, and 404 routes
+│   ├── styles/                 # Global tokens, base styles, and fonts
+│   ├── content.config.ts       # Content Collection schemas
+│   └── middleware.ts           # Configurable redirect middleware
+├── docs/                       # Blog and redirect documentation
+├── astro.config.mjs
+├── tailwind.config.mjs
+├── tsconfig.json
+└── package.json
+```
 
-- Images use modern formats (AVIF/WebP) with fallbacks
-- Critical CSS inlined, non-critical deferred
-- Animations respect `prefers-reduced-motion`
-- Smooth scroll disabled on low-power devices
-- Minimal JavaScript shipped to client
+## Production build
+
+```bash
+pnpm build
+pnpm preview
+```
+
+Astro writes the static site to `dist/`. The build performs type and Astro diagnostics before generating routes and optimized images.
+
+Production CSS is inlined into each page. Vite is configured to separate vendor code and dedicated GSAP or Lenis chunks when those dependencies are imported. The WebGL enhancement is loaded after user intent and only runs on capable desktop devices; the hero image remains visible when WebGL, motion, or hardware requirements are not met.
+
+## Accessibility and motion
+
+The interface includes semantic controls, visible focus styles, keyboard-operable navigation and modal behavior, responsive layouts, and `prefers-reduced-motion` fallbacks. Interactive effects are progressive enhancements: core content and navigation remain available when expensive effects are disabled.
 
 ## Contact
 
-- Email: hello@hector-jaraba.dev
-- GitHub: [@hector-jaraba](https://github.com/hector-jaraba)
-- LinkedIn: [hjaraba](https://linkedin.com/in/hjaraba)
+- Email: [hi@hectorjaraba.com](mailto:hi@hectorjaraba.com)
+- LinkedIn: [linkedin.com/in/hjaraba](https://www.linkedin.com/in/hjaraba)
 
 ---
 
-Built with Astro, Tailwind CSS, GSAP, and Lenis.
+Built with Astro, Tailwind CSS, TypeScript, GSAP, and custom WebGL shaders.
