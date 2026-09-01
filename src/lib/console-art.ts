@@ -75,9 +75,9 @@ export function showConsoleMessage() {
   console.log('\n');
 
   // Call to action
-  console.log('%c💼 Looking for a Senior Frontend Engineer?', styles.title);
+  console.log('%c💼 Looking for a Staff Frontend Engineer?', styles.title);
   console.log(
-    '%cI specialize in React, TypeScript, and building delightful user experiences.',
+    '%cI set frontend technical direction and help teams build scalable product experiences.',
     styles.text
   );
   console.log('\n');
@@ -95,7 +95,7 @@ function setupConsoleCommands() {
     console.clear();
     console.log('%c👨‍💻 Héctor Jaraba', 'color: #00bfa6; font-size: 24px; font-weight: bold;');
     console.log('\n');
-    console.log('%c🎯 Senior Frontend Engineer', 'color: #6bd3ff; font-size: 16px;');
+    console.log('%c🎯 Staff Frontend Engineer', 'color: #6bd3ff; font-size: 16px;');
     console.log('\n');
     console.log(
       '%cI build high-performance, scalable web applications with a focus on:',

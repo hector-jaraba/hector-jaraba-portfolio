@@ -1,27 +1,17 @@
 ---
 import { navLinks } from '@/lib/navigation';
-import {
-  getLangFromUrl,
-  useTranslations,
-  languages,
-  type Locale,
-  getLocalizedPath,
-} from '@/i18n/utils';
-import { isFeatureEnabled } from '@/config/features';
+import { getLangFromUrl, useTranslations } from '@/i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-const i18nEnabled = isFeatureEnabled('I18N_ENABLED');
-
 // Check if we're on a blog page
-const isBlogPage =
-  Astro.url.pathname.startsWith('/blog') || Astro.url.pathname.startsWith('/es/blog');
+const isBlogPage = Astro.url.pathname.startsWith('/blog');
 
 // For blog pages, prepend the homepage path to hash links
 const localizedNavLinks = navLinks.map((link) => ({
   ...link,
   label: t(`nav.${link.label}`),
-  href: isBlogPage ? (lang === 'en' ? `/${link.href}` : `/${lang}${link.href}`) : link.href,
+  href: isBlogPage ? `/${link.href}` : link.href,
 }));
 ---
 
@@ -66,30 +56,8 @@ const localizedNavLinks = navLinks.map((link) => ({
         }
       </div>
 
-      <!-- Clock, Language Switcher and Connect Button -->
+      <!-- Connect Button -->
       <div class="hidden md:flex items-center gap-6">
-        <!-- Language Switcher -->
-        {
-          i18nEnabled && (
-            <div class="flex items-center gap-2">
-              {Object.entries(languages).map(([locale, name]) => (
-                <a
-                  href={getLocalizedPath(
-                    Astro.url.pathname.replace(/^\/(en|es)/, ''),
-                    locale as Locale
-                  )}
-                  class={`text-xs uppercase tracking-wider font-light transition-colors ${
-                    lang === locale ? 'text-primary' : 'text-text-tertiary hover:text-primary'
-                  }`}
-                  aria-label={`Switch to ${name}`}
-                >
-                  {locale}
-                </a>
-              ))}
-            </div>
-          )
-        }
-
         <a
           href="#contact"
           data-nav-link
@@ -144,27 +112,6 @@ const localizedNavLinks = navLinks.map((link) => ({
             {link.label}
           </a>
         ))
-      }
-
-      <!-- Mobile Language Switcher -->
-      {
-        i18nEnabled && (
-          <div class="flex items-center gap-4 py-2">
-            {Object.entries(languages).map(([locale, name]) => (
-              <a
-                href={getLocalizedPath(
-                  Astro.url.pathname.replace(/^\/(en|es)/, ''),
-                  locale as Locale
-                )}
-                class={`text-sm uppercase tracking-wider font-light transition-colors ${
-                  lang === locale ? 'text-primary' : 'text-text-tertiary hover:text-primary'
-                }`}
-              >
-                {name}
-              </a>
-            ))}
-          </div>
-        )
       }
 
       <a
@@ -238,9 +185,7 @@ const localizedNavLinks = navLinks.map((link) => ({
 
   function initNavigation() {
     const nav = document.getElementById('main-nav');
-    const isBlogPage =
-      window.location.pathname.startsWith('/blog') ||
-      window.location.pathname.startsWith('/es/blog');
+    const isBlogPage = window.location.pathname.startsWith('/blog');
 
     // Mobile menu toggle
     const mobileMenuButton = document.getElementById('mobile-menu-button');

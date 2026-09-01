@@ -1,12 +1,12 @@
 {
   "hero": {
-    "label": "Ingeniero Frontend Senior<br/>Valencia, España",
-    "title": "Creando experiencias digitales excepcionales mediante aplicaciones escalables y de alto rendimiento que llevan el desarrollo web al siguiente nivel.",
+    "label": "Staff Frontend Engineer<br/>Valencia, España",
+    "title": "Definiendo la dirección técnica de sistemas frontend que ayudan a los equipos a lanzar experiencias de producto fiables y de alto rendimiento a escala.",
     "name": "Héctor Jaraba",
     "currentCompany": "Actualmente en",
     "companyName": "New Work SE",
-    "paragraph1": "Trabajando remotamente desde Valencia, me especializo en <span class=\"highlight-hero\" data-word=\"React\">React</span> y <span class=\"highlight-hero\" data-word=\"Vue\">Vue</span>, desde la optimización del rendimiento hasta el diseño de sistemas escalables con microfrontends. Más allá del código, me comprometo a formar ingenieros para construir productos escalables.",
-    "paragraph2": "Con <span class=\"highlight-hero\" data-word=\"7+\">7+</span> <span class=\"highlight-hero\" data-word=\"años\">años</span> de experiencia en startups y empresas consolidadas, he impulsado iniciativas que mejoran la experiencia de desarrollo y establecen mejores prácticas en comunidades frontend.",
+    "paragraph1": "Trabajando remotamente desde Valencia, defino la dirección técnica frontend en sistemas de <span class=\"highlight-hero\" data-word=\"React\">React</span> y <span class=\"highlight-hero\" data-word=\"Vue\">Vue</span>, desde la optimización del rendimiento hasta arquitecturas de microfrontends escalables. Colaboro con los equipos para tomar decisiones técnicas duraderas y construir productos que escalen.",
+    "paragraph2": "Con <span class=\"highlight-hero\" data-word=\"10+\">10+</span> <span class=\"highlight-hero\" data-word=\"años\">años</span> de experiencia en startups y empresas consolidadas, mejoro la experiencia de desarrollo, establezco prácticas de ingeniería y ayudo a crecer a otros ingenieros en comunidades frontend.",
     "moreAboutMe": "¿Más sobre mí?",
     "keepScrolling": "o sigue bajando"
   },
@@ -35,29 +35,47 @@
       "age": "A LOS 16 AÑOS",
       "text": "Gané el tercer premio en el Valencia Startup Weekend con una idea para ayudar a personas con discapacidades a comunicarse usando solo un dedo. Ese proyecto caló hondo: fue el momento en que me di cuenta de que la tecnología de verdad podía ayudar a las personas."
     },
-    "paragraph3a": "Ese proyecto marcó el rumbo de todo lo que vino después. Estudié Ingeniería Informática en la UPV, profundizando en algoritmos, arquitectura de sistemas y los fundamentos que hacen que el software realmente funcione. Justo después de graduarme, me lancé a un MBA — me di cuenta de que construir productos que impactan no es solo escribir código limpio, es entender el panorama completo. Desde entonces, he trabajado profesionalmente en startups y empresas consolidadas, y sigo siendo esa misma persona que cree que la tecnología debe ayudar a las personas.",
+    "paragraph3a": "Ese proyecto marcó el rumbo de todo lo que vino después. Estudié Ingeniería Informática en la UPV, profundizando en algoritmos, arquitectura de sistemas y los fundamentos que hacen que el software realmente funcione. Justo después de graduarme, me lancé a un MBA. Me di cuenta de que construir productos que impactan no es solo escribir código limpio, es entender el panorama completo. Desde entonces, he trabajado profesionalmente en startups y empresas consolidadas, y sigo siendo esa misma persona que cree que la tecnología debe ayudar a las personas.",
     "paragraph4": "Y en algún momento del camino, tuve la increíble suerte de casarme con <span class=\"highlight\">el amor de mi vida</span>. Mi compañera de viaje favorita, compañera de buceo, la que testea mis bugs y la persona que hace que cada aventura sea aún mejor.",
-    "closingQuote": "Todo esto —viajes, buceo, café, juegos, perros y una vida de curiosidad— da forma a quién soy como ingeniero y como persona. Me encanta construir cosas, explorar nuevos mundos (digitales o submarinos) y resolver problemas creativamente… preferiblemente con un buen espresso cerca."
+    "closingQuote": "Los viajes, el buceo, el café, los juegos, los perros y una vida de curiosidad dan forma a quién soy como ingeniero y como persona. Me encanta construir cosas, explorar nuevos mundos (digitales o submarinos) y resolver problemas creativamente, preferiblemente con un buen espresso cerca."
   },
   "expertise": {
     "title": "Qué Hago",
     "subtitle": "De la arquitectura a la implementación, convierto retos complejos en soluciones elegantes y escalables. Cada línea de código tiene un propósito: rendimiento, experiencia y personas.",
     "cards": [
       {
-        "title": "Liderazgo Técnico y Mentoría",
-        "description": "Mentoría de Ingenieros / Guía Arquitectural / Colaboración entre Equipos / Liderazgo Comunidad Frontend / Entrevistas Técnicas / Promoción de Buenas Prácticas"
+        "title": "Estrategia Técnica y Arquitectura",
+        "description": "Dirección Técnica / Decisiones de Arquitectura / Límites de Sistemas / Alineación entre Equipos / Plataformas Frontend Sostenibles"
       },
       {
-        "title": "Arquitectura Frontend Moderna",
-        "description": "React & Next.js / TypeScript / Vue 3 Composition API / Sistemas Microfrontend / Design Systems / Estructuras Monorepo / SSR y Rendimiento"
+        "title": "Plataforma Frontend y Experiencia de Desarrollo",
+        "description": "Sistemas Microfrontend / Design Systems / Monorepos / Rendimiento de Build / Fundamentos CI/CD / Flujos de Trabajo con IA"
       },
       {
-        "title": "Experiencia del Desarrollador",
-        "description": "Flujos de Trabajo con IA / Diseño de Pipelines CI/CD / GitHub Actions / Optimización de Build / Estándares de Calidad"
+        "title": "Liderazgo Técnico Entre Equipos",
+        "description": "Mentoría de Ingenieros / Guía Arquitectural / Entrevistas Técnicas / Liderazgo de Comunidad Frontend / Decisiones Claras"
       },
       {
-        "title": "Testing y Calidad",
-        "description": "Test-Driven Development / Estrategias de Testing Automatizado / Testing de Componentes e Integración / Jest, Vitest y Testing Library / Playwright y Cypress / Auditoría de Rendimiento"
+        "title": "Calidad y Fiabilidad a Escala",
+        "description": "Estrategia de Testing / Estándares de Calidad / Testing de Componentes e Integración / Auditoría de Rendimiento / Mentalidad de Observabilidad"
+      }
+    ]
+  },
+  "staffImpact": {
+    "title": "Impacto como Staff Engineer",
+    "subtitle": "Trabajo donde se cruzan los sistemas frontend, la entrega de producto y las prácticas de ingeniería, convirtiendo retos técnicos complejos en una dirección que los equipos pueden ejecutar.",
+    "items": [
+      {
+        "title": "Arquitectura frontend",
+        "description": "Guío arquitecturas frontend escalables y la evolución de microfrontends, priorizando límites claros, mantenibilidad y experiencias de usuario fiables."
+      },
+      {
+        "title": "Experiencia de desarrollo",
+        "description": "Mejoro los flujos de trabajo, las herramientas y las bases de calidad para que los ingenieros dediquen más tiempo a resolver problemas de producto."
+      },
+      {
+        "title": "Capacitación de ingeniería",
+        "description": "Comparto contexto, hago mentoría y fortalezco comunidades frontend para que las buenas decisiones técnicas escalen más allá de un equipo."
       }
     ]
   },
@@ -136,20 +154,26 @@
       {
         "title": "Ingeniero Frontend Senior",
         "company": "NEW WORK SE",
-        "period": "2022 - Actualidad",
-        "description": "Liderando iniciativas frontend con React y TypeScript. Contribución a adopción de desarrollo asistido por IA y mentoría de ingenieros."
+        "period": "2022 - 2026",
+        "description": "Liderazgo de iniciativas frontend con React y TypeScript, contribución a la adopción de desarrollo asistido por IA y mentoría a ingenieros."
+      },
+      {
+        "title": "Staff Engineer",
+        "company": "NEW WORK SE",
+        "period": "2026 - Actualidad",
+        "description": "Definiendo la dirección técnica frontend, liderando iniciativas de plataforma y mejorando la experiencia de desarrollo entre equipos."
       }
     ]
   },
   "contact": {
     "title": "Trabajemos Juntos",
-    "description": "Abierto a posiciones senior frontend y puestos de liderazgo técnico. Charlemos sobre cómo podemos crear experiencias digitales excepcionales.",
+    "description": "Abierto a oportunidades de Staff Frontend Engineer y liderazgo técnico. Hablemos de cómo puedo ayudar a los equipos a crear experiencias de producto escalables y fiables.",
     "copyright": "Todos los derechos reservados.",
     "downloadCV": "Descargar CV",
     "linkedin": "LinkedIn"
   },
   "footer": {
-    "brandDescription": "Ingeniero Frontend Senior especializado en React, TypeScript y desarrollo de aplicaciones web de alto rendimiento.",
+    "brandDescription": "Staff Frontend Engineer centrado en arquitectura frontend, experiencia de desarrollo y sistemas de producto escalables.",
     "quickLinks": "Enlaces Rápidos",
     "about": "Sobre mí",
     "projects": "Proyectos",
@@ -161,8 +185,8 @@
   },
   "seo": {
     "home": {
-      "title": "Héctor Jaraba - Ingeniero Frontend Senior",
-      "description": "Ingeniero Frontend Senior especializado en React, TypeScript y desarrollo de aplicaciones web de alto rendimiento. Echa un vistazo a mi portafolio y contáctame."
+      "title": "Héctor Jaraba - Staff Frontend Engineer",
+      "description": "Staff Frontend Engineer centrado en arquitectura frontend, experiencia de desarrollo y sistemas de producto escalables. Echa un vistazo a mi portafolio y contáctame."
     }
   },
   "common": {

@@ -45,8 +45,15 @@ export const jobs: Job[] = [
   {
     title: 'Senior Frontend Engineer',
     company: 'NEW WORK SE',
-    period: '2022 - Present',
-    description: 'Leading microfrontend migration initiatives and optimizing developer experiences',
+    period: '2022 - 2026',
+    description: 'Led frontend initiatives with React and TypeScript, and mentored engineers',
     side: 'right'
+  },
+  {
+    title: 'Staff Engineer',
+    company: 'NEW WORK SE',
+    period: '2026 - Present',
+    description: 'Setting frontend technical direction, leading platform initiatives, and improving developer experience',
+    side: 'left'
   }
 ];

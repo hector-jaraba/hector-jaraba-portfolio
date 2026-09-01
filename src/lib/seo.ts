@@ -25,7 +25,7 @@ export function generateSEOMeta(props: SEOProps) {
 
   const fullTitle = title.includes('Héctor Jaraba')
     ? title
-    : `${title} | Héctor Jaraba - Senior Frontend Engineer`;
+    : `${title} | Héctor Jaraba - Staff Frontend Engineer`;
 
   return {
     title: fullTitle,
@@ -48,7 +48,7 @@ export function generateStructuredData(type: 'person' | 'portfolio' | 'article',
       '@context': 'https://schema.org',
       '@type': 'Person',
       name: 'Héctor Jaraba',
-      jobTitle: 'Senior Frontend Engineer',
+      jobTitle: 'Staff Engineer',
       url: baseUrl,
       sameAs: [data.github || '', data.linkedin || ''].filter(Boolean),
       knowsAbout: [

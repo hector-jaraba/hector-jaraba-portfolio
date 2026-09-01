@@ -11,7 +11,7 @@ const t = useTranslations(lang);
 <section id="hero" class="hero-section">
   <GlassEffect
     imageSrc="/hector.jpg"
-    imageAlt="Héctor Jaraba - Senior Frontend Engineer"
+    imageAlt="Héctor Jaraba - Staff Frontend Engineer"
     containerClass="absolute top-0 left-0 w-full h-full z-[-1]"
     enableScrollEffects={true}
   />
@@ -139,6 +139,7 @@ const t = useTranslations(lang);
     position: relative;
     width: 100vw;
     height: 300vh;
+    height: 300dvh;
     background: #000;
   }
 
@@ -159,6 +160,7 @@ const t = useTranslations(lang);
     padding: 2rem;
     width: 100%;
     height: 100vh;
+    height: 100dvh;
     position: relative;
     top: 0;
     overflow: visible;
@@ -172,7 +174,9 @@ const t = useTranslations(lang);
   .hero-inner {
     text-align: left;
     height: 100vh;
+    height: 100dvh;
     min-height: 100vh;
+    min-height: 100dvh;
     position: absolute;
     top: 0;
     left: 2rem;
@@ -265,6 +269,7 @@ const t = useTranslations(lang);
       right: 0.5rem;
       height: auto;
       min-height: 100vh;
+      min-height: 100dvh;
       gap: 1.5rem;
     }
 
@@ -307,10 +312,11 @@ const t = useTranslations(lang);
 </style>
 
 <script>
-  import { getGsap } from '@/lib/gsap';
+  import { getGsap, getScrollTrigger } from '@/lib/gsap';
   import { onInit } from '@/lib/dom';
 
   const gsap = getGsap();
+  const ScrollTrigger = getScrollTrigger();
 
   function initHeroAnimation() {
     const hero = document.getElementById('hero');
@@ -346,6 +352,18 @@ const t = useTranslations(lang);
         end: '+=300%',
         scrub: 1,
       },
+    });
+
+    // iOS Safari changes the visible viewport when its browser chrome collapses.
+    // Refresh after that transition so the pinned hero keeps its scroll bounds.
+    let viewportRefreshTimeout: number | undefined;
+    const refreshForViewportChange = () => {
+      window.clearTimeout(viewportRefreshTimeout);
+      viewportRefreshTimeout = window.setTimeout(() => ScrollTrigger.refresh(), 150);
+    };
+
+    window.visualViewport?.addEventListener('resize', refreshForViewportChange, {
+      passive: true,
     });
 
     tl.to(
