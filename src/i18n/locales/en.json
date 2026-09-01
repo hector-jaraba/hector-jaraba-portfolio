@@ -3,7 +3,9 @@
     "home": "Home",
     "about": "About",
     "work": "Work",
-    "contact": "Contact"
+    "contact": "Contact",
+    "menu": "Menu",
+    "close": "Close"
   },
   "hero": {
     "label": "Staff Frontend Engineer<br/>Valencia, Spain",

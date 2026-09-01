@@ -1,4 +1,12 @@
 {
+  "nav": {
+    "home": "Inicio",
+    "about": "Sobre mí",
+    "work": "Trabajo",
+    "contact": "Contacto",
+    "menu": "Menú",
+    "close": "Cerrar"
+  },
   "hero": {
     "label": "Staff Frontend Engineer<br/>Valencia, España",
     "title": "Definiendo la dirección técnica de sistemas frontend que ayudan a los equipos a lanzar experiencias de producto fiables y de alto rendimiento a escala.",
