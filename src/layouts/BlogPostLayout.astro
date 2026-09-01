@@ -22,6 +22,7 @@ const seo = generateSEOMeta({
   description,
   canonical: `https://hectorjaraba.com/blog/${post.slug}`,
   image: image?.src,
+  imageAlt: image?.alt,
   type: 'article',
   author,
   publishedTime: publishDate.toISOString(),

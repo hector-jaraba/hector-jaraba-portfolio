@@ -19,7 +19,7 @@ const t = useTranslations(lang);
     <div id="home" class="hero-inner flex flex-col-reverse justify-end">
       <div class="max-w-4xl">
         <div class="flex flex-col gap-4 mb-5 sm:flex-row sm:gap-10">
-          <p id="hero-label" class="hero-label text-pretty" set:html={t('hero.label')} />
+          <p id="hero-label" class="hero-label" set:html={t('hero.label')} />
           <BlinkingTag
             >{t('hero.currentCompany')}
             <span class="font-semibold ml-1">{t('hero.companyName')}</span></BlinkingTag

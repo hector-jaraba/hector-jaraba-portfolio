@@ -8,6 +8,7 @@ import { FEATURES } from './src/config/features';
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://hectorjaraba.com',
   integrations: [
     tailwind(),
     mdx({

@@ -3,6 +3,7 @@ export interface SEOProps {
   description: string;
   canonical?: string;
   image?: string;
+  imageAlt?: string;
   type?: 'website' | 'article' | 'profile';
   author?: string;
   publishedTime?: string;
@@ -10,12 +11,16 @@ export interface SEOProps {
   tags?: string[];
 }
 
+const SITE_URL = 'https://hectorjaraba.com';
+const DEFAULT_SOCIAL_IMAGE = '/social-preview.png';
+
 export function generateSEOMeta(props: SEOProps) {
   const {
     title,
     description,
-    canonical = 'https://hectorjaraba.com',
-    image = '/og-image.png',
+    canonical = SITE_URL,
+    image = DEFAULT_SOCIAL_IMAGE,
+    imageAlt = 'Héctor Jaraba, Staff Frontend Engineer',
     type = 'website',
     author = 'Héctor Jaraba',
     publishedTime,
@@ -27,11 +32,15 @@ export function generateSEOMeta(props: SEOProps) {
     ? title
     : `${title} | Héctor Jaraba - Staff Frontend Engineer`;
 
+  const canonicalUrl = new URL(canonical, SITE_URL).toString();
+  const imageUrl = new URL(image, SITE_URL).toString();
+
   return {
     title: fullTitle,
     description,
-    canonical,
-    image: image.startsWith('http') ? image : `${canonical}${image}`,
+    canonical: canonicalUrl,
+    image: imageUrl,
+    imageAlt,
     type,
     author,
     publishedTime,
