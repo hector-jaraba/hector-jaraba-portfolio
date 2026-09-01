@@ -49,7 +49,7 @@
       },
       {
         "title": "Plataforma Frontend y Experiencia de Desarrollo",
-        "description": "Sistemas Microfrontend / Design Systems / Monorepos / Rendimiento de Build / Fundamentos CI/CD / Flujos de Trabajo con IA"
+        "description": "Sistemas Microfrontend / Design Systems / Monorepos / Rendimiento de Build / Fundamentos CI/CD / Factorías de Software con IA"
       },
       {
         "title": "Liderazgo Técnico Entre Equipos",
@@ -113,6 +113,7 @@
         "DOCKER",
         "ESLINT",
         "PRETTIER",
+        "CODEX",
         "CLAUDE CODE",
         "MCP SERVERS"
       ]
@@ -161,7 +162,7 @@
         "title": "Staff Engineer",
         "company": "NEW WORK SE",
         "period": "2026 - Actualidad",
-        "description": "Definiendo la dirección técnica frontend, liderando iniciativas de plataforma y mejorando la experiencia de desarrollo entre equipos."
+        "description": "Definiendo la dirección técnica frontend, liderando iniciativas de plataforma e implementando factorías de software con IA."
       }
     ]
   },

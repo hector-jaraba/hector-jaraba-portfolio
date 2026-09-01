@@ -56,7 +56,7 @@
       },
       {
         "title": "Frontend Platform & Developer Experience",
-        "description": "Microfrontend Systems / Design Systems / Monorepos / Build Performance / CI/CD Foundations / AI-Assisted Workflows"
+        "description": "Microfrontend Systems / Design Systems / Monorepos / Build Performance / CI/CD Foundations / AI Software Factories"
       },
       {
         "title": "Cross-Team Technical Leadership",
@@ -120,6 +120,7 @@
         "DOCKER",
         "ESLINT",
         "PRETTIER",
+        "CODEX",
         "CLAUDE CODE",
         "MCP SERVERS"
       ]
@@ -168,7 +169,7 @@
         "title": "Staff Engineer",
         "company": "NEW WORK SE",
         "period": "2026 - Present",
-        "description": "Setting frontend technical direction, leading platform initiatives, and improving developer experience across teams."
+        "description": "Setting frontend technical direction, leading platform initiatives, and implementing AI software factories."
       }
     ]
   },

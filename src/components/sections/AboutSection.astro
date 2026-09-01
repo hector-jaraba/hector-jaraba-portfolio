@@ -12,7 +12,7 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 ---
 
-<section id="about" class="section-full bg-[#130D1E] py-10 pt-20 min-h-screen">
+<section id="about" class="about-section section-full bg-[#130D1E] py-10 pt-20">
   <div class="about-content max-w-4xl mx-auto px-6">
     <button id="close-about-me" class="close-button is-hidden" aria-label="Close about me section">
       <svg
@@ -177,6 +177,11 @@ const t = useTranslations(lang);
 </section>
 
 <style>
+  .about-section {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
   .close-button {
     position: sticky;
     top: 2rem;
@@ -322,15 +327,18 @@ const t = useTranslations(lang);
 
   .marquee-content {
     display: flex;
-    animation: marquee 30s linear infinite;
+    width: max-content;
+    animation: marquee 90s linear infinite;
     will-change: transform;
   }
 
   .marquee-track {
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     white-space: nowrap;
     gap: 3rem;
+    padding-right: 3rem;
   }
 
   .marquee-item {
@@ -349,10 +357,10 @@ const t = useTranslations(lang);
 
   @keyframes marquee {
     0% {
-      transform: translateX(0);
+      transform: translate3d(0, 0, 0);
     }
     100% {
-      transform: translateX(-50%);
+      transform: translate3d(-50%, 0, 0);
     }
   }
 
@@ -546,6 +554,7 @@ const t = useTranslations(lang);
 
     .marquee-track {
       gap: 2rem;
+      padding-right: 2rem;
     }
 
     .marquee-item {

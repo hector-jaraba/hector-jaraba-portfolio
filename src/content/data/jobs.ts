@@ -53,7 +53,7 @@ export const jobs: Job[] = [
     title: 'Staff Engineer',
     company: 'NEW WORK SE',
     period: '2026 - Present',
-    description: 'Setting frontend technical direction, leading platform initiatives, and improving developer experience',
+    description: 'Setting frontend technical direction, leading platform initiatives, and implementing AI software factories',
     side: 'left'
   }
 ];
