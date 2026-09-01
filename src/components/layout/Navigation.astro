@@ -90,12 +90,7 @@ const contactHref = isBlogPage ? '/#contact' : '#contact';
   </div>
 
   <!-- Mobile Menu -->
-  <div
-    id="mobile-menu"
-    class="mobile-menu md:hidden"
-    aria-hidden="true"
-    inert
-  >
+  <div id="mobile-menu" class="mobile-menu md:hidden" aria-hidden="true" inert>
     <div class="mobile-menu__monogram" aria-hidden="true">HJ</div>
     <div class="mobile-menu__content container-custom">
       <div class="mobile-menu__links">
@@ -108,9 +103,13 @@ const contactHref = isBlogPage ? '/#contact' : '#contact';
               class="mobile-nav-link"
               style={`--menu-index: ${index}`}
             >
-              <span class="mobile-nav-link__mark" aria-hidden="true">↬</span>
+              <span class="mobile-nav-link__mark" aria-hidden="true">
+                ↬
+              </span>
               <span class="mobile-nav-link__label">{link.label}</span>
-              <span class="mobile-nav-link__arrow" aria-hidden="true">↗</span>
+              <span class="mobile-nav-link__arrow" aria-hidden="true">
+                ↗
+              </span>
             </a>
           ))
         }
@@ -730,37 +729,114 @@ const contactHref = isBlogPage ? '/#contact' : '#contact';
     }
 
     // Get all nav links for smooth scroll behavior
-    const allNavLinks = document.querySelectorAll('[data-nav-link]');
+    const allNavLinks = document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]');
     // Get desktop nav links only for progress tracking
     const desktopNavLinks = document.querySelectorAll('[data-nav-link]:not(.mobile-nav-link)');
 
-    // Add smooth scroll behavior for hero slides (all nav links)
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const navigationKeys = new Set([
+      'ArrowDown',
+      'ArrowLeft',
+      'ArrowRight',
+      'ArrowUp',
+      'End',
+      'Home',
+      'PageDown',
+      'PageUp',
+      ' ',
+    ]);
+    let cancelActiveScroll: (() => void) | null = null;
+
+    const smoothScrollTo = (target: number) => {
+      cancelActiveScroll?.();
+
+      const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      const destination = Math.min(Math.max(target, 0), maxScroll);
+      const start = window.scrollY;
+      const distance = destination - start;
+
+      if (reducedMotion.matches || Math.abs(distance) < 2) {
+        window.scrollTo({ top: destination, behavior: 'auto' });
+        return;
+      }
+
+      const duration = Math.min(900, Math.max(480, 420 + Math.abs(distance) * 0.08));
+      const startedAt = performance.now();
+      const root = document.documentElement;
+      const previousScrollBehavior = root.style.scrollBehavior;
+      let animationFrame = 0;
+      let finished = false;
+
+      // The site uses CSS smooth scrolling, so disable it while the frame-by-frame
+      // animation is active to avoid stacking two scroll animations.
+      root.style.scrollBehavior = 'auto';
+
+      const cleanup = () => {
+        if (finished) return;
+        finished = true;
+        cancelAnimationFrame(animationFrame);
+        root.style.scrollBehavior = previousScrollBehavior;
+        window.removeEventListener('wheel', interruptScroll);
+        window.removeEventListener('touchstart', interruptScroll);
+        window.removeEventListener('pointerdown', interruptScroll);
+        document.removeEventListener('keydown', interruptWithKeyboard);
+        cancelActiveScroll = null;
+      };
+
+      const interruptScroll = () => cleanup();
+      const interruptWithKeyboard = (event: KeyboardEvent) => {
+        if (navigationKeys.has(event.key)) cleanup();
+      };
+
+      window.addEventListener('wheel', interruptScroll, { passive: true });
+      window.addEventListener('touchstart', interruptScroll, { passive: true });
+      window.addEventListener('pointerdown', interruptScroll, { passive: true });
+      document.addEventListener('keydown', interruptWithKeyboard);
+      cancelActiveScroll = cleanup;
+
+      const animate = (now: number) => {
+        const progress = Math.min((now - startedAt) / duration, 1);
+        const eased =
+          progress < 0.5
+            ? 4 * progress * progress * progress
+            : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+        window.scrollTo(0, start + distance * eased);
+
+        if (progress < 1) {
+          animationFrame = requestAnimationFrame(animate);
+        } else {
+          cleanup();
+        }
+      };
+
+      animationFrame = requestAnimationFrame(animate);
+    };
+
+    // Give every in-page destination the same continuous navigation motion.
     allNavLinks.forEach((link) => {
       link.addEventListener('click', (e) => {
+        if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
         const sectionId = link.getAttribute('data-section');
         const heroSection = document.getElementById('hero');
+        const section = sectionId ? document.getElementById(sectionId) : null;
+        if (!sectionId || !heroSection || !section) return;
 
-        if (!heroSection) return;
-
-        const heroHeight = heroSection.offsetHeight;
+        let targetScroll = section.getBoundingClientRect().top + window.scrollY;
 
         if (sectionId === 'home') {
-          e.preventDefault();
-          window.scrollTo({
-            top: 0,
-            behavior: 'smooth',
-          });
+          targetScroll = 0;
         } else if (sectionId === 'about') {
-          e.preventDefault();
           // Scroll to approximately 50% of hero section to show the about slide
           // The about slide becomes fully visible at around 50% of the hero scroll
-          const targetScroll = heroHeight * 0.5;
-          window.scrollTo({
-            top: targetScroll,
-            behavior: 'smooth',
-          });
+          targetScroll = heroSection.offsetHeight * 0.5;
         }
-        // Other sections will use default anchor behavior
+
+        e.preventDefault();
+        const hash = link.hash || `#${sectionId}`;
+        if (window.location.hash !== hash) history.pushState(null, '', hash);
+        smoothScrollTo(targetScroll);
       });
     });
 
