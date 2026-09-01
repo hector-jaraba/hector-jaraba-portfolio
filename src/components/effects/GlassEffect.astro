@@ -1,5 +1,5 @@
 ---
-import { Image, getImage } from 'astro:assets';
+import { Image } from 'astro:assets';
 import hectorGlassImage from '@/assets/images/hector-glass.png';
 interface Props {
   imageSrc: string;
@@ -15,13 +15,6 @@ const {
   enableScrollEffects = false,
 } = Astro.props;
 const instanceId = `glass-${Math.random().toString(36).substring(2, 11)}`;
-const optimizedTexture = await getImage({
-  src: hectorGlassImage,
-  width: 1600,
-  format: 'avif',
-  quality: 60,
-});
-const textureSrc = imageSrc === '/hector.jpg' ? optimizedTexture.src : imageSrc;
 ---
 
 <div
@@ -29,12 +22,13 @@ const textureSrc = imageSrc === '/hector.jpg' ? optimizedTexture.src : imageSrc;
   id="glass-effect"
   data-glass-id={instanceId}
   data-enable-scroll={enableScrollEffects}
-  data-image-src={textureSrc}
+  data-image-source={imageSrc}
 >
   <div class="absolute inset-0 z-[1] will-change-transform pointer-events-none">
     <Image
       class="absolute inset-0 w-full h-full object-cover object-center opacity-50"
       src={hectorGlassImage}
+      data-glass-image
       alt={imageAlt}
       loading="eager"
       fetchpriority="high"
@@ -64,10 +58,26 @@ const textureSrc = imageSrc === '/hector.jpg' ? optimizedTexture.src : imageSrc;
   import { useDevices } from '@/lib/devices';
   import { onInit } from '@/lib/dom';
 
+  function supportsAcceleratedWebGL() {
+    const testCanvas = document.createElement('canvas');
+    const gl = testCanvas.getContext('webgl');
+    if (!gl) return false;
+
+    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+    const renderer = debugInfo
+      ? String(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)).toLowerCase()
+      : '';
+    gl.getExtension('WEBGL_lose_context')?.loseContext();
+
+    // Software rasterizers turn this full-viewport effect into a long task.
+    // The eager image below is intentionally the complete visual fallback.
+    return !/(swiftshader|software|llvmpipe|mesa offscreen)/.test(renderer);
+  }
+
   async function initGlassEffects() {
     const containers = document.querySelectorAll('[data-glass-id]');
     const { isAbleToRunEffects } = useDevices();
-    if (!isAbleToRunEffects || !containers.length) return;
+    if (!isAbleToRunEffects || !containers.length || !supportsAcceleratedWebGL()) return;
 
     const [{ GlassEffect }, { getScrollTrigger }] = await Promise.all([
       import('@/lib/webgl/glass-effect'),
@@ -79,23 +89,26 @@ const textureSrc = imageSrc === '/hector.jpg' ? optimizedTexture.src : imageSrc;
       if ((container as HTMLElement).dataset.initialized === 'true') continue;
 
       const canvas = container.querySelector('[data-glass-canvas]') as HTMLCanvasElement;
-      const imageSrc = container.getAttribute('data-image-src');
+      const image = container.querySelector('[data-glass-image]') as HTMLImageElement;
       const enableScroll = container.getAttribute('data-enable-scroll') === 'true';
 
-      if (!canvas || !imageSrc) continue;
+      if (!canvas || !image) continue;
       (container as HTMLElement).dataset.initialized = 'true';
 
       try {
-        // Create and load image programmatically
-        const img = new Image();
-        img.crossOrigin = 'anonymous'; // Important for WebGL CORS
-        img.src = imageSrc;
+        // Reuse the hero image already decoded for the visible fallback.
+        // This avoids an additional 1600px texture request and a blocking decode.
+        if (!image.complete || !image.naturalWidth) {
+          await new Promise<void>((resolve, reject) => {
+            image.addEventListener('load', () => resolve(), { once: true });
+            image.addEventListener('error', () => reject(new Error('Failed to load glass texture')), {
+              once: true,
+            });
+          });
+        }
 
-        // Wait for image to load
-        await img.decode();
-
-        // Create WebGL effect with loaded image
-        const effect = new GlassEffect(canvas, img);
+        // Create WebGL effect with the decoded fallback image.
+        const effect = new GlassEffect(canvas, image);
 
         // Add scroll-triggered zoom if enabled
         if (enableScroll) {
@@ -129,6 +142,27 @@ const textureSrc = imageSrc === '/hector.jpg' ? optimizedTexture.src : imageSrc;
     }
   }
 
-  // Simplified initialization with onInit utility
-  onInit(initGlassEffects);
+  function scheduleGlassEffects() {
+    let started = false;
+
+    const start = () => {
+      if (started) return;
+      started = true;
+      window.removeEventListener('pointermove', start);
+      window.removeEventListener('pointerdown', start);
+      window.removeEventListener('keydown', start);
+      window.removeEventListener('scroll', start);
+      void initGlassEffects();
+    };
+
+    // Keep the eager, visually identical image as the first paint. WebGL only
+    // adds interaction-driven distortion, so it can wait for visitor intent.
+    window.addEventListener('pointermove', start, { once: true, passive: true });
+    window.addEventListener('pointerdown', start, { once: true, passive: true });
+    window.addEventListener('keydown', start, { once: true });
+    window.addEventListener('scroll', start, { once: true, passive: true });
+  }
+
+  // WebGL enhances the already-visible image, so keep it off the critical render path.
+  onInit(scheduleGlassEffects);
 </script>

@@ -48,9 +48,6 @@ const buttonClasses = [
       target={target}
       download={download}
     >
-      <div class="shine-button__border-mask">
-        <div class="shine-button__border-glow" />
-      </div>
       <span class="shine-button__content">
         {text}
         <slot />
@@ -68,9 +65,6 @@ const buttonClasses = [
       disabled={disabled}
       aria-label={ariaLabel}
     >
-      <div class="shine-button__border-mask">
-        <div class="shine-button__border-glow" />
-      </div>
       <span class="shine-button__content">
         {text}
         <slot />
@@ -81,6 +75,12 @@ const buttonClasses = [
 
 <style>
   @reference '../../../styles/global.css';
+
+  @property --shine-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
 
   .shine-button {
     position: relative;
@@ -94,9 +94,45 @@ const buttonClasses = [
     text-decoration: none;
     cursor: pointer;
     overflow: hidden;
+    isolation: isolate;
+    background: var(--shine-button-surface);
     transition:
       background-color var(--duration-normal) var(--ease-in-out),
       transform var(--duration-fast) var(--ease-out);
+  }
+
+  .shine-button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    padding: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    background: conic-gradient(
+      from var(--shine-angle, 0deg),
+      transparent 0deg,
+      var(--shine-button-glow-start) 18deg,
+      var(--shine-button-border) 36deg,
+      var(--shine-button-glow-end) 54deg,
+      transparent 72deg
+    );
+    animation: rotate-shine 3s linear infinite;
+    animation-play-state: var(--shine-play-state, running);
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+  }
+
+  @keyframes rotate-shine {
+    to {
+      --shine-angle: 360deg;
+    }
   }
 
   /* Sizes */
@@ -123,30 +159,39 @@ const buttonClasses = [
   }
 
   .shine-button--primary {
-    background: rgb(var(--accent-purple-rgb) / 0.1);
+    --shine-button-surface: rgb(var(--accent-purple-rgb) / 0.1);
+    --shine-button-border: var(--primary);
+    --shine-button-glow-start: var(--primary-bright);
+    --shine-button-glow-end: var(--accent-purple);
     color: var(--primary);
   }
 
   .shine-button--primary:hover {
-    background: rgb(var(--accent-purple-rgb) / 0.2);
+    --shine-button-surface: rgb(var(--accent-purple-rgb) / 0.2);
   }
 
   .shine-button--accent {
-    background: rgb(var(--accent-blue-rgb) / 0.1);
+    --shine-button-surface: rgb(var(--accent-blue-rgb) / 0.1);
+    --shine-button-border: var(--accent-blue);
+    --shine-button-glow-start: var(--accent-lavender);
+    --shine-button-glow-end: var(--accent-purple);
     color: var(--accent-blue);
   }
 
   .shine-button--accent:hover {
-    background: rgb(var(--accent-blue-rgb) / 0.2);
+    --shine-button-surface: rgb(var(--accent-blue-rgb) / 0.2);
   }
 
   .shine-button--ghost {
-    background: rgba(255, 255, 255, 0.03);
+    --shine-button-surface: rgba(255, 255, 255, 0.03);
+    --shine-button-border: var(--text-primary);
+    --shine-button-glow-start: rgba(255, 255, 255, 0.7);
+    --shine-button-glow-end: rgba(255, 255, 255, 0.25);
     color: var(--text-primary);
   }
 
   .shine-button--ghost:hover {
-    background: rgba(255, 255, 255, 0.06);
+    --shine-button-surface: rgba(255, 255, 255, 0.06);
   }
 
   .shine-button:hover {
@@ -177,107 +222,18 @@ const buttonClasses = [
     gap: 0.5rem;
   }
 
-  .shine-button__border-mask {
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    pointer-events: none;
-
-    mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    mask-composite: exclude;
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-  }
-
-  .shine-button__border-glow {
-    position: absolute;
-    inset: -250px;
-    background: conic-gradient(
-      from 0deg,
-      transparent 0%,
-      var(--primary-bright) 5%,
-      var(--primary) 10%,
-      var(--accent-purple) 15%,
-      transparent 20%,
-      transparent 100%
-    );
-    animation: rotate-shine 3s linear infinite;
-  }
-
-  .shine-button--primary .shine-button__border-glow {
-    background: conic-gradient(
-      from 0deg,
-      transparent 0%,
-      var(--primary-bright) 5%,
-      var(--primary) 10%,
-      var(--accent-purple) 15%,
-      transparent 20%,
-      transparent 100%
-    );
-  }
-
-  .shine-button--accent .shine-button__border-glow {
-    background: conic-gradient(
-      from 0deg,
-      transparent 0%,
-      var(--accent-lavender) 5%,
-      var(--accent-blue) 10%,
-      var(--accent-purple) 15%,
-      transparent 20%,
-      transparent 100%
-    );
-  }
-
-  .shine-button--ghost .shine-button__border-glow {
-    background: conic-gradient(
-      from 0deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.5) 5%,
-      rgba(255, 255, 255, 0.3) 10%,
-      rgba(255, 255, 255, 0.1) 15%,
-      transparent 20%,
-      transparent 100%
-    );
-  }
-
-  @keyframes rotate-shine {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-
-  .shine-button:hover .shine-button__border-glow {
-    animation-play-state: paused;
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .shine-button {
       transition: none;
     }
 
+    .shine-button::before {
+      animation: none;
+      --shine-angle: 45deg;
+    }
+
     .shine-button:hover {
       transform: none;
-    }
-
-    .shine-button__border-glow {
-      animation: none;
-      background: linear-gradient(90deg, transparent, var(--primary) 50%, transparent);
-    }
-
-    .shine-button--accent .shine-button__border-glow {
-      background: linear-gradient(90deg, transparent, var(--accent-blue) 50%, transparent);
-    }
-
-    .shine-button--ghost .shine-button__border-glow {
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3) 50%, transparent);
     }
   }
 </style>

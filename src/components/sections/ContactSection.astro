@@ -283,9 +283,12 @@ const circles = [
     animation: moonPulse 6s ease-in-out infinite;
   }
 
-  .section-full.animations-managed:not(.is-animation-active) .moon-shadow,
-  .section-full.animations-managed:not(.is-animation-active) :global(.shine-button__border-glow) {
+  .section-full.animations-managed:not(.is-animation-active) .moon-shadow {
     animation-play-state: paused;
+  }
+
+  .section-full.animations-managed:not(.is-animation-active) :global(.shine-button) {
+    --shine-play-state: paused;
   }
 
   @keyframes moonPulse {
