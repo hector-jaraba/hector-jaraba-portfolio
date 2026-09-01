@@ -3,7 +3,7 @@ import BaseLayout from './BaseLayout.astro';
 import BlogFooter from '@/components/layout/BlogFooter.astro';
 import { formatDate, getReadingTime } from '@/lib/blog';
 import { generateSEOMeta, generateStructuredData } from '@/lib/seo';
-import type { CollectionEntry } from 'astro:content';
+import { render, type CollectionEntry } from 'astro:content';
 
 interface Props {
   post: CollectionEntry<'blog'>;
@@ -11,16 +11,16 @@ interface Props {
 
 const { post } = Astro.props;
 const { title, description, publishDate, updatedDate, author, image, tags, category } = post.data;
-const readingTime = getReadingTime(post.body);
+const readingTime = getReadingTime(post.body ?? '');
 
 // Extract headings for table of contents
-const headings = (await post.render()).headings.filter((h) => h.depth === 2 || h.depth === 3);
+const headings = (await render(post)).headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
 
 // Generate SEO metadata
 const seo = generateSEOMeta({
   title,
   description,
-  canonical: `https://hectorjaraba.com/blog/${post.slug}`,
+  canonical: `https://hectorjaraba.com/blog/${post.id}`,
   image: image?.src,
   imageAlt: image?.alt,
   type: 'article',

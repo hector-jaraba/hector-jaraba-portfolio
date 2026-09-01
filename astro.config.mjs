@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
-import tailwind from '@astrojs/tailwind';
+import { unified } from '@astrojs/markdown-remark';
+import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
@@ -10,8 +11,10 @@ import { FEATURES } from './src/config/features';
 export default defineConfig({
   site: 'https://hectorjaraba.com',
   integrations: [
-    tailwind(),
-    mdx({
+    mdx(),
+  ],
+  markdown: {
+    processor: unified({
       syntaxHighlight: false,
       rehypePlugins: [
         [
@@ -33,7 +36,7 @@ export default defineConfig({
         ],
       ],
     }),
-  ],
+  },
   output: 'static',
   // Conditionally enable i18n based on feature flag
   ...(FEATURES.I18N_ENABLED && {
@@ -50,6 +53,7 @@ export default defineConfig({
     assets: '_astro',
   },
   vite: {
+    plugins: [tailwindcss()],
     build: {
       cssCodeSplit: false,
       minify: 'esbuild',

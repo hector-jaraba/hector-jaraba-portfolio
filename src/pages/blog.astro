@@ -84,7 +84,7 @@ const seo = generateSEOMeta({
       <section class="blog-list space-y-1">
         {
           sortedPosts.map((post, index) => {
-            const readingTime = getReadingTime(post.body);
+            const readingTime = getReadingTime(post.body ?? '');
             return (
               <article
                 class="blog-item group"
@@ -93,7 +93,7 @@ const seo = generateSEOMeta({
                 style={`--card-index: ${index}`}
               >
                 <a
-                  href={`/blog/${post.slug}`}
+                  href={`/blog/${post.id}`}
                   class="blog-item-link block py-6 px-4 -mx-4 mb-3 rounded-lg hover:bg-[var(--surface)] transition-all duration-300"
                 >
                   <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
