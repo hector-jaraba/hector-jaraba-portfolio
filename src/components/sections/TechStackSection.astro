@@ -153,6 +153,10 @@ const circles = [
     animation: marquee 60s linear infinite;
   }
 
+  .section-full.animations-managed:not(.is-animation-active) .marquee-content {
+    animation-play-state: paused;
+  }
+
   .marquee-reverse .marquee-content {
     animation: marquee-reverse 60s linear infinite;
   }
@@ -224,6 +228,10 @@ const circles = [
 <script>
   // Scroll Reveal Animation for Tech Stack Section
   function initScrollReveal() {
+    const section = document.getElementById('stack');
+    if (!section || section.dataset.initialized === 'true') return;
+    section.dataset.initialized = 'true';
+
     const revealElements = document.querySelectorAll('#stack .scroll-reveal');
 
     const observer = new IntersectionObserver(
@@ -241,6 +249,13 @@ const circles = [
     );
 
     revealElements.forEach((el) => observer.observe(el));
+
+    section.classList.add('animations-managed');
+    const animationObserver = new IntersectionObserver(
+      ([entry]) => section.classList.toggle('is-animation-active', entry.isIntersecting),
+      { rootMargin: '200px 0px' }
+    );
+    animationObserver.observe(section);
   }
 
   // Initialize on load

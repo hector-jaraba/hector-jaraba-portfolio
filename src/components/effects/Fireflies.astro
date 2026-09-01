@@ -79,8 +79,8 @@ const { count = 20, className = '' } = Astro.props;
         { r: 196, g: 181, b: 253 }, // --primary: #c4b5fd
         { r: 167, g: 139, b: 250 }, // --primary-dim: #a78bfa
         { r: 221, g: 214, b: 254 }, // --primary-bright: #ddd6fe
-        { r: 139, g: 92, b: 246 },  // --accent-purple: #8b5cf6
-        { r: 99, g: 102, b: 241 },  // --accent-blue: #6366f1
+        { r: 139, g: 92, b: 246 }, // --accent-purple: #8b5cf6
+        { r: 99, g: 102, b: 241 }, // --accent-blue: #6366f1
         { r: 224, g: 231, b: 255 }, // --accent-lavender: #e0e7ff
       ];
 
@@ -152,7 +152,7 @@ const { count = 20, className = '' } = Astro.props;
           // Convert arrow tip position to canvas coordinates
           this.arrowTipPosition = {
             x: arrowCenterX - canvasRect.left,
-            y: arrowBottom - canvasRect.top
+            y: arrowBottom - canvasRect.top,
           };
 
           // Spawn fireflies from arrow tip
@@ -178,7 +178,7 @@ const { count = 20, className = '' } = Astro.props;
       const spawnCount = 6; // Reduced from 15 to 6 for subtlety
 
       for (let i = 0; i < spawnCount; i++) {
-        const angle = (Math.random() * Math.PI * 2);
+        const angle = Math.random() * Math.PI * 2;
         const velocity = Math.random() * 0.8 + 0.3; // Slower, more gentle velocity
         const color = this.colors[Math.floor(Math.random() * this.colors.length)];
 
@@ -192,14 +192,14 @@ const { count = 20, className = '' } = Astro.props;
           glowIntensity: Math.random() * 8 + 8, // Reduced glow
           color: color,
           timeline: gsap.timeline({ repeat: -1 }),
-          spawnedFromArrow: true
+          spawnedFromArrow: true,
         };
 
         // Animate spawn with gentle fade-in
         gsap.to(firefly, {
           opacity: Math.random() * 0.3 + 0.2, // More subtle opacity
           duration: 1.5, // Longer, smoother fade-in
-          ease: 'power1.out'
+          ease: 'power1.out',
         });
 
         // Create gentle pulsing glow animation
@@ -213,13 +213,13 @@ const { count = 20, className = '' } = Astro.props;
               opacity: Math.random() * 0.4 + 0.25,
               duration: duration / 2,
               ease: 'sine.inOut',
-              delay: delay
+              delay: delay,
             })
             .to(firefly, {
               glowIntensity: Math.random() * 6 + 4,
               opacity: Math.random() * 0.2 + 0.15,
               duration: duration / 2,
-              ease: 'sine.inOut'
+              ease: 'sine.inOut',
             });
         }
 
@@ -249,7 +249,7 @@ const { count = 20, className = '' } = Astro.props;
           opacity: Math.random() * 0.25 + 0.15, // More subtle opacity
           glowIntensity: Math.random() * 8 + 6, // Reduced glow intensity
           color: color,
-          timeline: gsap.timeline({ repeat: -1 })
+          timeline: gsap.timeline({ repeat: -1 }),
         };
 
         // Create gentle pulsing glow animation with GSAP
@@ -263,13 +263,13 @@ const { count = 20, className = '' } = Astro.props;
               opacity: Math.random() * 0.35 + 0.25,
               duration: duration / 2,
               ease: 'sine.inOut',
-              delay: delay
+              delay: delay,
             })
             .to(firefly, {
               glowIntensity: Math.random() * 6 + 4,
               opacity: Math.random() * 0.2 + 0.1,
               duration: duration / 2,
-              ease: 'sine.inOut'
+              ease: 'sine.inOut',
             });
         }
 
@@ -282,7 +282,7 @@ const { count = 20, className = '' } = Astro.props;
       this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
       // Update and draw each firefly
-      this.fireflies.forEach(firefly => {
+      this.fireflies.forEach((firefly) => {
         // Update position (slower movement for reduced motion)
         const speed = this.isReducedMotion ? 0.1 : 0.8; // Even slower, smoother movement
         firefly.x += firefly.vx * speed;
@@ -349,19 +349,19 @@ const { count = 20, className = '' } = Astro.props;
         cancelAnimationFrame(this.animationId);
         this.animationId = null;
       }
-      this.fireflies.forEach(f => f.timeline.pause());
+      this.fireflies.forEach((f) => f.timeline.pause());
     }
 
     public resume() {
       if (this.animationId === null && !document.hidden && this.isInViewport) {
         this.animate();
       }
-      this.fireflies.forEach(f => f.timeline.resume());
+      this.fireflies.forEach((f) => f.timeline.resume());
     }
 
     public destroy() {
       this.pause();
-      this.fireflies.forEach(f => f.timeline.kill());
+      this.fireflies.forEach((f) => f.timeline.kill());
       this.fireflies = [];
       window.removeEventListener('resize', this.handleResize);
       document.removeEventListener('visibilitychange', this.handleVisibilityChange);
@@ -377,16 +377,24 @@ const { count = 20, className = '' } = Astro.props;
   function initFireflies() {
     const canvas = document.getElementById('fireflies-canvas') as HTMLCanvasElement;
     if (!canvas) return;
-    if ((canvas as any).__firefliesEffect) return;
+    if ((canvas as any).__firefliesEffect || (canvas as any).__firefliesInitObserver) return;
 
     const container = canvas.closest('[data-fireflies-count]') as HTMLElement;
     const count = parseInt(container?.dataset.firefliesCount || '20', 10);
+    if (!container) return;
 
-    // Store instance for cleanup
-    const effect = new FirefliesEffect(canvas, count);
-
-    // Store on element for potential cleanup
-    (canvas as any).__firefliesEffect = effect;
+    // Defer canvas allocation and GSAP timelines until the contact section is nearby.
+    const initObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || (canvas as any).__firefliesEffect) return;
+        (canvas as any).__firefliesEffect = new FirefliesEffect(canvas, count);
+        initObserver.disconnect();
+        (canvas as any).__firefliesInitObserver = null;
+      },
+      { rootMargin: '600px 0px' }
+    );
+    (canvas as any).__firefliesInitObserver = initObserver;
+    initObserver.observe(container);
   }
 
   // Initialize on load
@@ -403,6 +411,8 @@ const { count = 20, className = '' } = Astro.props;
   document.addEventListener('astro:before-preparation', () => {
     const canvas = document.getElementById('fireflies-canvas') as HTMLCanvasElement;
     const effect = (canvas as any)?.__firefliesEffect;
+    const initObserver = (canvas as any)?.__firefliesInitObserver as IntersectionObserver | null;
+    initObserver?.disconnect();
     if (effect) {
       effect.destroy();
     }

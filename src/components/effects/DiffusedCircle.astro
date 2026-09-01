@@ -134,6 +134,10 @@ const {
     animation-play-state: paused;
   }
 
+  .diffused-circle.animate.is-offscreen {
+    animation-play-state: paused;
+  }
+
   .diffused-circle::before {
     content: '';
     position: absolute;
@@ -165,9 +169,9 @@ const {
 </style>
 
 <script>
-  // Pause animations during resize for better performance
   let resizeTimeout: number;
   let lastViewportWidth = window.innerWidth;
+  let visibilityObserver: IntersectionObserver | null = null;
 
   function handleResize() {
     const viewportWidth = window.innerWidth;
@@ -186,8 +190,40 @@ const {
   // Use passive listener for better performance
   window.addEventListener('resize', handleResize, { passive: true });
 
+  function initVisibilityObserver() {
+    const wrappers = document.querySelectorAll<HTMLElement>('[data-diffused-circle]');
+    if (!wrappers.length) return;
+
+    visibilityObserver ??= new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const circle = entry.target.querySelector('.diffused-circle.animate');
+          circle?.classList.toggle('is-offscreen', !entry.isIntersecting);
+        });
+      },
+      { rootMargin: '200px 0px' }
+    );
+
+    wrappers.forEach((wrapper) => {
+      if (wrapper.dataset.visibilityObserved === 'true') return;
+      wrapper.dataset.visibilityObserved = 'true';
+      wrapper.querySelector('.diffused-circle.animate')?.classList.add('is-offscreen');
+      visibilityObserver?.observe(wrapper);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initVisibilityObserver, { once: true });
+  } else {
+    initVisibilityObserver();
+  }
+
+  document.addEventListener('astro:page-load', initVisibilityObserver);
+
   // Cleanup on page transition
   document.addEventListener('astro:before-preparation', () => {
     window.removeEventListener('resize', handleResize);
+    visibilityObserver?.disconnect();
+    visibilityObserver = null;
   });
 </script>

@@ -55,7 +55,15 @@ const t = useTranslations(lang);
             >
           </text>
         </svg>
-        <Image src={meImage} alt="Héctor Jaraba" class="profile-image shadow-lg" />
+        <Image
+          src={meImage}
+          alt="Héctor Jaraba"
+          class="profile-image shadow-lg"
+          loading="lazy"
+          decoding="async"
+          widths={[300, 500]}
+          sizes="(max-width: 768px) 300px, 500px"
+        />
       </div>
       <h2 class="about-title text-primary">{t('aboutModal.title')}</h2>
     </div>
@@ -115,6 +123,10 @@ const t = useTranslations(lang);
       src={divingImage}
       alt="Héctor diving in Bali"
       class="story-image my-8 rounded-lg shadow-lg"
+      loading="lazy"
+      decoding="async"
+      widths={[320, 640, 800]}
+      sizes="(max-width: 768px) calc(100vw - 3rem), 800px"
     />
 
     <!-- Story paragraphs with improved styling -->
@@ -123,7 +135,15 @@ const t = useTranslations(lang);
       <p class="story-paragraph text-balance" set:html={t('aboutModal.paragraph2')} />
     </div>
 
-    <Image src={dogsImage} alt="Héctor's dogs" class="story-image my-8 rounded-lg shadow-lg" />
+    <Image
+      src={dogsImage}
+      alt="Héctor's dogs"
+      class="story-image my-8 rounded-lg shadow-lg"
+      loading="lazy"
+      decoding="async"
+      widths={[320, 640, 800]}
+      sizes="(max-width: 768px) calc(100vw - 3rem), 800px"
+    />
 
     <div class="story-section">
       <p class="story-paragraph text-balance" set:html={t('aboutModal.paragraph3')} />
@@ -147,6 +167,10 @@ const t = useTranslations(lang);
       src={startupImage}
       alt="Valencia Startup Weekend"
       class="story-image my-8 rounded-lg shadow-lg"
+      loading="lazy"
+      decoding="async"
+      widths={[320, 640, 800]}
+      sizes="(max-width: 768px) calc(100vw - 3rem), 800px"
     />
 
     <div class="story-section">
@@ -156,6 +180,10 @@ const t = useTranslations(lang);
         src={cathyhectorImage}
         alt="Héctor and Cath"
         class="story-image rounded-lg shadow-lg"
+        loading="lazy"
+        decoding="async"
+        widths={[320, 640, 800]}
+        sizes="(max-width: 768px) calc(100vw - 3rem), 800px"
       />
 
       <div class="closing-section">
@@ -170,6 +198,10 @@ const t = useTranslations(lang);
           src={hectorImage}
           alt="Héctor Jaraba"
           class="story-image final-image rounded-lg shadow-lg"
+          loading="lazy"
+          decoding="async"
+          widths={[320, 500]}
+          sizes="(max-width: 768px) calc(100vw - 3rem), 500px"
         />
       </div>
     </div>
@@ -329,7 +361,6 @@ const t = useTranslations(lang);
     display: flex;
     width: max-content;
     animation: marquee 90s linear infinite;
-    will-change: transform;
   }
 
   .marquee-track {

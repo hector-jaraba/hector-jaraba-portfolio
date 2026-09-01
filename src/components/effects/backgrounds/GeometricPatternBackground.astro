@@ -30,6 +30,8 @@
     if (!isAbleToRunEffects) return;
     const canvas = document.getElementById('geometric-pattern-bg') as HTMLCanvasElement;
     if (!canvas) return;
+    if (canvas.dataset.initialized === 'true') return;
+    canvas.dataset.initialized = 'true';
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;

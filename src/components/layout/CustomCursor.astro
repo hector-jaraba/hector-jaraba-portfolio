@@ -70,6 +70,8 @@
     const follower = document.getElementById('cursor-follower');
 
     if (!cursor || !follower) return;
+    if (cursor.dataset.initialized === 'true') return;
+    cursor.dataset.initialized = 'true';
 
     let mouseX = 0;
     let mouseY = 0;

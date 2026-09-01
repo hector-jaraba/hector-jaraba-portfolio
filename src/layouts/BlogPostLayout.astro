@@ -143,7 +143,13 @@ const structuredData = generateStructuredData('article', {
         {
           image && (
             <div class="rounded-2xl overflow-hidden mb-8">
-              <img src={image.src} alt={image.alt} class="w-full h-auto object-cover" />
+              <img
+                src={image.src}
+                alt={image.alt}
+                class="w-full h-auto object-cover"
+                decoding="async"
+                fetchpriority="high"
+              />
             </div>
           )
         }

@@ -11,13 +11,34 @@ const { before, after, alt = 'Comparison' } = Astro.props;
 <div class="image-comparison my-8 rounded-xl overflow-hidden border border-[var(--muted-dark)]">
   <div class="comparison-container" data-comparison>
     <div class="comparison-images">
-      <img src={before} alt={`${alt} - Before`} class="comparison-img comparison-before" />
-      <img src={after} alt={`${alt} - After`} class="comparison-img comparison-after" />
+      <img
+        src={before}
+        alt={`${alt} - Before`}
+        class="comparison-img comparison-before"
+        loading="lazy"
+        decoding="async"
+      />
+      <img
+        src={after}
+        alt={`${alt} - After`}
+        class="comparison-img comparison-after"
+        loading="lazy"
+        decoding="async"
+      />
     </div>
-    <div class="comparison-slider" data-slider>
+    <div
+      class="comparison-slider"
+      data-slider
+      role="slider"
+      tabindex="0"
+      aria-label={`${alt} comparison position`}
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="50"
+    >
       <div class="slider-button">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-          <path d="M7 14l-4-4 4-4M13 6l4 4-4 4" stroke-width="2" stroke-linecap="round" />
+          <path d="M7 14l-4-4 4-4M13 6l4 4-4 4" stroke-width="2" stroke-linecap="round"></path>
         </svg>
       </div>
     </div>
@@ -33,6 +54,7 @@ const { before, after, alt = 'Comparison' } = Astro.props;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    touch-action: pan-y;
   }
 
   .comparison-images {
@@ -91,39 +113,68 @@ const { before, after, alt = 'Comparison' } = Astro.props;
 
 <script>
   document.querySelectorAll('[data-comparison]').forEach((container) => {
+    if ((container as HTMLElement).dataset.initialized === 'true') return;
+    (container as HTMLElement).dataset.initialized = 'true';
+
     const slider = container.querySelector('[data-slider]') as HTMLElement;
     const after = container.querySelector('.comparison-after') as HTMLElement;
-    let isDragging = false;
+    if (!slider || !after) return;
 
-    const updateSlider = (x: number) => {
+    let activePointerId: number | null = null;
+    let containerLeft = 0;
+    let containerWidth = 1;
+
+    const cacheBounds = () => {
       const rect = container.getBoundingClientRect();
-      const percentage = Math.max(0, Math.min(100, ((x - rect.left) / rect.width) * 100));
-      slider.style.left = `${percentage}%`;
-      after.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+      containerLeft = rect.left;
+      containerWidth = rect.width || 1;
     };
 
-    slider.addEventListener('mousedown', (e) => {
-      e.preventDefault();
-      isDragging = true;
-    });
-    document.addEventListener('mouseup', () => (isDragging = false));
-    document.addEventListener('mousemove', (e) => {
-      if (isDragging) {
-        e.preventDefault();
-        updateSlider(e.clientX);
-      }
+    const updateSlider = (x: number) => {
+      const percentage = Math.max(0, Math.min(100, ((x - containerLeft) / containerWidth) * 100));
+      slider.style.left = `${percentage}%`;
+      after.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+      slider.setAttribute('aria-valuenow', Math.round(percentage).toString());
+    };
+
+    slider.addEventListener('pointerdown', (event) => {
+      if (!event.isPrimary) return;
+      activePointerId = event.pointerId;
+      cacheBounds();
+      slider.setPointerCapture(event.pointerId);
+      updateSlider(event.clientX);
     });
 
-    slider.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      isDragging = true;
+    slider.addEventListener('pointermove', (event) => {
+      if (event.pointerId !== activePointerId) return;
+      updateSlider(event.clientX);
     });
-    document.addEventListener('touchend', () => (isDragging = false));
-    document.addEventListener('touchmove', (e) => {
-      if (isDragging) {
-        e.preventDefault();
-        updateSlider(e.touches[0].clientX);
-      }
+
+    const endDrag = (event: PointerEvent) => {
+      if (event.pointerId !== activePointerId) return;
+      activePointerId = null;
+      if (slider.hasPointerCapture(event.pointerId)) slider.releasePointerCapture(event.pointerId);
+    };
+
+    slider.addEventListener('pointerup', endDrag);
+    slider.addEventListener('pointercancel', endDrag);
+
+    slider.addEventListener('keydown', (event) => {
+      const currentValue = Number(slider.getAttribute('aria-valuenow') || 50);
+      const step = event.shiftKey ? 10 : 2;
+      let nextValue = currentValue;
+
+      if (event.key === 'ArrowLeft') nextValue -= step;
+      else if (event.key === 'ArrowRight') nextValue += step;
+      else if (event.key === 'Home') nextValue = 0;
+      else if (event.key === 'End') nextValue = 100;
+      else return;
+
+      event.preventDefault();
+      const percentage = Math.max(0, Math.min(100, nextValue));
+      slider.style.left = `${percentage}%`;
+      after.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+      slider.setAttribute('aria-valuenow', percentage.toString());
     });
   });
 </script>

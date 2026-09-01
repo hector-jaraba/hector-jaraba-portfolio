@@ -171,8 +171,14 @@ const t = useTranslations(lang);
     const loadingScreen = document.getElementById('loading-screen');
 
     if (!loadingScreen) return;
+    if (loadingScreen.dataset.initialized === 'true') return;
+    loadingScreen.dataset.initialized = 'true';
+
+    let hasHidden = false;
 
     const hideLoading = () => {
+      if (hasHidden) return;
+      hasHidden = true;
       loadingScreen.classList.add('loaded');
 
       const loadingCompleteEvent = new CustomEvent('loading-complete');
@@ -184,14 +190,13 @@ const t = useTranslations(lang);
     };
 
     if (document.readyState === 'complete') {
-      setTimeout(hideLoading, 2000);
+      hideLoading();
     } else {
-      window.addEventListener('load', () => {
-        setTimeout(hideLoading, 2000);
-      });
+      window.addEventListener('load', hideLoading, { once: true });
     }
 
-    setTimeout(hideLoading, 5000);
+    // Never let a slow or failed subresource leave the page covered indefinitely.
+    setTimeout(hideLoading, 3000);
   }
 
   if (document.readyState === 'loading') {

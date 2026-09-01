@@ -21,7 +21,6 @@ import AboutSection from '@/components/sections/AboutSection.astro';
     opacity: 0;
     pointer-events: none;
     transform: translate3d(0, 100%, 0);
-    will-change: transform, opacity;
     isolation: isolate;
   }
 
@@ -29,6 +28,12 @@ import AboutSection from '@/components/sections/AboutSection.astro';
     opacity: 1;
     pointer-events: auto;
     transform: translate3d(0, 0, 0);
+    will-change: transform, opacity;
+  }
+
+  .about-modal:not(.is-open) :global(.rotating-badge),
+  .about-modal:not(.is-open) :global(.marquee-content) {
+    animation-play-state: paused;
   }
 
   .about-modal::-webkit-scrollbar {
@@ -72,12 +77,23 @@ import AboutSection from '@/components/sections/AboutSection.astro';
     const html = document.documentElement;
 
     if (!openButton || !closeButton || !modal) return;
+    if (modal.dataset.initialized === 'true') return;
+    modal.dataset.initialized = 'true';
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const animationDuration = prefersReducedMotion ? 0 : 0.6;
 
     let scrollPosition = 0;
     let isModalOpen = false;
+    const modalAnimations: any[] = [];
+
+    const clearModalAnimations = () => {
+      modalAnimations.forEach((animation) => {
+        animation.scrollTrigger?.kill();
+        animation.kill();
+      });
+      modalAnimations.length = 0;
+    };
 
     const openModal = (addToHistory = true) => {
       if (isModalOpen) return;
@@ -139,6 +155,7 @@ import AboutSection from '@/components/sections/AboutSection.astro';
     const setupScrollAnimations = () => {
       const aboutContent = modal.querySelector('.about-content');
       if (!aboutContent) return;
+      clearModalAnimations();
 
       const profileWrapper = aboutContent.querySelector('.profile-wrapper');
       const aboutTitle = aboutContent.querySelector('.about-title');
@@ -156,140 +173,156 @@ import AboutSection from '@/components/sections/AboutSection.astro';
       };
 
       if (profileWrapper) {
-        gsap.fromTo(
-          profileWrapper,
-          { opacity: 0, y: 30, scale: 0.95 },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: animationDuration * 0.8,
-            ease: 'power2.out',
-            scrollTrigger: {
-              ...scrollConfig,
-              trigger: profileWrapper,
-            },
-          }
+        modalAnimations.push(
+          gsap.fromTo(
+            profileWrapper,
+            { opacity: 0, y: 30, scale: 0.95 },
+            {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: animationDuration * 0.8,
+              ease: 'power2.out',
+              scrollTrigger: {
+                ...scrollConfig,
+                trigger: profileWrapper,
+              },
+            }
+          )
         );
       }
 
       if (aboutTitle) {
-        gsap.fromTo(
-          aboutTitle,
-          { opacity: 0, y: 20 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: animationDuration * 0.6,
-            ease: 'power2.out',
-            scrollTrigger: {
-              ...scrollConfig,
-              trigger: aboutTitle,
-            },
-          }
+        modalAnimations.push(
+          gsap.fromTo(
+            aboutTitle,
+            { opacity: 0, y: 20 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: animationDuration * 0.6,
+              ease: 'power2.out',
+              scrollTrigger: {
+                ...scrollConfig,
+                trigger: aboutTitle,
+              },
+            }
+          )
         );
       }
 
       if (marqueeContainer) {
-        gsap.fromTo(
-          marqueeContainer,
-          { opacity: 0, x: -50 },
-          {
-            opacity: 1,
-            x: 0,
-            duration: animationDuration * 0.6,
-            ease: 'power2.out',
-            scrollTrigger: {
-              ...scrollConfig,
-              trigger: marqueeContainer,
-            },
-          }
+        modalAnimations.push(
+          gsap.fromTo(
+            marqueeContainer,
+            { opacity: 0, x: -50 },
+            {
+              opacity: 1,
+              x: 0,
+              duration: animationDuration * 0.6,
+              ease: 'power2.out',
+              scrollTrigger: {
+                ...scrollConfig,
+                trigger: marqueeContainer,
+              },
+            }
+          )
         );
       }
 
       if (storyIntro) {
-        gsap.fromTo(
-          storyIntro,
-          { opacity: 0, x: -30 },
-          {
-            opacity: 1,
-            x: 0,
-            duration: animationDuration * 0.6,
-            ease: 'power2.out',
-            scrollTrigger: {
-              ...scrollConfig,
-              trigger: storyIntro,
-            },
-          }
+        modalAnimations.push(
+          gsap.fromTo(
+            storyIntro,
+            { opacity: 0, x: -30 },
+            {
+              opacity: 1,
+              x: 0,
+              duration: animationDuration * 0.6,
+              ease: 'power2.out',
+              scrollTrigger: {
+                ...scrollConfig,
+                trigger: storyIntro,
+              },
+            }
+          )
         );
       }
 
       storyParagraphs.forEach((paragraph) => {
-        gsap.fromTo(
-          paragraph,
-          { opacity: 0, y: 20 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: animationDuration * 0.5,
-            ease: 'power2.out',
-            scrollTrigger: {
-              ...scrollConfig,
-              trigger: paragraph,
-            },
-          }
+        modalAnimations.push(
+          gsap.fromTo(
+            paragraph,
+            { opacity: 0, y: 20 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: animationDuration * 0.5,
+              ease: 'power2.out',
+              scrollTrigger: {
+                ...scrollConfig,
+                trigger: paragraph,
+              },
+            }
+          )
         );
       });
 
       milestoneCards.forEach((card) => {
-        gsap.fromTo(
-          card,
-          { opacity: 0, y: 30, scale: 0.95 },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: animationDuration * 0.6,
-            ease: 'power2.out',
-            scrollTrigger: {
-              ...scrollConfig,
-              trigger: card,
-            },
-          }
+        modalAnimations.push(
+          gsap.fromTo(
+            card,
+            { opacity: 0, y: 30, scale: 0.95 },
+            {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: animationDuration * 0.6,
+              ease: 'power2.out',
+              scrollTrigger: {
+                ...scrollConfig,
+                trigger: card,
+              },
+            }
+          )
         );
       });
 
       storyImages.forEach((image) => {
-        gsap.fromTo(
-          image,
-          { opacity: 0, scale: 0.9 },
-          {
-            opacity: 1,
-            scale: 1,
-            duration: animationDuration * 0.7,
-            ease: 'power2.out',
-            scrollTrigger: {
-              ...scrollConfig,
-              trigger: image,
-            },
-          }
+        modalAnimations.push(
+          gsap.fromTo(
+            image,
+            { opacity: 0, scale: 0.9 },
+            {
+              opacity: 1,
+              scale: 1,
+              duration: animationDuration * 0.7,
+              ease: 'power2.out',
+              scrollTrigger: {
+                ...scrollConfig,
+                trigger: image,
+              },
+            }
+          )
         );
       });
 
       if (closingQuote) {
-        gsap.fromTo(
-          closingQuote,
-          { opacity: 0, scale: 0.95 },
-          {
-            opacity: 1,
-            scale: 1,
-            duration: animationDuration * 0.6,
-            ease: 'power2.out',
-            scrollTrigger: {
-              ...scrollConfig,
-              trigger: closingQuote,
-            },
-          }
+        modalAnimations.push(
+          gsap.fromTo(
+            closingQuote,
+            { opacity: 0, scale: 0.95 },
+            {
+              opacity: 1,
+              scale: 1,
+              duration: animationDuration * 0.6,
+              ease: 'power2.out',
+              scrollTrigger: {
+                ...scrollConfig,
+                trigger: closingQuote,
+              },
+            }
+          )
         );
       }
     };
@@ -349,6 +382,7 @@ import AboutSection from '@/components/sections/AboutSection.astro';
         },
         onComplete: () => {
           modal.classList.remove('is-open');
+          clearModalAnimations();
 
           const aboutContent = modal.querySelector('.about-content');
           if (aboutContent) {

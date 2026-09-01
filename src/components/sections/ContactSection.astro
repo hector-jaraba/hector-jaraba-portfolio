@@ -277,6 +277,11 @@ const circles = [
     animation: moonPulse 6s ease-in-out infinite;
   }
 
+  .section-full.animations-managed:not(.is-animation-active) .moon-shadow,
+  .section-full.animations-managed:not(.is-animation-active) :global(.shine-button__border-glow) {
+    animation-play-state: paused;
+  }
+
   @keyframes moonPulse {
     0%,
     100% {
@@ -462,6 +467,17 @@ const circles = [
   }
 
   function init() {
+    const section = document.getElementById('contact');
+    if (!section || section.dataset.initialized === 'true') return;
+    section.dataset.initialized = 'true';
+
+    section.classList.add('animations-managed');
+    const animationObserver = new IntersectionObserver(
+      ([entry]) => section.classList.toggle('is-animation-active', entry.isIntersecting),
+      { rootMargin: '200px 0px' }
+    );
+    animationObserver.observe(section);
+
     initScrollReveal();
     initCVButtonAnimation();
   }

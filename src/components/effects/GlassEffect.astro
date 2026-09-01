@@ -51,22 +51,28 @@ const instanceId = `glass-${Math.random().toString(36).substring(2, 11)}`;
 
 <script>
   import { useDevices } from '@/lib/devices';
-  import { GlassEffect } from '@/lib/webgl/glass-effect';
   import { onInit } from '@/lib/dom';
-  import { getScrollTrigger } from '@/lib/gsap';
-
-  const ScrollTrigger = getScrollTrigger();
 
   async function initGlassEffects() {
     const containers = document.querySelectorAll('[data-glass-id]');
+    const { isAbleToRunEffects } = useDevices();
+    if (!isAbleToRunEffects || !containers.length) return;
+
+    const [{ GlassEffect }, { getScrollTrigger }] = await Promise.all([
+      import('@/lib/webgl/glass-effect'),
+      import('@/lib/gsap'),
+    ]);
+    const ScrollTrigger = getScrollTrigger();
 
     for (const container of containers) {
+      if ((container as HTMLElement).dataset.initialized === 'true') continue;
+
       const canvas = container.querySelector('[data-glass-canvas]') as HTMLCanvasElement;
       const imageSrc = container.getAttribute('data-image-src');
       const enableScroll = container.getAttribute('data-enable-scroll') === 'true';
-      const { isAbleToRunEffects } = useDevices();
 
-      if (!canvas || !imageSrc || !isAbleToRunEffects) continue;
+      if (!canvas || !imageSrc) continue;
+      (container as HTMLElement).dataset.initialized = 'true';
 
       try {
         // Create and load image programmatically

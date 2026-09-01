@@ -134,6 +134,13 @@ const icons = [CircleIcon, RectIcon, TriangleIcon, WaveIcon];
     gap: 2rem;
   }
 
+  .section-full.animations-managed:not(.is-animation-active) :global(.rotating-circle),
+  .section-full.animations-managed:not(.is-animation-active) :global(.morphing-rect),
+  .section-full.animations-managed:not(.is-animation-active) :global(.pulsing-polygon),
+  .section-full.animations-managed:not(.is-animation-active) :global(.wave-path) {
+    animation-play-state: paused;
+  }
+
   @media (max-width: 1200px) {
     .cards-wrapper {
       grid-template-columns: repeat(2, 1fr);
@@ -159,7 +166,18 @@ const icons = [CircleIcon, RectIcon, TriangleIcon, WaveIcon];
   gsap.registerPlugin(ScrollTrigger);
 
   function initExpertiseAnimations() {
+    const section = document.getElementById('work');
+    if (!section || section.dataset.initialized === 'true') return;
+    section.dataset.initialized = 'true';
+
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    section.classList.add('animations-managed');
+    const animationObserver = new IntersectionObserver(
+      ([entry]) => section.classList.toggle('is-animation-active', entry.isIntersecting),
+      { rootMargin: '200px 0px' }
+    );
+    animationObserver.observe(section);
 
     const revealElements = document.querySelectorAll('#work .scroll-reveal');
     revealElements.forEach((element, index) => {
