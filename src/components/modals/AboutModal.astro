@@ -8,6 +8,7 @@ import AboutSection from '@/components/sections/AboutSection.astro';
 
 <style>
   .about-modal {
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -25,6 +26,7 @@ import AboutSection from '@/components/sections/AboutSection.astro';
   }
 
   .about-modal.is-open {
+    display: block;
     opacity: 1;
     pointer-events: auto;
     transform: translate3d(0, 0, 0);
@@ -136,6 +138,7 @@ import AboutSection from '@/components/sections/AboutSection.astro';
       }
 
       modal.classList.add('is-open');
+      modal.style.display = 'block';
 
       gsap.to(modal, {
         opacity: 1,
@@ -382,6 +385,7 @@ import AboutSection from '@/components/sections/AboutSection.astro';
         },
         onComplete: () => {
           modal.classList.remove('is-open');
+          modal.style.display = '';
           clearModalAnimations();
 
           const aboutContent = modal.querySelector('.about-content');

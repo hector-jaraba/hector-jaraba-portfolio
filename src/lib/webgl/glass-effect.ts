@@ -43,6 +43,10 @@ export class GlassEffect {
   private container: HTMLElement;
   private resizeTimeout: number | null = null;
   private isResizing = false;
+  private isVisible = true;
+  private visibilityObserver: IntersectionObserver | null = null;
+  private lastFrameTime = 0;
+  private readonly frameInterval = 1000 / 30;
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -63,6 +67,7 @@ export class GlassEffect {
     this.initBuffers();
     this.initTexture();
     this.setupEventListeners();
+    this.observeVisibility();
     this.resizeCanvas();
     this.render();
   }
@@ -220,39 +225,52 @@ export class GlassEffect {
     this.targetMouseX = this.mouseX;
   }
 
-  private render = (): void => {
+  private observeVisibility(): void {
+    this.visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        this.isVisible = entry.isIntersecting;
+        if (this.isVisible) this.lastFrameTime = 0;
+      },
+      { rootMargin: '100px 0px' }
+    );
+    this.visibilityObserver.observe(this.canvas);
+  }
+
+  private render = (timestamp = performance.now()): void => {
+    this.animationFrame = requestAnimationFrame(this.render);
+
+    if (!this.isVisible || document.hidden || this.isResizing) return;
+    if (timestamp - this.lastFrameTime < this.frameInterval) return;
+    this.lastFrameTime = timestamp;
+
     const gl = this.gl;
     const { config, uniforms } = this;
 
-    if (!this.isResizing) {
-      this.mouseX += (this.targetMouseX - this.mouseX) * config.mouseEase;
-      this.mouseY = this.canvas.height / 2;
-      this.currentX += (this.mouseX - this.currentX) * config.mouseEase;
-      this.currentY = this.canvas.height / 2;
+    this.mouseX += (this.targetMouseX - this.mouseX) * config.mouseEase;
+    this.mouseY = this.canvas.height / 2;
+    this.currentX += (this.mouseX - this.currentX) * config.mouseEase;
+    this.currentY = this.canvas.height / 2;
 
-      this.textureOffset.x += (this.targetTextureOffset.x - this.textureOffset.x) * 0.1;
-      this.textureOffset.y = 0;
+    this.textureOffset.x += (this.targetTextureOffset.x - this.textureOffset.x) * 0.1;
+    this.textureOffset.y = 0;
 
-      gl.uniform2f(uniforms.u_mouse, this.currentX, this.currentY);
-      gl.uniform2f(uniforms.u_resolution, this.canvas.width, this.canvas.height);
-      gl.uniform2f(uniforms.u_imageResolution, this.image.naturalWidth, this.image.naturalHeight);
-      gl.uniform1f(uniforms.u_time, (Date.now() - this.startTime) * 0.001);
-      gl.uniform2f(uniforms.u_textureOffset, this.textureOffset.x, this.textureOffset.y);
+    gl.uniform2f(uniforms.u_mouse, this.currentX, this.currentY);
+    gl.uniform2f(uniforms.u_resolution, this.canvas.width, this.canvas.height);
+    gl.uniform2f(uniforms.u_imageResolution, this.image.naturalWidth, this.image.naturalHeight);
+    gl.uniform1f(uniforms.u_time, (Date.now() - this.startTime) * 0.001);
+    gl.uniform2f(uniforms.u_textureOffset, this.textureOffset.x, this.textureOffset.y);
 
-      gl.uniform1f(uniforms.u_textureScale, config.textureScale);
-      gl.uniform1f(uniforms.u_numDivisions, config.numDivisions);
-      gl.uniform1f(uniforms.u_autoMoveSpeed, config.autoMoveSpeed);
-      gl.uniform1f(uniforms.u_autoMoveAmplitude, config.autoMoveAmplitude);
-      gl.uniform1f(uniforms.u_warpAmplitude, config.warpAmplitude);
-      gl.uniform1f(uniforms.u_displacementAmplitude, config.displacementAmplitude);
-      gl.uniform1f(uniforms.u_mouseInfluence, config.mouseInfluence);
-      gl.uniform1f(uniforms.u_blurAmount, config.blurAmount);
-      gl.uniform1f(uniforms.u_desaturation, config.desaturation);
+    gl.uniform1f(uniforms.u_textureScale, config.textureScale);
+    gl.uniform1f(uniforms.u_numDivisions, config.numDivisions);
+    gl.uniform1f(uniforms.u_autoMoveSpeed, config.autoMoveSpeed);
+    gl.uniform1f(uniforms.u_autoMoveAmplitude, config.autoMoveAmplitude);
+    gl.uniform1f(uniforms.u_warpAmplitude, config.warpAmplitude);
+    gl.uniform1f(uniforms.u_displacementAmplitude, config.displacementAmplitude);
+    gl.uniform1f(uniforms.u_mouseInfluence, config.mouseInfluence);
+    gl.uniform1f(uniforms.u_blurAmount, config.blurAmount);
+    gl.uniform1f(uniforms.u_desaturation, config.desaturation);
 
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    }
-
-    this.animationFrame = requestAnimationFrame(this.render);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   };
 
   public updateConfig(updates: Partial<GlassEffectConfig>): void {
@@ -271,6 +289,7 @@ export class GlassEffect {
     if (this.resizeTimeout) {
       clearTimeout(this.resizeTimeout);
     }
+    this.visibilityObserver?.disconnect();
     this.gl.deleteProgram(this.program);
   }
 }

@@ -189,11 +189,9 @@ const t = useTranslations(lang);
       }, 800);
     };
 
-    if (document.readyState === 'complete') {
-      hideLoading();
-    } else {
-      window.addEventListener('load', hideLoading, { once: true });
-    }
+    // The loader only needs the document structure, not every below-fold asset.
+    // Two frames preserve its painted transition without holding back LCP.
+    requestAnimationFrame(() => requestAnimationFrame(hideLoading));
 
     // Never let a slow or failed subresource leave the page covered indefinitely.
     setTimeout(hideLoading, 3000);

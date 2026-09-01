@@ -62,17 +62,25 @@
     let mouseX = -1000;
     let mouseY = -1000;
     const hoverRadius = 120;
+    const frameInterval = 1000 / 30;
+    let canvasWidth = 0;
+    let canvasHeight = 0;
+    let lastFrameTime = 0;
+    let animationId: number | null = null;
+    let isVisible = false;
 
     const resizeCanvas = () => {
       const parent = canvas.parentElement;
       if (!parent) return;
 
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = parent.offsetWidth * dpr;
-      canvas.height = parent.offsetHeight * dpr;
-      canvas.style.width = `${parent.offsetWidth}px`;
-      canvas.style.height = `${parent.offsetHeight}px`;
-      ctx.scale(dpr, dpr);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvasWidth = parent.offsetWidth;
+      canvasHeight = parent.offsetHeight;
+      canvas.width = canvasWidth * dpr;
+      canvas.height = canvasHeight * dpr;
+      canvas.style.width = `${canvasWidth}px`;
+      canvas.style.height = `${canvasHeight}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       initShapes();
     };
@@ -81,8 +89,8 @@
       shapes.length = 0;
 
       const gridSpacing = 50;
-      const cols = Math.ceil(canvas.width / gridSpacing) + 1;
-      const rows = Math.ceil(canvas.height / gridSpacing) + 1;
+      const cols = Math.ceil(canvasWidth / gridSpacing) + 1;
+      const rows = Math.ceil(canvasHeight / gridSpacing) + 1;
 
       const pattern: Shape['type'][] = [
         'circle',
@@ -189,17 +197,65 @@
       });
     };
 
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      updateShapes();
-      shapes.forEach(drawShape);
-      requestAnimationFrame(animate);
+    const animate = (timestamp: number) => {
+      if (!isVisible || document.hidden) {
+        animationId = null;
+        return;
+      }
+
+      if (timestamp - lastFrameTime >= frameInterval) {
+        lastFrameTime = timestamp;
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+        updateShapes();
+        shapes.forEach(drawShape);
+      }
+
+      animationId = requestAnimationFrame(animate);
+    };
+
+    const startAnimation = () => {
+      if (animationId !== null || !isVisible || document.hidden) return;
+      lastFrameTime = 0;
+      animationId = requestAnimationFrame(animate);
+    };
+
+    const stopAnimation = () => {
+      if (animationId === null) return;
+      cancelAnimationFrame(animationId);
+      animationId = null;
     };
 
     resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    window.addEventListener('mousemove', updateMouse);
-    animate();
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) startAnimation();
+        else stopAnimation();
+      },
+      { rootMargin: '100px 0px' }
+    );
+    visibilityObserver.observe(canvas);
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) stopAnimation();
+      else startAnimation();
+    };
+
+    window.addEventListener('resize', resizeCanvas, { passive: true });
+    window.addEventListener('mousemove', updateMouse, { passive: true });
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    document.addEventListener(
+      'astro:before-preparation',
+      () => {
+        stopAnimation();
+        visibilityObserver.disconnect();
+        window.removeEventListener('resize', resizeCanvas);
+        window.removeEventListener('mousemove', updateMouse);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      },
+      { once: true }
+    );
   }
 
   if (document.readyState === 'loading') {

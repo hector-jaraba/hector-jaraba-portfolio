@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import hectorGlassImage from '@/assets/images/hector-glass.png';
 interface Props {
   imageSrc: string;
@@ -15,6 +15,13 @@ const {
   enableScrollEffects = false,
 } = Astro.props;
 const instanceId = `glass-${Math.random().toString(36).substring(2, 11)}`;
+const optimizedTexture = await getImage({
+  src: hectorGlassImage,
+  width: 1600,
+  format: 'avif',
+  quality: 60,
+});
+const textureSrc = imageSrc === '/hector.jpg' ? optimizedTexture.src : imageSrc;
 ---
 
 <div
@@ -22,7 +29,7 @@ const instanceId = `glass-${Math.random().toString(36).substring(2, 11)}`;
   id="glass-effect"
   data-glass-id={instanceId}
   data-enable-scroll={enableScrollEffects}
-  data-image-src={imageSrc}
+  data-image-src={textureSrc}
 >
   <div class="absolute inset-0 z-[1] will-change-transform pointer-events-none">
     <Image
