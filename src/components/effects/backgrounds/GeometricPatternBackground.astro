@@ -52,6 +52,13 @@
     }
 
     const shapes: Shape[] = [];
+    const primaryValue = getComputedStyle(document.documentElement)
+      .getPropertyValue('--primary')
+      .trim();
+    const primaryMatch = primaryValue.match(/^#([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
+    const primaryRgb = primaryMatch
+      ? primaryMatch.slice(1).map((value) => Number.parseInt(value, 16))
+      : [200, 183, 255];
     let mouseX = -1000;
     let mouseY = -1000;
     const hoverRadius = 120;
@@ -117,9 +124,9 @@
       const { x, y, type, size, hoverIntensity, baseOpacity } = shape;
       const alpha = hoverIntensity > 0.01 ? baseOpacity + hoverIntensity * 0.6 : baseOpacity;
 
-      // Pale violet color matching the new palette
-      ctx.fillStyle = `rgba(196, 181, 253, ${alpha})`;
-      ctx.strokeStyle = `rgba(196, 181, 253, ${alpha * 0.8})`;
+      const [red, green, blue] = primaryRgb;
+      ctx.fillStyle = `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+      ctx.strokeStyle = `rgba(${red}, ${green}, ${blue}, ${alpha * 0.8})`;
       ctx.lineWidth = 1;
       ctx.beginPath();
 

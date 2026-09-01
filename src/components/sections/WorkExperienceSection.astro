@@ -218,7 +218,7 @@ const jobs = translations[lang].workExperience.jobs;
     position: absolute;
     width: 300px;
     height: 300px;
-    background: #8b5cf6;
+    background: var(--accent-purple);
     filter: blur(200px);
     opacity: 0.9;
     border-radius: 50%;
@@ -315,9 +315,15 @@ const jobs = translations[lang].workExperience.jobs;
     opacity: 1;
   }
 
+  .timeline-arrow path[fill],
+  .timeline-arrow circle[fill] {
+    fill: var(--ornament);
+  }
+
   /* Initially hide stroke elements for drawing animation */
   .timeline-arrow path[stroke],
   .timeline-arrow circle[stroke] {
+    stroke: var(--ornament);
     stroke-dasharray: 1000;
     stroke-dashoffset: 1000;
   }

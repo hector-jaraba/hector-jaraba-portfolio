@@ -68,7 +68,7 @@ const t = useTranslations(lang);
   }
 
   .loading-logo path {
-    fill: white;
+    fill: var(--text-primary);
   }
 
   .logo-group-1 path {
@@ -108,7 +108,7 @@ const t = useTranslations(lang);
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.2em;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-muted);
     font-weight: 300;
     animation: fadeText 2s ease-in-out infinite;
   }
@@ -126,7 +126,7 @@ const t = useTranslations(lang);
   .loading-bar {
     width: 200px;
     height: 2px;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--border-subtle);
     border-radius: 2px;
     overflow: hidden;
     position: relative;

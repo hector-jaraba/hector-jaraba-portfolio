@@ -55,12 +55,12 @@ const { title, description } = Astro.props;
     padding: 3rem 2rem;
     background: radial-gradient(
       circle at left bottom,
-      rgba(30, 20, 50, 0.8) 0%,
-      rgba(11, 15, 18, 0.95) 70%,
-      rgba(8, 8, 10, 1) 100%
+      rgb(var(--surface-violet-rgb) / 0.88) 0%,
+      rgb(var(--bg-800-rgb) / 0.96) 70%,
+      rgb(var(--bg-900-rgb) / 1) 100%
     );
     backdrop-filter: blur(10px);
-    border: 2px solid #513690;
+    border: 2px solid var(--border-strong);
     border-radius: 20px;
     display: flex;
     flex-direction: column;
@@ -84,7 +84,9 @@ const { title, description } = Astro.props;
   /* Simple hover effect */
   .flip-card-container:hover .flip-card-front,
   .flip-card-container:hover .flip-card-back {
-    box-shadow: 0px 0px 20px #582ff3;
+    box-shadow:
+      0 18px 44px -24px rgb(var(--accent-purple-rgb) / 0.7),
+      0 0 24px -10px rgb(var(--primary-rgb) / 0.85);
   }
 
   /* Card front - centered content */

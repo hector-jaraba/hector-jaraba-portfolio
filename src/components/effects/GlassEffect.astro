@@ -41,7 +41,11 @@ const instanceId = `glass-${Math.random().toString(36).substring(2, 11)}`;
   <div class="absolute inset-0 z-[2] pointer-events-none hidden md:block">
     <canvas data-glass-canvas class="w-full h-full block opacity-100 mix-blend-normal"></canvas>
   </div>
-  <div class="absolute inset-0 bg-violet-500/20" style="mix-blend-mode: multiply;"></div>
+  <div
+    class="absolute inset-0"
+    style="background: rgb(var(--accent-purple-rgb) / 0.18); mix-blend-mode: multiply;"
+  >
+  </div>
   <div class="absolute inset-0 z-[3] flex items-center justify-center pointer-events-none">
     <div class="pointer-events-auto">
       <slot />

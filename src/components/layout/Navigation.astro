@@ -141,7 +141,7 @@ const localizedNavLinks = navLinks.map((link) => ({
 
   .nav-link::before {
     @apply rounded-lg;
-    background: rgba(153, 161, 173, 0.15);
+    background: rgb(var(--primary-rgb) / 0.08);
   }
 
   .nav-link.active {
@@ -149,17 +149,17 @@ const localizedNavLinks = navLinks.map((link) => ({
   }
 
   .nav-link.active::before {
-    background: rgba(229, 227, 255, 0.15);
+    background: rgb(var(--primary-rgb) / 0.14);
   }
 
   .nav-link:not(.active):hover::before {
     @apply w-full transition-[width] duration-300 ease-in-out;
-    background: rgba(153, 161, 173, 0.2);
+    background: rgb(var(--primary-rgb) / 0.12);
   }
 
   .connect-button::before {
     @apply rounded-full;
-    background: rgba(229, 227, 255, 0.1);
+    background: rgb(var(--primary-rgb) / 0.1);
   }
 
   .connect-button.active::before {
@@ -228,10 +228,10 @@ const localizedNavLinks = navLinks.map((link) => ({
 
         // Add glass effect when scrolled down
         if (scrollTop > 50) {
-          nav.style.background = 'rgba(11, 15, 18, 0.8)';
+          nav.style.background = 'rgb(var(--bg-800-rgb) / 0.82)';
           nav.style.backdropFilter = 'blur(12px)';
           nav.style.webkitBackdropFilter = 'blur(12px)';
-          nav.style.borderBottom = '1px solid rgba(153, 161, 173, 0.1)';
+          nav.style.borderBottom = '1px solid var(--border-subtle)';
         } else {
           nav.style.background = 'transparent';
           nav.style.backdropFilter = 'none';

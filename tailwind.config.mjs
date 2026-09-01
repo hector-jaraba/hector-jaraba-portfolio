@@ -8,14 +8,21 @@ export default {
         bg: {
           900: 'var(--bg-900)',
           800: 'var(--bg-800)',
+          700: 'var(--bg-700)',
         },
         primary: 'var(--primary)',
         accent: {
-          DEFAULT: 'var(--accent-2)',
-          2: 'var(--accent-2)',
+          DEFAULT: 'var(--accent-purple)',
+          2: 'var(--accent-blue)',
         },
         muted: 'var(--muted)',
         surface: 'var(--surface)',
+        text: {
+          primary: 'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          tertiary: 'var(--text-tertiary)',
+          muted: 'var(--text-muted)',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
@@ -42,7 +49,7 @@ export default {
       animation: {
         'fade-in': 'fadeIn 0.6s ease-out forwards',
         'slide-up': 'slideUp 0.8s ease-out forwards',
-        'glow': 'glow 2s ease-in-out infinite',
+        glow: 'glow 2s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {

@@ -15,7 +15,7 @@ import AboutSection from '@/components/sections/AboutSection.astro';
     height: 100vh;
     height: 100dvh;
     z-index: 9990;
-    background: #000;
+    background: var(--surface-deep);
     overflow-y: auto;
     overflow-x: hidden;
     opacity: 0;
@@ -41,7 +41,7 @@ import AboutSection from '@/components/sections/AboutSection.astro';
   }
 
   .about-modal::-webkit-scrollbar-track {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgb(var(--accent-purple-rgb) / 0.1);
   }
 
   .about-modal::-webkit-scrollbar-thumb {
@@ -50,7 +50,7 @@ import AboutSection from '@/components/sections/AboutSection.astro';
   }
 
   .about-modal::-webkit-scrollbar-thumb:hover {
-    background: rgba(139, 92, 246, 0.8);
+    background: rgb(var(--accent-purple-rgb) / 0.82);
   }
 
   .about-modal :global(.profile-wrapper),

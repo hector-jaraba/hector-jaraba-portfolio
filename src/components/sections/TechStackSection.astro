@@ -12,7 +12,7 @@ const circles = [
     top: '50px',
     left: '0px',
     size: 400,
-    color: '#8b5cf6',
+    color: 'var(--accent-purple)',
     opacity: 0.5,
     blur: 80, // Reduced from 120 for better performance
     animate: true,
@@ -21,7 +21,7 @@ const circles = [
     bottom: '50px', // 190px = half of 380px size
     right: '-15px', // Keeps circle fully inside at bottom-right
     size: 400,
-    color: '#8b5cf6',
+    color: 'var(--accent-purple)',
     opacity: 0.6,
     blur: 60, // Reduced from 100 for better performance
     animate: true,
@@ -79,15 +79,15 @@ const circles = [
     width: 100%;
     max-width: 1400px;
     padding: 6rem 2rem 3rem 2rem;
-    border: 2px solid #513690;
+    border: 2px solid var(--border-strong);
     border-radius: 20px;
     margin: 0 auto;
   }
 
   .bg-surface {
     background:
-      radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(196, 181, 253, 0.06) 0%, transparent 50%),
+      radial-gradient(circle at 20% 50%, rgb(var(--accent-purple-rgb) / 0.09) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgb(var(--primary-rgb) / 0.07) 0%, transparent 50%),
       var(--surface);
     position: relative;
   }
@@ -101,15 +101,15 @@ const circles = [
         0deg,
         transparent,
         transparent 2px,
-        rgba(196, 181, 253, 0.01) 2px,
-        rgba(196, 181, 253, 0.01) 4px
+        rgb(var(--primary-rgb) / 0.012) 2px,
+        rgb(var(--primary-rgb) / 0.012) 4px
       ),
       repeating-linear-gradient(
         90deg,
         transparent,
         transparent 2px,
-        rgba(196, 181, 253, 0.01) 2px,
-        rgba(196, 181, 253, 0.01) 4px
+        rgb(var(--primary-rgb) / 0.012) 2px,
+        rgb(var(--primary-rgb) / 0.012) 4px
       );
     pointer-events: none;
   }

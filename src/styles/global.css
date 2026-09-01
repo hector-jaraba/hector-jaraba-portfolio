@@ -5,37 +5,50 @@
 @tailwind utilities;
 
 :root {
-  /* Color Palette - Obscure Modern Theme with Pale Violet */
-  /* Ultra dark backgrounds - almost pure black */
-  --bg-900: #08080a;
-  --bg-800: #0e0e11;
-  --bg-700: #15151a;
+  /* Obsidian surfaces with a restrained violet undertone */
+  --bg-900: #07070a;
+  --bg-900-rgb: 7 7 10;
+  --bg-800: #0c0b11;
+  --bg-800-rgb: 12 11 17;
+  --bg-700: #15131d;
 
-  /* Pale violet/lavender accents */
-  --primary: #c4b5fd;
-  --primary-dim: #a78bfa;
-  --primary-bright: #ddd6fe;
+  /* Luminous lavender accents */
+  --primary: #c8b7ff;
+  --primary-rgb: 200 183 255;
+  --primary-dim: #a68af2;
+  --primary-bright: #eeeaff;
 
-  /* Secondary accents - subtle purples and blues */
-  --accent-lavender: #e0e7ff;
-  --accent-purple: #8b5cf6;
-  --accent-blue: #6366f1;
+  /* Supporting violet and indigo accents */
+  --accent-lavender: #e6e1ff;
+  --accent-purple: #8d68ed;
+  --accent-purple-rgb: 141 104 237;
+  --accent-blue: #7782f5;
+  --accent-blue-rgb: 119 130 245;
 
-  /* Neutral grays with violet undertones */
-  --muted: #71717a;
-  --muted-dark: #3f3f46;
-  --muted-light: #a1a1aa;
+  /* Neutrals carry a subtle violet cast for a cohesive dark palette */
+  --muted: #858091;
+  --muted-dark: #34303f;
+  --muted-light: #b0aabc;
 
-  /* Surface colors with gradient potential */
-  --surface: #0e0e11;
-  --surface-light: #18181b;
-  --surface-lighter: #27272a;
+  /* Surface hierarchy */
+  --surface: #0e0d14;
+  --surface-light: #181622;
+  --surface-lighter: #252231;
+  --surface-deep: #130f1e;
+  --surface-violet-rgb: 26 20 40;
 
-  /* Text colors optimized for dark mode */
-  --text-primary: #fafafa;
-  --text-secondary: #d4d4d8;
-  --text-tertiary: #a1a1aa;
-  --text-muted: #71717a;
+  /* Semantic borders and ornament color */
+  --border-subtle: rgb(var(--primary-rgb) / 0.14);
+  --border-default: rgb(var(--primary-rgb) / 0.26);
+  --border-strong: #4a3d73;
+  --ornament: #4a3d73;
+
+  /* Text colors tuned for the dark surfaces */
+  --text-primary: #f7f5fb;
+  --text-secondary: #d8d4e2;
+  --text-tertiary: #aaa5b7;
+  --text-muted: #827d8e;
+  --text-reveal-muted: #827d8e;
 
   /* Contrast variant colors (for theme toggle) */
   --contrast-bg: #000000;
@@ -46,15 +59,15 @@
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 
   /* Spacing scale (following 8px grid) */
-  --spacing-xs: 0.5rem;    /* 8px */
-  --spacing-sm: 0.75rem;   /* 12px */
-  --spacing-md: 1rem;      /* 16px */
-  --spacing-lg: 1.5rem;    /* 24px */
-  --spacing-xl: 2rem;      /* 32px */
-  --spacing-2xl: 3rem;     /* 48px */
-  --spacing-3xl: 4rem;     /* 64px */
-  --spacing-4xl: 6rem;     /* 96px */
-  --spacing-5xl: 8rem;     /* 128px */
+  --spacing-xs: 0.5rem; /* 8px */
+  --spacing-sm: 0.75rem; /* 12px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-lg: 1.5rem; /* 24px */
+  --spacing-xl: 2rem; /* 32px */
+  --spacing-2xl: 3rem; /* 48px */
+  --spacing-3xl: 4rem; /* 64px */
+  --spacing-4xl: 6rem; /* 96px */
+  --spacing-5xl: 8rem; /* 128px */
 
   /* Animation timings */
   --duration-fast: 0.15s;
@@ -64,9 +77,8 @@
 
   /* Easing curves */
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-out: cubic-bezier(0.0, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
-  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
   /* Borders & Radii */
   --radius-sm: 0.25rem;
@@ -79,9 +91,9 @@
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.2);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.3);
-  --shadow-glow: 0 0 40px rgba(196, 181, 253, 0.3);
-  --shadow-glow-accent: 0 0 30px rgba(139, 92, 246, 0.25);
-  --shadow-glow-blue: 0 0 30px rgba(99, 102, 241, 0.25);
+  --shadow-glow: 0 0 40px rgb(var(--primary-rgb) / 0.28);
+  --shadow-glow-accent: 0 0 30px rgb(var(--accent-purple-rgb) / 0.24);
+  --shadow-glow-blue: 0 0 30px rgb(var(--accent-blue-rgb) / 0.22);
 }
 
 /* Contrast theme variant */
@@ -94,7 +106,7 @@
 
 @layer base {
   * {
-    border-color: rgb(153 161 173 / 0.2);
+    border-color: var(--border-subtle);
   }
 
   html {
@@ -132,11 +144,16 @@
 
   /* Selection styles */
   ::selection {
-    background-color: rgba(196, 181, 253, 0.3);
+    background-color: rgb(var(--primary-rgb) / 0.3);
     color: var(--text-primary);
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-weight: 700;
     color: var(--text-primary);
     line-height: 1.2;
@@ -168,7 +185,7 @@
 
 @layer utilities {
   .text-gradient {
-    @apply bg-gradient-to-r from-primary to-accent-2 bg-clip-text text-transparent;
+    color: var(--primary);
   }
 
   .glow-primary {
@@ -181,7 +198,7 @@
 
   .backdrop-blur-panel {
     backdrop-filter: blur(12px);
-    background-color: rgb(15 22 32 / 0.8);
+    background-color: rgb(var(--bg-800-rgb) / 0.82);
   }
 
   .container-custom {
