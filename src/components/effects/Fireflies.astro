@@ -60,6 +60,13 @@ const { count = 20, className = '' } = Astro.props;
     private colors: { r: number; g: number; b: number }[];
     private arrowTipPosition: { x: number; y: number } | null = null;
     private hasSpawnedFromArrow: boolean = false;
+    private canvasWidth = 0;
+    private canvasHeight = 0;
+    private lastViewportWidth = window.innerWidth;
+    private isInViewport = false;
+    private visibilityObserver: IntersectionObserver | null = null;
+    private arrowPositionHandler: (() => void) | null = null;
+    private arrowCheckFrame: number | null = null;
 
     constructor(canvas: HTMLCanvasElement, count: number) {
       this.canvas = canvas;
@@ -79,20 +86,45 @@ const { count = 20, className = '' } = Astro.props;
 
       this.resize();
       this.init();
-      this.animate();
       this.trackArrow();
+      this.pause();
+      this.observeVisibility();
 
       // Handle resize
-      window.addEventListener('resize', () => this.resize());
+      window.addEventListener('resize', this.handleResize, { passive: true });
 
       // Handle visibility change
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-          this.pause();
-        } else {
-          this.resume();
-        }
-      });
+      document.addEventListener('visibilitychange', this.handleVisibilityChange);
+    }
+
+    private handleResize = () => {
+      const viewportWidth = window.innerWidth;
+      if (Math.abs(viewportWidth - this.lastViewportWidth) < 2) return;
+      this.lastViewportWidth = viewportWidth;
+      this.resize();
+    };
+
+    private handleVisibilityChange = () => {
+      if (document.hidden || !this.isInViewport) {
+        this.pause();
+      } else {
+        this.resume();
+      }
+    };
+
+    private observeVisibility() {
+      const container = this.canvas.closest('[data-fireflies-count]');
+      if (!container) return;
+
+      this.visibilityObserver = new IntersectionObserver(
+        ([entry]) => {
+          this.isInViewport = entry.isIntersecting;
+          this.handleVisibilityChange();
+          if (entry.isIntersecting) this.arrowPositionHandler?.();
+        },
+        { rootMargin: '200px 0px' }
+      );
+      this.visibilityObserver.observe(container);
     }
 
     private trackArrow() {
@@ -129,16 +161,15 @@ const { count = 20, className = '' } = Astro.props;
         }
       };
 
-      // Check on scroll
-      window.addEventListener('scroll', checkArrowPosition);
-
-      // Also check periodically
-      const intervalId = setInterval(() => {
-        if (this.hasSpawnedFromArrow) {
-          clearInterval(intervalId);
-        }
-        checkArrowPosition();
-      }, 100);
+      // Check once per rendered scroll frame while waiting for the arrow to arrive.
+      this.arrowPositionHandler = () => {
+        if (!this.isInViewport || this.hasSpawnedFromArrow || this.arrowCheckFrame !== null) return;
+        this.arrowCheckFrame = requestAnimationFrame(() => {
+          this.arrowCheckFrame = null;
+          checkArrowPosition();
+        });
+      };
+      window.addEventListener('scroll', this.arrowPositionHandler, { passive: true });
     }
 
     private spawnFromArrow() {
@@ -198,20 +229,20 @@ const { count = 20, className = '' } = Astro.props;
 
     private resize() {
       const rect = this.canvas.getBoundingClientRect();
+      this.canvasWidth = rect.width;
+      this.canvasHeight = rect.height;
       this.canvas.width = rect.width * window.devicePixelRatio;
       this.canvas.height = rect.height * window.devicePixelRatio;
       this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
     }
 
     private init() {
-      const rect = this.canvas.getBoundingClientRect();
-
       for (let i = 0; i < this.count; i++) {
         const color = this.colors[Math.floor(Math.random() * this.colors.length)];
 
         const firefly: Firefly = {
-          x: Math.random() * rect.width,
-          y: Math.random() * rect.height,
+          x: Math.random() * this.canvasWidth,
+          y: Math.random() * this.canvasHeight,
           vx: (Math.random() - 0.5) * 0.3, // Slower movement
           vy: (Math.random() - 0.5) * 0.3,
           radius: Math.random() * 1.5 + 0.8, // Smaller particles
@@ -247,10 +278,8 @@ const { count = 20, className = '' } = Astro.props;
     }
 
     private animate() {
-      const rect = this.canvas.getBoundingClientRect();
-
       // Clear canvas
-      this.ctx.clearRect(0, 0, rect.width, rect.height);
+      this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
       // Update and draw each firefly
       this.fireflies.forEach(firefly => {
@@ -260,18 +289,18 @@ const { count = 20, className = '' } = Astro.props;
         firefly.y += firefly.vy * speed;
 
         // Bounce off edges with some randomness
-        if (firefly.x < 0 || firefly.x > rect.width) {
+        if (firefly.x < 0 || firefly.x > this.canvasWidth) {
           firefly.vx *= -1;
           firefly.vx += (Math.random() - 0.5) * 0.1;
         }
-        if (firefly.y < 0 || firefly.y > rect.height) {
+        if (firefly.y < 0 || firefly.y > this.canvasHeight) {
           firefly.vy *= -1;
           firefly.vy += (Math.random() - 0.5) * 0.1;
         }
 
         // Keep within bounds
-        firefly.x = Math.max(0, Math.min(rect.width, firefly.x));
-        firefly.y = Math.max(0, Math.min(rect.height, firefly.y));
+        firefly.x = Math.max(0, Math.min(this.canvasWidth, firefly.x));
+        firefly.y = Math.max(0, Math.min(this.canvasHeight, firefly.y));
 
         // Add slight randomness to velocity
         if (!this.isReducedMotion && Math.random() < 0.01) {
@@ -324,7 +353,7 @@ const { count = 20, className = '' } = Astro.props;
     }
 
     public resume() {
-      if (this.animationId === null) {
+      if (this.animationId === null && !document.hidden && this.isInViewport) {
         this.animate();
       }
       this.fireflies.forEach(f => f.timeline.resume());
@@ -334,7 +363,13 @@ const { count = 20, className = '' } = Astro.props;
       this.pause();
       this.fireflies.forEach(f => f.timeline.kill());
       this.fireflies = [];
-      window.removeEventListener('resize', () => this.resize());
+      window.removeEventListener('resize', this.handleResize);
+      document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+      if (this.arrowPositionHandler) {
+        window.removeEventListener('scroll', this.arrowPositionHandler);
+      }
+      if (this.arrowCheckFrame !== null) cancelAnimationFrame(this.arrowCheckFrame);
+      this.visibilityObserver?.disconnect();
     }
   }
 
@@ -342,6 +377,7 @@ const { count = 20, className = '' } = Astro.props;
   function initFireflies() {
     const canvas = document.getElementById('fireflies-canvas') as HTMLCanvasElement;
     if (!canvas) return;
+    if ((canvas as any).__firefliesEffect) return;
 
     const container = canvas.closest('[data-fireflies-count]') as HTMLElement;
     const count = parseInt(container?.dataset.firefliesCount || '20', 10);

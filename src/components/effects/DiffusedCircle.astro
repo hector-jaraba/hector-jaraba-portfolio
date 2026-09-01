@@ -167,8 +167,13 @@ const {
 <script>
   // Pause animations during resize for better performance
   let resizeTimeout: number;
+  let lastViewportWidth = window.innerWidth;
 
   function handleResize() {
+    const viewportWidth = window.innerWidth;
+    if (Math.abs(viewportWidth - lastViewportWidth) < 2) return;
+    lastViewportWidth = viewportWidth;
+
     const circles = document.querySelectorAll('.diffused-circle.animate');
     circles.forEach((circle) => circle.classList.add('resizing'));
 

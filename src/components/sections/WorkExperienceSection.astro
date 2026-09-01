@@ -259,7 +259,6 @@ const jobs = translations[lang].workExperience.jobs;
     position: relative;
     width: 100%;
     height: 100vh;
-    height: 100dvh;
     overflow: hidden;
   }
 
@@ -324,6 +323,11 @@ const jobs = translations[lang].workExperience.jobs;
   }
 
   @media screen and (max-width: 768px) {
+    .horizontal-scroll-wrapper {
+      /* Keep ScrollTrigger's pinned viewport stable while Safari's address bar animates. */
+      height: 100svh;
+    }
+
     .horizontal-scroll-content {
       justify-content: flex-start;
       top: 80px;

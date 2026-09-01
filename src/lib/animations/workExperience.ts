@@ -40,15 +40,14 @@ export function initWorkExperienceAnimations() {
     return;
   }
 
+  if (horizontalSection.dataset.animationInitialized === 'true') return;
+  horizontalSection.dataset.animationInitialized = 'true';
+
   const calculateDimensions = () => {
     const cardWidth = jobCards[0].offsetWidth;
     let cardSpacing = cardWidth;
     if (jobCards.length > 1) {
-      const firstCardRect = jobCards[0].getBoundingClientRect();
-      const secondCardRect = jobCards[1].getBoundingClientRect();
-      const firstCardCenter = firstCardRect.left + firstCardRect.width / 2;
-      const secondCardCenter = secondCardRect.left + secondCardRect.width / 2;
-      cardSpacing = Math.abs(secondCardCenter - firstCardCenter);
+      cardSpacing = Math.abs(jobCards[1].offsetLeft - jobCards[0].offsetLeft);
     }
 
     const viewportCenter = window.innerWidth / 2;
@@ -66,12 +65,16 @@ export function initWorkExperienceAnimations() {
 
   let dimensions = calculateDimensions();
 
-  gsap.set(horizontalContent, {
-    width: dimensions.totalWidth,
-    paddingLeft: dimensions.initialPaddingLeft,
-  });
+  const applyDimensions = () => {
+    gsap.set(horizontalContent, {
+      width: dimensions.totalWidth,
+      paddingLeft: dimensions.initialPaddingLeft,
+    });
 
-  horizontalSection.setAttribute('data-scroll-width', dimensions.totalWidth.toString());
+    horizontalSection.setAttribute('data-scroll-width', dimensions.totalWidth.toString());
+  };
+
+  applyDimensions();
 
   const arrowPaths = Array.from(arrow.querySelectorAll('path[stroke]')) as SVGGeometryElement[];
   const arrowCircles = Array.from(arrow.querySelectorAll('circle[stroke]')) as SVGGeometryElement[];
@@ -86,102 +89,69 @@ export function initWorkExperienceAnimations() {
     });
   });
 
-  const mainTimeline = gsap.timeline({
-    scrollTrigger: {
-      trigger: horizontalSection,
-      start: 'top top',
-      end: () => {
-        const dims = calculateDimensions();
-        return `+=${dims.totalWidth}`;
-      },
-      scrub: 1,
-      pin: true,
-      anticipatePin: 1,
-      invalidateOnRefresh: true,
-    },
-  });
-
-  mainTimeline.to(horizontalContent, {
-    x: () => {
-      const dims = calculateDimensions();
-      return -(dims.totalWidth - dims.cardWidth);
-    },
-    ease: 'none',
-  });
-
   jobCards.forEach((card) => {
     gsap.set(card, { opacity: 0.3, scale: 0.9 });
   });
 
-  jobCards.forEach((card, index) => {
-    const updateCard = (scrollProgress: number) => {
-      const dims = calculateDimensions();
-      const currentX = scrollProgress * (dims.totalWidth - dims.cardWidth);
-      const cardLeftPosition = dims.initialPaddingLeft + index * dims.cardSpacing;
-      const cardCenterInContent = cardLeftPosition + dims.cardWidth / 2;
-      const cardCenterInViewport = cardCenterInContent - currentX;
-      const distanceFromCenter = Math.abs(cardCenterInViewport - dims.viewportCenter);
+  const updateCards = (scrollProgress: number) => {
+    const currentX = scrollProgress * (dimensions.totalWidth - dimensions.cardWidth);
+    const fadeRange = dimensions.cardWidth * 0.7;
+    const activeRange = dimensions.cardWidth * 0.1;
 
-      const fadeRange = dims.cardWidth * 0.7;
+    jobCards.forEach((card, index) => {
+      const cardLeftPosition = dimensions.initialPaddingLeft + index * dimensions.cardSpacing;
+      const cardCenterInContent = cardLeftPosition + dimensions.cardWidth / 2;
+      const cardCenterInViewport = cardCenterInContent - currentX;
+      const distanceFromCenter = Math.abs(cardCenterInViewport - dimensions.viewportCenter);
+
       let opacity = 1 - distanceFromCenter / fadeRange;
       opacity = Math.max(0.3, Math.min(1, opacity));
 
-      let scale = 0.9 + 0.1 * opacity;
+      const scale = 0.9 + 0.1 * opacity;
 
       gsap.set(card, { opacity, scale });
 
-      if (distanceFromCenter < dims.cardWidth * 0.1) {
-        card.classList.add('active');
-      } else {
-        card.classList.remove('active');
-      }
-    };
+      card.classList.toggle('active', distanceFromCenter < activeRange);
+    });
+  };
 
-    updateCard(0);
+  updateCards(0);
 
-    ScrollTrigger.create({
+  const mainTimeline = gsap.timeline({
+    scrollTrigger: {
       trigger: horizontalSection,
       start: 'top top',
-      end: () => {
-        const dims = calculateDimensions();
-        return `+=${dims.totalWidth}`;
+      end: () => `+=${dimensions.totalWidth}`,
+      scrub: 1,
+      pin: true,
+      anticipatePin: 1,
+      invalidateOnRefresh: true,
+      onRefreshInit: () => {
+        dimensions = calculateDimensions();
+        applyDimensions();
       },
-      scrub: 0.5,
-      onUpdate: (self) => updateCard(self.progress),
-      onEnter: () => updateCard(0),
-    });
+      onUpdate: (self) => updateCards(self.progress),
+      onEnter: () => updateCards(0),
+    },
   });
 
-  arrowElements.forEach((el) => {
-    gsap.to(el, {
-      opacity: 1,
-      ease: 'linear',
-      scrollTrigger: {
-        trigger: horizontalSection,
-        start: 'top top',
-        end: () => {
-          const dims = calculateDimensions();
-          return `+=${dims.totalWidth}`;
-        },
-        scrub: 1,
-      },
-    });
+  mainTimeline.to(horizontalContent, {
+    x: () => -(dimensions.totalWidth - dimensions.cardWidth),
+    ease: 'none',
+    force3D: true,
   });
 
-  arrowElements.forEach((el) => {
-    gsap.to(el, {
-      strokeDashoffset: 0,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: horizontalSection,
-        start: 'top top',
-        end: () => {
-          const dims = calculateDimensions();
-          return `+=${dims.totalWidth}`;
-        },
-        scrub: 1,
-      },
-    });
+  gsap.to(arrowElements, {
+    opacity: 1,
+    strokeDashoffset: 0,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: horizontalSection,
+      start: 'top top',
+      end: () => `+=${dimensions.totalWidth}`,
+      scrub: 1,
+      invalidateOnRefresh: true,
+    },
   });
 
   const filledElements = arrow.querySelectorAll(
@@ -197,11 +167,9 @@ export function initWorkExperienceAnimations() {
         scrollTrigger: {
           trigger: horizontalSection,
           start: 'top top',
-          end: () => {
-            const dims = calculateDimensions();
-            return `+=${dims.totalWidth * 1.3}`;
-          },
+          end: () => `+=${dimensions.totalWidth * 1.3}`,
           scrub: 1,
+          invalidateOnRefresh: true,
         },
       }
     );
@@ -330,18 +298,16 @@ export function initWorkExperienceAnimations() {
   }
 
   let resizeTimer: ReturnType<typeof setTimeout>;
+  let lastViewportWidth = window.innerWidth;
   window.addEventListener('resize', () => {
+    const viewportWidth = window.innerWidth;
+    if (Math.abs(viewportWidth - lastViewportWidth) < 2) return;
+    lastViewportWidth = viewportWidth;
+
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
       dimensions = calculateDimensions();
-
-      gsap.set(horizontalContent, {
-        width: dimensions.totalWidth,
-        paddingLeft: dimensions.initialPaddingLeft,
-      });
-
-      horizontalSection.setAttribute('data-scroll-width', dimensions.totalWidth.toString());
-
+      applyDimensions();
       ScrollTrigger.refresh();
     }, 250);
   });

@@ -220,12 +220,19 @@ const t = useTranslations(lang);
   }
 
   @media (max-width: 1024px) and (min-width: 769px) {
+    .hero-section {
+      height: 300svh;
+    }
+
     .hero-content {
+      height: 100svh;
       font-size: clamp(1.5rem, 3vw, 2rem);
       padding: 1.5rem;
     }
 
     .hero-inner {
+      height: 100svh;
+      min-height: 100svh;
       left: 1.5rem;
       right: 1.5rem;
       padding: 100px 1.5rem 2rem 1.5rem;
@@ -256,7 +263,12 @@ const t = useTranslations(lang);
   }
 
   @media (max-width: 768px) {
+    .hero-section {
+      height: 300svh;
+    }
+
     .hero-content {
+      height: 100svh;
       overflow: visible;
       font-size: clamp(1.25rem, 4.5vw, 1.8rem);
       line-height: 1.5;
@@ -269,7 +281,7 @@ const t = useTranslations(lang);
       right: 0.5rem;
       height: auto;
       min-height: 100vh;
-      min-height: 100dvh;
+      min-height: 100svh;
       gap: 1.5rem;
     }
 
@@ -342,11 +354,10 @@ const t = useTranslations(lang);
 </style>
 
 <script>
-  import { getGsap, getScrollTrigger } from '@/lib/gsap';
+  import { getGsap } from '@/lib/gsap';
   import { onInit } from '@/lib/dom';
 
   const gsap = getGsap();
-  const ScrollTrigger = getScrollTrigger();
 
   function initHeroAnimation() {
     const hero = document.getElementById('hero');
@@ -354,6 +365,8 @@ const t = useTranslations(lang);
     const texts = document.querySelectorAll('.animate-text');
 
     if (!hero || !heroInners || heroInners.length < 2) return;
+    if (hero.dataset.animationInitialized === 'true') return;
+    hero.dataset.animationInitialized = 'true';
 
     const [slide1, slide2] = heroInners;
 
@@ -382,18 +395,6 @@ const t = useTranslations(lang);
         end: '+=300%',
         scrub: 1,
       },
-    });
-
-    // iOS Safari changes the visible viewport when its browser chrome collapses.
-    // Refresh after that transition so the pinned hero keeps its scroll bounds.
-    let viewportRefreshTimeout: number | undefined;
-    const refreshForViewportChange = () => {
-      window.clearTimeout(viewportRefreshTimeout);
-      viewportRefreshTimeout = window.setTimeout(() => ScrollTrigger.refresh(), 150);
-    };
-
-    window.visualViewport?.addEventListener('resize', refreshForViewportChange, {
-      passive: true,
     });
 
     tl.to(

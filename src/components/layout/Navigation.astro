@@ -185,6 +185,9 @@ const localizedNavLinks = navLinks.map((link) => ({
 
   function initNavigation() {
     const nav = document.getElementById('main-nav');
+    if (!nav || nav.dataset.navigationInitialized === 'true') return;
+    nav.dataset.navigationInitialized = 'true';
+
     const isBlogPage = window.location.pathname.startsWith('/blog');
 
     // Mobile menu toggle
@@ -310,12 +313,12 @@ const localizedNavLinks = navLinks.map((link) => ({
 
     const updateActiveSection = () => {
       const scrollTop = window.scrollY;
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
+      const shouldShowGlass = scrollTop > 50;
 
       // Add glass effect when scrolled down
-      if (nav) {
-        if (scrollTop > 50) {
+      if (nav && nav.dataset.scrolled !== String(shouldShowGlass)) {
+        nav.dataset.scrolled = String(shouldShowGlass);
+        if (shouldShowGlass) {
           nav.style.backdropFilter = 'blur(12px)';
           nav.style.webkitBackdropFilter = 'blur(12px)';
           nav.style.transition = 'backdrop-filter 0.3s ease-in-out';
@@ -325,6 +328,12 @@ const localizedNavLinks = navLinks.map((link) => ({
           nav.style.transition = 'backdrop-filter 0.3s ease-in-out';
         }
       }
+
+      // Progress indicators are hidden on mobile, so avoid their layout reads entirely.
+      if (window.innerWidth < 768) return;
+
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
 
       const currentIndex = getCurrentSectionIndex(
         desktopNavLinks,

@@ -3,6 +3,11 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Mobile browser chrome changes the visual viewport height while scrolling.
+// Ignoring those height-only resize events prevents pinned timelines from
+// refreshing mid-gesture; real layout/orientation changes still refresh.
+ScrollTrigger.config({ ignoreMobileResize: true });
+
 export function getGsap() {
   return gsap;
 }
